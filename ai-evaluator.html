@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Use Case Evaluator</title>
+  <style>
+    body { font-family: Arial; max-width: 800px; margin: auto; }
+    textarea, select, input { width: 100%; margin: 10px 0; padding: 8px; }
+    button { padding: 10px 15px; cursor: pointer; }
+    .output { margin-top: 20px; padding: 15px; border: 1px solid #ccc; }
+  </style>
+</head>
+
+<body>
+
+<h2>AI Use Case Evaluator</h2>
+
+<label>Business Problem</label>
+<textarea id="problem"></textarea>
+
+<label>Specific Task</label>
+<input id="task" />
+
+<label>Current Workflow</label>
+<textarea id="workflow"></textarea>
+
+<label>Output Type</label>
+<select id="outputType">
+  <option>Report</option>
+  <option>Prediction</option>
+  <option>Classification</option>
+  <option>Recommendation</option>
+  <option>Monitoring</option>
+</select>
+
+<label>Error Tolerance</label>
+<select id="error">
+  <option>Low</option>
+  <option>Medium</option>
+  <option>High</option>
+</select>
+
+<label>Context Dependency</label>
+<select id="context">
+  <option>Low</option>
+  <option>Medium</option>
+  <option>High</option>
+</select>
+
+<button onclick="evaluateAI()">Evaluate</button>
+
+<div class="output" id="result"></div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
