@@ -1,5 +1,8 @@
 async function evaluateAI() {
-
+  
+async function evaluateAI() {
+  alert("JS is working");
+}
   const problem = document.getElementById("problem").value;
   const task = document.getElementById("task").value;
   const workflow = document.getElementById("workflow").value;
