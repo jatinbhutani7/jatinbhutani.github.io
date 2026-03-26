@@ -1,6 +1,4 @@
-console.log("JS FILE LOADED");
-
-function evaluateAI() {
+async function evaluateAI() {
 
   const problem = document.getElementById("problem").value;
   const task = document.getElementById("task").value;
@@ -9,19 +7,19 @@ function evaluateAI() {
   const error = document.getElementById("error").value;
   const context = document.getElementById("context").value;
 
-  const outputText = `
-Business Problem: ${problem}
+  document.getElementById("result").innerText = "Evaluating...";
 
-Task: ${task}
+  const response = await fetch("/api/evaluate", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      problem, task, workflow, outputType, error, context
+    })
+  });
 
-Workflow: ${workflow}
+  const data = await response.json();
 
-Output Type: ${outputType}
-
-Error Tolerance: ${error}
-
-Context Dependency: ${context}
-`;
-
-  document.getElementById("result").innerText = outputText;
+  document.getElementById("result").innerText = data.result;
 }
