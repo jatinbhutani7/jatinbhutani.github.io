@@ -43,9 +43,12 @@ Give structured output:
 
     const data = await response.json();
 
-    return res.status(200).json({
-      result: data.output[0].content[0].text
-    });
+const resultText =
+  data.output?.[0]?.content?.[0]?.text || "No response generated";
+
+return res.status(200).json({
+  result: resultText
+});
 
   } catch (err) {
     console.error("SERVER ERROR:", err);
