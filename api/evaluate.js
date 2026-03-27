@@ -42,6 +42,7 @@ Give structured output:
     });
 
     const data = await response.json();
+    console.log("OPENAI RESPONSE:", JSON.stringify(data, null, 2));
 
 const resultText =
   data.output?.[0]?.content?.[0]?.text || "No response generated";
