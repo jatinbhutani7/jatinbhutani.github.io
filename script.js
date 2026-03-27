@@ -11,20 +11,22 @@ async function evaluateAI() {
   document.getElementById("result").innerText = "Evaluating...";
 
   try {
-    const response = await fetch("/api/evaluate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        problem,
-        task,
-        workflow,
-        outputType,
-        error,
-        context
-      })
-    });
+const payload = {
+  problem: problem,
+  task: task,
+  workflow: workflow,
+  outputType: outputType,
+  error: error,
+  context: context
+};
+
+const response = await fetch("/api/evaluate", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify(payload)
+});
 
     const data = await response.json();
 
