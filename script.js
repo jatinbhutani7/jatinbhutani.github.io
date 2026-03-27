@@ -24,8 +24,8 @@ async function evaluateAI() {
 
     document.getElementById("result").innerText = data.result;
 
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    console.error(err);
     document.getElementById("result").innerText = "Error occurred. Check console.";
   }
 }
