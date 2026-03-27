@@ -44,7 +44,14 @@ async function runAnalysis() {
   });
 
   const data = await response.json();
-  document.getElementById("output").innerText = data.result;
+  document.getElementById("output").innerHTML = formatOutput(data.result);
+
+function formatOutput(text) {
+  return text
+    .replace(/\n/g, "<br>")
+    .replace(/### (.*?)(<br>|$)/g, "<h3>$1</h3>")
+    .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>");
+}
 }
 </script>
 
