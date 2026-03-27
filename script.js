@@ -1,4 +1,5 @@
 async function evaluateAI() {
+async function evaluateAI() {
 
   const problem = document.getElementById("problem").value;
   const task = document.getElementById("task").value;
@@ -9,17 +10,23 @@ async function evaluateAI() {
 
   document.getElementById("result").innerText = "Evaluating...";
 
-  const response = await fetch("/api/evaluate", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      problem, task, workflow, outputType, error, context
-    })
-  });
+  try {
+    const response = await fetch("/api/evaluate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        problem, task, workflow, outputType, error, context
+      })
+    });
 
-  const data = await response.json();
+    const data = await response.json();
 
-  document.getElementById("result").innerText = data.result;
+    document.getElementById("result").innerText = data.result;
+
+  } catch (error) {
+    console.error(error);
+    document.getElementById("result").innerText = "Error occurred. Check console.";
+  }
 }
