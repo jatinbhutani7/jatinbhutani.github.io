@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Blind Spot Detector</title>
+  <style>
+    body { font-family: Arial; max-width: 800px; margin: auto; padding: 20px; }
+    textarea { width: 100%; height: 150px; margin-top: 10px; }
+    button { margin-top: 15px; padding: 10px 20px; }
+    .output { margin-top: 30px; white-space: pre-wrap; }
+  </style>
+</head>
+
+<body>
+
+<h2>AI Blind Spot Detector</h2>
+
+<label>Context (optional)</label>
+<textarea id="context"></textarea>
+
+<label>Objective (what decision is this for?)</label>
+<textarea id="objective"></textarea>
+
+<label>Paste analysis / report</label>
+<textarea id="inputText"></textarea>
+
+<button onclick="runAnalysis()">Run Analysis</button>
+
+<div class="output" id="output"></div>
+
+<script>
+async function runAnalysis() {
+  const context = document.getElementById("context").value;
+  const objective = document.getElementById("objective").value;
+  const inputText = document.getElementById("inputText").value;
+
+  document.getElementById("output").innerText = "Analyzing...";
+
+  const response = await fetch("YOUR_BACKEND_URL", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ context, objective, inputText })
+  });
+
+  const data = await response.json();
+  document.getElementById("output").innerText = data.result;
+}
+</script>
+
+</body>
+</html>
