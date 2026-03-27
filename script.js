@@ -1,3 +1,8 @@
 function evaluateAI() {
-  alert("WORKING CLEAN");
+
+  const problem = document.getElementById("problem").value;
+  const task = document.getElementById("task").value;
+
+  document.getElementById("result").innerText =
+    "Problem: " + problem + " | Task: " + task;
 }
