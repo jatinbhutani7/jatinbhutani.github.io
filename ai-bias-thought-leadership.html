@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Bias & Social Structure</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  background: #fafafa;
+  color: #111;
+}
+
+.container {
+  max-width: 800px;
+  margin: auto;
+  padding: 40px 20px;
+}
+
+h1 {
+  font-size: 28px;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  color: #666;
+  margin-bottom: 30px;
+}
+
+.section {
+  margin-bottom: 30px;
+}
+
+.section h2 {
+  font-size: 16px;
+  margin-bottom: 8px;
+}
+
+.section p {
+  color: #444;
+  line-height: 1.7;
+}
+
+.highlight {
+  background: #fff;
+  padding: 15px;
+  border-left: 3px solid #000;
+  margin-top: 10px;
+}
+
+.footer {
+  margin-top: 50px;
+  font-size: 12px;
+  color: #888;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>AI learns social structure. Not just language.</h1>
+<p class="subtitle">A note on bias, localization, and deployment risk</p>
+
+<div class="section">
+<p>
+In India, names carry signals—caste, geography, class. AI models infer this without being explicitly trained on it.
+</p>
+<p>
+In controlled tests, models mapped upper-caste names to high-status roles and marginalised identities to lower-status work. Not because of instructions, but because these patterns exist in the data.
+</p>
+<p>
+This is the core issue: models don’t just learn words. They learn structure.
+</p>
+</div>
+
+<div class="section">
+<h2>Why this matters</h2>
+<p>
+As AI moves into hiring, lending, and healthcare, bias becomes structural, not visible. Outputs may appear neutral, but decisions are not. Standard fairness checks often miss what sits deeper in the model.
+</p>
+</div>
+
+<div class="section">
+<h2>Where current approaches fall short</h2>
+<p>
+Most mitigation focuses on filtering outputs. The problem sits in representations. Most benchmarks are global, while the risk is local.
+</p>
+</div>
+
+<div class="section">
+<h2>What needs to change</h2>
+<p>
+Evaluation must be localized. Models should be tested using real-world proxies like names, regions, and institutions—not to optimise outcomes, but to surface hidden bias.
+</p>
+<p>
+The focus must shift from filtering to auditing. And governance needs to happen at the use-case level, not just at the model level.
+</p>
+</div>
+
+<div class="section">
+<h2>The trade-off</h2>
+<p>
+The highest-value use cases—healthcare, credit, policing—will adopt AI because the upside is too large.
+</p>
+<p>
+Which means the question is no longer whether to deploy, but how to constrain deployment.
+</p>
+<p>
+This creates a real trade-off between scale and control. There is no clean resolution.
+</p>
+</div>
+
+<div class="section">
+<h2>Key takeaway</h2>
+<div class="highlight">
+AI will not remove societal bias. It will standardise and scale it—unless actively constrained.
+</div>
+</div>
+
+<div class="footer">
+© 2026 Jatin Bhutani
+</div>
+
+</div>
+
+</body>
+</html>
