@@ -684,7 +684,7 @@ async function runAnalysis() {
   const userPrompt = `Analyze emerging risks for the ${industry} industry in the ${region} region using the Trifecta framework. Focus on underappreciated, novel, or structurally shifting risks that may not be adequately covered by current insurance products or pricing models.`;
 
   try {
-    const OPENAI_API_KEY = 'YOUR_OPENAI_API_KEY_HERE'; // ← Replace this with your key
+    const OPENAI_API_KEY = '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';
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
