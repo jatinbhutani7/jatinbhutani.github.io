@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>SRH vs KKR – Match Analysis</title>
+  <style>
+    body {
+      font-family: Arial;
+      margin: 40px;
+      background: #f5f5f5;
+    }
+    .output-box {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>SRH vs KKR – Match Analysis</h1>
+
+<div class="output-box">
+
+<h3>Turning Points</h3>
+<ul>
+  <li><b>SRH Powerplay (84/1):</b> Forced KKR out of plans early. From there, KKR were reacting, not controlling.</li>
+  
+  <li><b>Raghuvanshi run-out (~110/3):</b> Chase broke here. Set batter gone, structure lost.</li>
+  
+  <li><b>SRH final surge (+50 in last 4 overs):</b> Pushed total beyond control. From chaseable to pressure-heavy.</li>
+</ul>
+
+<h3>Phase Control</h3>
+
+<p><b>Powerplay:</b><br>
+SRH controlled completely, dictating fields and matchups.<br>
+KKR started well but were already behind target.<br>
+→ SRH ahead.</p>
+
+<p><b>Middle Overs:</b><br>
+SRH preserved wickets, played for finish.<br>
+KKR rebuilt through Raghuvanshi + Rinku.<br>
+→ Game balanced.</p>
+
+<p><b>Death Overs:</b><br>
+SRH accelerated effectively.<br>
+KKR lost wickets instead of closing gap.<br>
+→ SRH decisively won.</p>
+
+<p><b>Net:</b> SRH controlled start and finish; KKR only held control briefly.</p>
+
+<h3>Match Decider</h3>
+<p><b>SRH’s final four overs</b><br>
+They changed the chase equation. Removed margin for error and made one wicket enough to break the chase.</p>
+
+<h3>Decision Insight</h3>
+<p>
+KKR failed to manage the chase once in position. After getting level, they lost structure—no batter took control, and the run-out triggered rushed decision-making instead of a paced finish.
+</p>
+
+<h3>Win Probability Shift (directional)</h3>
+<ul>
+  <li>SRH Powerplay: SRH ahead</li>
+  <li>KKR rebuild (~100/3): game evens out</li>
+  <li>SRH death surge: SRH ahead again</li>
+  <li>Raghuvanshi run-out: sharp shift</li>
+  <li>Post that: steady collapse</li>
+</ul>
+
+<p><b>Key point:</b> KKR reached control but couldn’t hold it long enough.</p>
+
+<h3>Framework Insights</h3>
+<ul>
+  <li><b>Death overs define the real total:</b> Final surge matters more than middle slowdown.</li>
+  
+  <li><b>Chases need a controlling batter:</b> Once Raghuvanshi fell, structure broke.</li>
+  
+  <li><b>Momentum is fragile:</b> One error can undo long phases of good play.</li>
+  
+  <li><b>Scoring rate ≠ control:</b> KKR had pace but not ownership.</li>
+</ul>
+
+</div>
+
+</body>
+</html>
