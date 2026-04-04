@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IPL 2026 — Team Intelligence Filter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --surface-2: #161616;
+    --border: #222222;
+    --border-hover: #333333;
+    --text-primary: #f0ede8;
+    --text-secondary: #888880;
+    --text-muted: #444440;
+    --accent: #c8a96e;
+    --accent-dim: rgba(200, 169, 110, 0.12);
+    --accent-dim2: rgba(200, 169, 110, 0.06);
+    --green: #4a9e6b;
+    --green-dim: rgba(74, 158, 107, 0.12);
+    --red: #c05a5a;
+    --red-dim: rgba(192, 90, 90, 0.12);
+    --neutral: #555550;
+    --neutral-dim: rgba(85, 85, 80, 0.12);
+    --radius: 2px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 48px 48px 36px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse 60% 100% at 80% 50%, rgba(200,169,110,0.04) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header-eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+    font-weight: 400;
+  }
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 4vw, 48px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    line-height: 1.1;
+    margin-bottom: 10px;
+  }
+  h1 span { color: var(--accent); }
+  .header-sub {
+    color: var(--text-secondary);
+    font-size: 12px;
+    max-width: 500px;
+  }
+  .header-meta {
+    position: absolute;
+    top: 48px; right: 48px;
+    text-align: right;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+  .header-meta strong {
+    display: block;
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+  }
+
+  /* ── FILTERS ── */
+  .filters-bar {
+    padding: 24px 48px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    align-items: flex-start;
+  }
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 140px;
+  }
+  .filter-label {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .filter-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .pill {
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    border-radius: var(--radius);
+    transition: all 0.15s ease;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+  .pill:hover {
+    border-color: var(--border-hover);
+    color: var(--text-primary);
+  }
+  .pill.active {
+    background: var(--accent-dim);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .pill.active.green { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+  .pill.active.red   { background: var(--red-dim);   border-color: var(--red);   color: var(--red);   }
+
+  .filter-reset {
+    align-self: flex-end;
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    border-radius: var(--radius);
+    transition: all 0.15s ease;
+    letter-spacing: 0.04em;
+    margin-top: auto;
+  }
+  .filter-reset:hover { color: var(--text-secondary); border-color: var(--border-hover); }
+
+  /* ── RESULTS BAR ── */
+  .results-bar {
+    padding: 14px 48px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .results-count {
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.06em;
+  }
+  .results-count strong { color: var(--accent); font-weight: 400; }
+  .active-filter-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .active-tag {
+    font-size: 10px;
+    padding: 2px 8px;
+    background: var(--accent-dim2);
+    border: 1px solid rgba(200,169,110,0.2);
+    color: var(--accent);
+    border-radius: 20px;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── GRID ── */
+  .grid {
+    padding: 32px 48px 64px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 2px;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 24px;
+    cursor: default;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+    animation: fadeIn 0.3s ease both;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: transparent;
+    transition: background 0.2s ease;
+  }
+  .card.winner-team1::before { background: var(--accent); }
+  .card.winner-team2::before { background: var(--accent); }
+  .card:hover { border-color: var(--border-hover); transform: translateY(-1px); }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .match-num {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .match-teams {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 4px 0 2px;
+    line-height: 1.2;
+  }
+  .match-winner {
+    font-size: 10px;
+    color: var(--green);
+    letter-spacing: 0.08em;
+  }
+  .chase-badge {
+    font-size: 9px;
+    padding: 3px 8px;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .chase-badge.yes { border-color: rgba(74,158,107,0.3); color: var(--green); }
+
+  /* ── PHASE GRID ── */
+  .phase-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2px;
+    margin-bottom: 16px;
+  }
+  .phase-cell {
+    padding: 10px 8px;
+    text-align: center;
+    border: 1px solid var(--border);
+  }
+  .phase-name {
+    font-size: 8px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+  .phase-winner {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .phase-cell.controlled-t1 { background: var(--accent-dim2); }
+  .phase-cell.controlled-t1 .phase-winner { color: var(--accent); }
+  .phase-cell.contested { background: var(--neutral-dim); }
+  .phase-cell.contested .phase-winner { color: var(--text-muted); font-size: 11px; }
+
+  /* ── TURNING POINTS ── */
+  .section-label {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+  .turning-points {
+    margin-bottom: 14px;
+  }
+  .tp-item {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 5px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+  .tp-item::before {
+    content: '→';
+    color: var(--accent);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ── INSIGHT ── */
+  .insight-box {
+    border-left: 2px solid var(--accent);
+    padding: 8px 12px;
+    margin-bottom: 14px;
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-style: italic;
+    line-height: 1.6;
+  }
+
+  /* ── TAGS ── */
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .tag {
+    font-size: 9px;
+    padding: 2px 8px;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: 1px;
+  }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    grid-column: 1 / -1;
+    padding: 80px 0;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 13px;
+    letter-spacing: 0.06em;
+  }
+  .empty-state span { display: block; font-size: 32px; margin-bottom: 12px; opacity: 0.3; }
+
+  /* ── PATTERN SIDEBAR ── */
+  .pattern-bar {
+    padding: 20px 48px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    align-items: center;
+  }
+  .pattern-label {
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .pattern-stat {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 11px;
+    color: var(--text-secondary);
+  }
+  .pattern-stat strong {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .divider { width: 1px; height: 24px; background: var(--border); }
+
+  @media (max-width: 640px) {
+    header, .filters-bar, .results-bar, .grid, .pattern-bar { padding-left: 20px; padding-right: 20px; }
+    .header-meta { display: none; }
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-eyebrow">IPL 2026 · AI Decision System</div>
+  <h1>Team <span>Intelligence</span><br>Filter</h1>
+  <p class="header-sub">Query phase control and decision patterns across all matches. Built from structured analysis, not scoreboards.</p>
+  <div class="header-meta">
+    <strong id="total-matches">7</strong>
+    matches analysed
+  </div>
+</header>
+
+<div class="filters-bar">
+  <div class="filter-group">
+    <div class="filter-label">Team</div>
+    <div class="filter-pills" id="team-filters"></div>
+  </div>
+  <div class="filter-group">
+    <div class="filter-label">Phase Control</div>
+    <div class="filter-pills" id="phase-filters">
+      <button class="pill" data-filter="phase" data-value="powerplay">Powerplay</button>
+      <button class="pill" data-filter="phase" data-value="middle">Middle</button>
+      <button class="pill" data-filter="phase" data-value="death">Death</button>
+    </div>
+  </div>
+  <div class="filter-group">
+    <div class="filter-label">Pattern</div>
+    <div class="filter-pills" id="pattern-filters">
+      <button class="pill" data-filter="pattern" data-value="wickets-without-control">Wickets w/o Control</button>
+      <button class="pill" data-filter="pattern" data-value="chase-win">Chase Win</button>
+      <button class="pill" data-filter="pattern" data-value="powerplay-decisive">Powerplay Decisive</button>
+      <button class="pill" data-filter="pattern" data-value="middle-overs-failure">Middle Failure</button>
+      <button class="pill" data-filter="pattern" data-value="death-overs-decisive">Death Decisive</button>
+      <button class="pill" data-filter="pattern" data-value="control-lost">Control Lost</button>
+    </div>
+  </div>
+  <button class="filter-reset" id="reset-btn">Reset all</button>
+</div>
+
+<div class="results-bar">
+  <div class="results-count">Showing <strong id="results-num">7</strong> of 7 matches</div>
+  <div class="active-filter-tags" id="active-tags"></div>
+</div>
+
+<div class="grid" id="card-grid"></div>
+
+<div class="pattern-bar" id="pattern-bar">
+  <div class="pattern-label">System Patterns</div>
+  <div class="pattern-stat"><strong>6/7</strong><span>chasing team won</span></div>
+  <div class="divider"></div>
+  <div class="pattern-stat"><strong>3</strong><span>matches decided in powerplay</span></div>
+  <div class="divider"></div>
+  <div class="pattern-stat"><strong>3</strong><span>wickets taken without control</span></div>
+  <div class="divider"></div>
+  <div class="pattern-stat"><strong>2</strong><span>games lost in one uncontrolled phase</span></div>
+</div>
+
+<script>
+const MATCHES = [
+  {
+    id: 1,
+    teams: ["RCB", "SRH"],
+    winner: "RCB",
+    chasingWon: true,
+    phases: {
+      powerplay: { controller: "RCB", note: "RCB clean hitting; SRH wickets but no control" },
+      middle:    { controller: "RCB", note: "Kohli paced; SRH never tightened" },
+      death:     { controller: "RCB", note: "Game already taken; SRH catching up late" }
+    },
+    turningPoints: [
+      "Duffy's first spell — early damage but not collapse, SRH lost options not the game",
+      "Kishan out at 80 (16th over) — the defining moment; SRH lost their only controlling batter",
+      "Kohli dropped at 28 — the only opening in the chase; once missed, game was done"
+    ],
+    insight: "SRH didn't react quickly enough in the powerplay. Same lengths, limited adjustments, no attempt to break Padikkal's rhythm. The phase drifted — and drift compounded.",
+    summary: "Early collapse risk + lack of disruption defined match control",
+    tags: ["wickets-without-control", "chase-win", "powerplay-decisive"]
+  },
+  {
+    id: 2,
+    teams: ["MI", "KKR"],
+    winner: "MI",
+    chasingWon: true,
+    phases: {
+      powerplay: { controller: "KKR", note: "KKR set decent platform but didn't assert" },
+      middle:    { controller: "MI",  note: "KKR slowed; MI bowling removed control" },
+      death:     { controller: "MI",  note: "KKR total insufficient after middle stall" }
+    },
+    turningPoints: [
+      "No early wickets for MI in field — KKR settled in without pressure",
+      "Middle overs slowdown — KKR's run rate stalled without boundaries to build on",
+      "MI chase built on platform — no panic phase reached"
+    ],
+    insight: "KKR had the powerplay but couldn't convert pressure into sustained control. A middle-overs stall without wickets as the trigger is a self-inflicted control loss.",
+    summary: "No early wickets + middle overs slowdown removed KKR's control",
+    tags: ["wickets-without-control", "chase-win", "middle-overs-failure"]
+  },
+  {
+    id: 3,
+    teams: ["RR", "CSK"],
+    winner: "RR",
+    chasingWon: false,
+    phases: {
+      powerplay: { controller: "RR",  note: "Disciplined lengths + conditions reading; CSK never found rhythm" },
+      middle:    { controller: "RR",  note: "Total built on powerplay advantage" },
+      death:     { controller: "contested", note: "CSK fought back but deficit too large" }
+    },
+    turningPoints: [
+      "RR bowlers read the conditions correctly from over 1 — the phase was decided by intent",
+      "CSK failed to rotate strike in powerplay — pressure accumulated passively",
+      "RR's total set a chase that demanded CSK play above their powerplay failure"
+    ],
+    insight: "Games are sometimes decided by one team arriving prepared and the other not. CSK's powerplay wasn't a collapse — it was a drift. Drift without correction becomes the match.",
+    summary: "Correct reading of conditions + disciplined lengths decided game in powerplay",
+    tags: ["powerplay-decisive"]
+  },
+  {
+    id: 4,
+    teams: ["PBKS", "GT"],
+    winner: "GT",
+    chasingWon: true,
+    phases: {
+      powerplay: { controller: "PBKS", note: "PBKS took early advantage with bat or ball" },
+      middle:    { controller: "GT",   note: "GT middle overs control reversed the game" },
+      death:     { controller: "GT",   note: "Composed chase; late composure absorbed pressure" }
+    },
+    turningPoints: [
+      "PBKS early advantage — created expectation but not control",
+      "GT middle-overs shift — the game's defining phase; PBKS couldn't sustain pressure",
+      "GT death composure — late wobble absorbed without losing the phase"
+    ],
+    insight: "One uncontrolled phase is enough to lose. PBKS had the game and let the middle overs slip. GT didn't need dominance — they needed one phase to change, and held it.",
+    summary: "Middle overs control + late composure outweighed early advantage",
+    tags: ["chase-win", "middle-overs-failure", "control-lost"]
+  },
+  {
+    id: 5,
+    teams: ["LSG", "DC"],
+    winner: "DC",
+    chasingWon: true,
+    phases: {
+      powerplay: { controller: "LSG", note: "LSG early wickets — but control didn't follow" },
+      middle:    { controller: "DC",  note: "DC recovered and took control of the innings" },
+      death:     { controller: "DC",  note: "DC target within reach after middle control" }
+    },
+    turningPoints: [
+      "LSG early wickets — step one without step two; DC batters regrouped",
+      "DC middle-overs recovery — wickets hadn't broken the innings, only paused it",
+      "DC controlled chase — total proved insufficient given LSG's failure to convert wicket pressure"
+    ],
+    insight: "Early wickets without control is the system's most dangerous pattern. LSG took scalps but gave DC room to breathe. Once DC reset, the wickets became historical facts, not match leverage.",
+    summary: "Early wickets without control allowed DC to recover and take match control",
+    tags: ["wickets-without-control", "chase-win", "control-lost"]
+  },
+  {
+    id: 6,
+    teams: ["KKR", "SRH"],
+    winner: "SRH",
+    chasingWon: false,
+    phases: {
+      powerplay: { controller: "KKR", note: "KKR established control early" },
+      middle:    { controller: "KKR", note: "KKR maintained through middle" },
+      death:     { controller: "SRH", note: "SRH death overs removed all KKR margin" }
+    },
+    turningPoints: [
+      "KKR established and maintained control through two phases",
+      "SRH death overs — a complete phase reversal; total redefined in final overs",
+      "KKR chase exposed — target reset by SRH death hitting was too steep to absorb"
+    ],
+    insight: "KKR did everything right for 15 overs and still lost. Death overs don't just add runs — they redefine the game's identity. The last phase has disproportionate leverage over all prior phases.",
+    summary: "KKR controlled two phases but lost it; SRH's death overs removed recovery margin",
+    tags: ["death-overs-decisive", "control-lost"]
+  },
+  {
+    id: 7,
+    teams: ["PBKS", "CSK"],
+    winner: "PBKS",
+    chasingWon: true,
+    phases: {
+      powerplay: { controller: "PBKS", note: "Powerplay damage was definitive and early" },
+      middle:    { controller: "PBKS", note: "CSK couldn't build — deficit too structural" },
+      death:     { controller: "contested", note: "CSK fought but never created a real phase" }
+    },
+    turningPoints: [
+      "PBKS powerplay attack — early damage removed pressure from the entire chase",
+      "CSK middle innings — repair mode, not control mode; no phase was seized",
+      "CSK never created a control phase — the match had a single direction throughout"
+    ],
+    insight: "When a team never takes a phase, the match has only one story. CSK needed to find a control moment somewhere — middle overs, a partnership, a bowling spell. None came.",
+    summary: "Early powerplay damage removed all pressure; CSK never created a control phase",
+    tags: ["wickets-without-control", "chase-win", "powerplay-decisive"]
+  }
+];
+
+// Build team list
+const allTeams = [...new Set(MATCHES.flatMap(m => m.teams))].sort();
+const teamFiltersEl = document.getElementById('team-filters');
+allTeams.forEach(team => {
+  const btn = document.createElement('button');
+  btn.className = 'pill';
+  btn.dataset.filter = 'team';
+  btn.dataset.value = team;
+  btn.textContent = team;
+  teamFiltersEl.appendChild(btn);
+});
+
+// State
+let activeFilters = { team: null, phase: null, pattern: null };
+
+// Render
+function getPhaseController(match, phase) {
+  return match.phases[phase]?.controller || '—';
+}
+
+function matchesFilters(match) {
+  const { team, phase, pattern } = activeFilters;
+  if (team && !match.teams.includes(team)) return false;
+  if (phase) {
+    const controller = getPhaseController(match, phase);
+    // Must have a non-contested controller matching the selected team (or any if no team filter)
+    if (controller === 'contested') return false;
+    if (team && controller !== team) return false;
+    if (!team && controller === 'contested') return false;
+  }
+  if (pattern && !match.tags.includes(pattern)) return false;
+  return true;
+}
+
+function renderCards() {
+  const grid = document.getElementById('card-grid');
+  const filtered = MATCHES.filter(matchesFilters);
+  document.getElementById('results-num').textContent = filtered.length;
+
+  // Active tags
+  const tagsEl = document.getElementById('active-tags');
+  tagsEl.innerHTML = '';
+  Object.entries(activeFilters).forEach(([key, val]) => {
+    if (val) {
+      const el = document.createElement('div');
+      el.className = 'active-tag';
+      el.textContent = val.replace(/-/g, ' ');
+      tagsEl.appendChild(el);
+    }
+  });
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="empty-state"><span>∅</span>No matches found for this combination</div>';
+    return;
+  }
+
+  grid.innerHTML = '';
+  filtered.forEach((match, i) => {
+    const card = document.createElement('div');
+    card.className = `card winner-team1`;
+    card.style.animationDelay = `${i * 40}ms`;
+
+    const phaseRows = ['powerplay', 'middle', 'death'].map(ph => {
+      const p = match.phases[ph];
+      const isContested = p.controller === 'contested';
+      let cellClass = isContested ? 'contested' : 'controlled-t1';
+      const displayName = isContested ? 'Contested' : p.controller;
+      return `<div class="phase-cell ${cellClass}">
+        <div class="phase-name">${ph}</div>
+        <div class="phase-winner">${displayName}</div>
+      </div>`;
+    }).join('');
+
+    const tpHtml = match.turningPoints.map(tp =>
+      `<div class="tp-item">${tp}</div>`
+    ).join('');
+
+    const tagHtml = match.tags.map(t =>
+      `<span class="tag">${t.replace(/-/g, ' ')}</span>`
+    ).join('');
+
+    card.innerHTML = `
+      <div class="card-header">
+        <div>
+          <div class="match-num">Match ${match.id}</div>
+          <div class="match-teams">${match.teams[0]} <span style="color:var(--text-muted);font-weight:400">vs</span> ${match.teams[1]}</div>
+          <div class="match-winner">↑ ${match.winner} won</div>
+        </div>
+        <div class="chase-badge ${match.chasingWon ? 'yes' : ''}">${match.chasingWon ? 'Chase ✓' : 'Defend ✓'}</div>
+      </div>
+      <div class="phase-grid">${phaseRows}</div>
+      <div class="turning-points">
+        <div class="section-label">Turning Points</div>
+        ${tpHtml}
+      </div>
+      <div class="insight-box">${match.insight}</div>
+      <div class="tags">${tagHtml}</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+// Filter click handlers
+document.querySelectorAll('.pill[data-filter]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const { filter, value } = btn.dataset;
+    if (activeFilters[filter] === value) {
+      activeFilters[filter] = null;
+      btn.classList.remove('active');
+    } else {
+      // Deactivate siblings
+      document.querySelectorAll(`.pill[data-filter="${filter}"]`).forEach(b => b.classList.remove('active'));
+      activeFilters[filter] = value;
+      btn.classList.add('active');
+    }
+    renderCards();
+  });
+});
+
+document.getElementById('reset-btn').addEventListener('click', () => {
+  activeFilters = { team: null, phase: null, pattern: null };
+  document.querySelectorAll('.pill').forEach(b => b.classList.remove('active'));
+  renderCards();
+});
+
+// Init
+renderCards();
+</script>
+</body>
+</html>
