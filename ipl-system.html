@@ -4,347 +4,746 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AI Decision System: T20 Match Intelligence</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
-body {
-  font-family: 'Inter', sans-serif;
-  margin: 0;
-  background: #fafafa;
-  color: #111;
-}
+  :root {
+    --bg:         #f7f5f1;
+    --surface:    #ffffff;
+    --border:     #e4e0d8;
+    --border-2:   #d4cfc5;
+    --text-primary:   #1a1814;
+    --text-secondary: #5a564e;
+    --text-muted:     #9a9690;
+    --accent:         #8b6240;
+    --accent-light:   rgba(139,98,64,0.08);
+    --accent-mid:     rgba(139,98,64,0.15);
+    --green:      #3d7a56;
+    --green-light:rgba(61,122,86,0.08);
+  }
 
-.container {
-  max-width: 900px;
-  margin: auto;
-  padding: 40px 20px;
-}
+  * { margin:0; padding:0; box-sizing:border-box; }
 
-h1 {
-  font-size: 28px;
-  margin-bottom: 10px;
-}
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+  }
 
-.subtitle {
-  color: #555;
-  margin-bottom: 25px;
-}
+  /* ── HEADER ── */
+  .site-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 52px 0 40px;
+  }
+  .header-inner {
+    max-width: 860px;
+    margin: auto;
+    padding: 0 32px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: end;
+  }
+  .header-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .header-title {
+    font-family: 'Cormorant', serif;
+    font-size: clamp(30px, 4vw, 44px);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+  }
+  .header-title em { font-style: italic; color: var(--accent); }
+  .header-sub {
+    font-size: 13.5px;
+    color: var(--text-secondary);
+    max-width: 480px;
+    line-height: 1.65;
+    font-weight: 300;
+  }
+  .header-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    align-items: flex-end;
+  }
+  .hstat {
+    text-align: right;
+  }
+  .hstat-num {
+    font-family: 'Cormorant', serif;
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .hstat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .hstat-divider { width: 24px; height: 1px; background: var(--border-2); margin-left: auto; }
 
-/* SECTION */
-.section {
-  margin-top: 40px;
-}
+  /* ── NAV BAND ── */
+  .nav-band {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    max-width: 100%;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .nav-inner {
+    max-width: 860px;
+    margin: auto;
+    display: flex;
+    gap: 0;
+    align-items: center;
+  }
+  .nav-item {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 14px 16px;
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+  }
+  .nav-item:hover { color: var(--text-primary); }
+  .nav-item.tool {
+    margin-left: auto;
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .nav-item.tool:hover { background: var(--accent-light); }
 
-.section h2 {
-  font-size: 18px;
-  margin-bottom: 15px;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 5px;
-}
+  /* ── MAIN ── */
+  main {
+    max-width: 860px;
+    margin: auto;
+    padding: 0 32px 80px;
+  }
 
-/* CARD */
-.card {
-  background: white;
-  padding: 18px;
-  border-radius: 10px;
-  border: 1px solid #eee;
-  margin-bottom: 15px;
-}
+  /* ── SECTION ── */
+  .section {
+    padding-top: 52px;
+  }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 3px 8px;
+    border: 1px solid var(--border-2);
+    border-radius: 2px;
+  }
+  .section-title {
+    font-family: 'Cormorant', serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text-primary);
+    letter-spacing: -0.01em;
+  }
 
-.card-title {
-  font-weight: 400;
-  margin-bottom: 6px;
-}
+  /* ── DASHBOARD METRICS ── */
+  .metrics-row {
+    display: grid;
+    grid-template-columns: 100px 100px 1fr;
+    gap: 2px;
+    margin-bottom: 2px;
+  }
+  .metric-tile {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 20px 22px;
+  }
+  .metric-tile.wide { grid-column: span 1; }
+  .mt-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+  .mt-value {
+    font-family: 'Cormorant', serif;
+    font-size: 38px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+  .mt-value.accent { color: var(--accent); }
+  .pattern-tile {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 20px 22px;
+    display: flex;
+    gap: 32px;
+  }
+  .pattern-block { flex: 1; }
+  .pattern-block + .pattern-block {
+    border-left: 1px solid var(--border);
+    padding-left: 32px;
+  }
+  .pb-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .pb-text {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    font-style: italic;
+    font-family: 'Cormorant', serif;
+    font-size: 16px;
+  }
 
-.card-desc {
-  font-size: 14px;
-  color: #555;
-}
+  /* ── SUMMARY CARD ── */
+  .prose-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 24px 26px;
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.75;
+    font-weight: 300;
+  }
 
-/* METRICS */
-.metrics {
-  display: flex;
-  gap: 15px;
-  margin-top: 10px;
-}
+  /* ── INTELLIGENCE TOOL CARD ── */
+  .tool-card {
+    background: var(--accent-light);
+    border: 1px solid var(--accent-mid);
+    padding: 18px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 2px;
+    text-decoration: none;
+    transition: background 0.15s ease;
+  }
+  .tool-card:hover { background: var(--accent-mid); }
+  .tool-card-left {}
+  .tool-chip {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 5px;
+  }
+  .tool-name {
+    font-family: 'Cormorant', serif;
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+  .tool-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 3px;
+    font-weight: 300;
+  }
+  .tool-arrow {
+    font-family: 'Cormorant', serif;
+    font-size: 24px;
+    color: var(--accent);
+    flex-shrink: 0;
+  }
 
-.metric-box {
-  flex: 1;
-  background: white;
-  padding: 15px;
-  border-radius: 8px;
-  border: 1px solid #eee;
-}
+  /* ── OBSERVATIONS CARD ── */
+  .obs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+  .obs-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 20px 22px;
+  }
+  .obs-card.full { grid-column: span 2; }
+  .obs-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .obs-list { list-style: none; }
+  .obs-list li {
+    font-size: 13px;
+    color: var(--text-secondary);
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 10px;
+    line-height: 1.5;
+    font-weight: 300;
+  }
+  .obs-list li:last-child { border-bottom: none; }
+  .obs-list li::before { content: '—'; color: var(--border-2); flex-shrink: 0; }
+  .obs-testing li { color: var(--text-muted); font-style: italic; }
+  .obs-testing li::before { content: '?'; font-family: 'Cormorant', serif; font-size: 14px; color: var(--text-muted); }
 
-.metric-title {
-  font-size: 12px;
-  color: #777;
-}
+  /* ── DECISION LAYER ── */
+  .decision-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+  .decision-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 20px 22px;
+    transition: border-color 0.15s ease;
+  }
+  .decision-card:hover { border-color: var(--border-2); }
+  .dc-num {
+    font-family: 'Cormorant', serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--border-2);
+    line-height: 1;
+    margin-bottom: 10px;
+  }
+  .dc-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+    line-height: 1.4;
+  }
+  .dc-body {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    font-weight: 300;
+  }
 
-.metric-value {
-  font-weight: 600;
-  margin-top: 5px;
-}
+  /* ── MATCH OUTPUTS ── */
+  .match-list { display: flex; flex-direction: column; gap: 2px; }
+  .match-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 16px 22px;
+    display: grid;
+    grid-template-columns: 48px 1fr;
+    gap: 16px;
+    align-items: center;
+    text-decoration: none;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+  .match-card:hover { border-color: var(--border-2); background: #fdfcfa; }
+  .match-num {
+    font-family: 'Cormorant', serif;
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--border-2);
+    text-align: center;
+    line-height: 1;
+  }
+  .match-info {}
+  .match-title {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 3px;
+  }
+  .match-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 300;
+    line-height: 1.4;
+  }
+  .match-arrow {
+    font-size: 16px;
+    color: var(--border-2);
+    margin-left: auto;
+    transition: color 0.15s ease, transform 0.15s ease;
+  }
+  .match-card:hover .match-arrow { color: var(--accent); transform: translateX(2px); }
+  .match-card:hover .match-num { color: var(--accent); }
 
-/* FOOTER */
-.footer {
-  margin-top: 60px;
-  font-size: 12px;
-  color: #888;
-}
+  /* ── SYSTEM LOGIC ── */
+  .logic-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2px;
+  }
+  .logic-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 20px 22px;
+  }
+  .lc-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+  .lc-title {
+    font-family: 'Cormorant', serif;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    line-height: 1.3;
+  }
+  .lc-body {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    padding: 20px 32px;
+    margin-top: 0;
+  }
+  .footer-inner {
+    max-width: 860px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-copy {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+  }
+  .footer-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--border-2);
+    letter-spacing: 0.08em;
+  }
+
+  @media (max-width: 640px) {
+    .header-inner { grid-template-columns: 1fr; }
+    .header-stats { flex-direction: row; align-items: flex-start; }
+    .metrics-row { grid-template-columns: 1fr 1fr; }
+    .obs-grid, .decision-grid, .logic-row { grid-template-columns: 1fr; }
+    .obs-card.full { grid-column: span 1; }
+    .pattern-tile { flex-direction: column; gap: 16px; }
+    .pattern-block + .pattern-block { border-left: none; padding-left: 0; border-top: 1px solid var(--border); padding-top: 16px; }
+    main { padding: 0 18px 60px; }
+  }
 </style>
 </head>
-
 <body>
 
-<div class="container">
+<!-- HEADER -->
+<div class="site-header">
+  <div class="header-inner">
+    <div>
+      <div class="header-eyebrow">IPL 2026 · AI Decision System</div>
+      <h1 class="header-title">T20 Match<br><em>Intelligence</em></h1>
+      <p class="header-sub">A structured system that converts match narratives into decision-oriented insights using phase-based analysis and reusable frameworks.</p>
+    </div>
+    <div class="header-stats">
+      <div class="hstat">
+        <div class="hstat-num">9</div>
+        <div class="hstat-label">Matches Analysed</div>
+      </div>
+      <div class="hstat-divider"></div>
+      <div class="hstat">
+        <div class="hstat-num">7</div>
+        <div class="hstat-label">Chasing Team Won</div>
+      </div>
+    </div>
+  </div>
+</div>
 
-  <!-- TITLE -->
-  <h1>AI Decision System: T20 Match Intelligence</h1>
-  <p class="subtitle">
-    A structured system that converts match narratives into decision-oriented insights using phase-based analysis and reusable frameworks.
-  </p>
+<!-- NAV -->
+<nav class="nav-band">
+  <div class="nav-inner">
+    <a class="nav-item" href="#summary">Summary</a>
+    <a class="nav-item" href="#intelligence">Intelligence</a>
+    <a class="nav-item" href="#decisions">Decisions</a>
+    <a class="nav-item" href="#matches">Matches</a>
+    <a class="nav-item" href="#logic">Logic</a>
+    <a class="nav-item tool" href="https://jatinbhutani7.github.io/ipl-intelligence.html">Team Filter →</a>
+  </div>
+</nav>
+
+<main>
 
   <!-- SYSTEM SUMMARY -->
-  <div class="section">
-    <h2>System Summary</h2>
+  <div class="section" id="summary">
+    <div class="section-header">
+      <span class="section-label">01</span>
+      <span class="section-title">System Summary</span>
+    </div>
+    <div class="prose-card">
+      This system evaluates T20 matches through phase control and decision pressure. Early observations suggest that powerplay dominance and distributed batting structure significantly influence match outcomes. The core thesis: games are not won by accumulating advantages — they are won by converting them into control phases that the opposition cannot escape.
+    </div>
+  </div>
 
-    <div class="card">
-      <div class="card-desc">
-        This system evaluates T20 matches through phase control and decision pressure. 
-        Early observations suggest that powerplay dominance and distributed batting structure significantly influence match outcomes.
+  <!-- SYSTEM DASHBOARD -->
+  <div class="section" id="dashboard">
+    <div class="section-header">
+      <span class="section-label">02</span>
+      <span class="section-title">System Dashboard</span>
+    </div>
+    <div class="metrics-row">
+      <div class="metric-tile">
+        <div class="mt-label">Matches</div>
+        <div class="mt-value accent">9</div>
+      </div>
+      <div class="metric-tile">
+        <div class="mt-label">Chase wins</div>
+        <div class="mt-value">7</div>
+      </div>
+      <div class="metric-tile">
+        <div class="mt-label">Chase rate</div>
+        <div class="mt-value">77<span style="font-size:18px;color:var(--text-muted)">%</span></div>
+      </div>
+    </div>
+    <div class="pattern-tile">
+      <div class="pattern-block">
+        <div class="pb-label">Primary Pattern</div>
+        <div class="pb-text">Matches are decided by which team creates phases where the game tightens — and sustains them</div>
+      </div>
+      <div class="pattern-block">
+        <div class="pb-label">Secondary Pattern</div>
+        <div class="pb-text">Games are often decided by failure to convert advantage into control, and by how teams respond immediately after disruption</div>
       </div>
     </div>
   </div>
-  <div class="section">
-<div class="section">
-<h2>System Intelligence</h2>
 
-  <div class="card" style="background:#f5f5f5; border:1px solid #ddd;">
-    <div class="card-title" style="font-size:13px; color:#777; letter-spacing:0.04em; text-transform:uppercase;">Live Tool</div>
-    <div style="font-size:16px; font-weight:500; margin:6px 0 4px;">
-      <a href="https://jatinbhutani7.github.io/ipl-intelligence.html" style="color:#111; text-decoration:none;">
-        Team Intelligence Filter →
-      </a>
-    </div>
-    <div class="card-desc">Query phase control by team, match phase, and pattern across all analysed matches. Includes team performance ratings.</div>
-  </div>
-
-  <div class="card">
-
-    <div class="card-desc" style="margin-bottom:10px;">
-      Insights emerging from match evaluations across the tournament:
+  <!-- SYSTEM INTELLIGENCE -->
+  <div class="section" id="intelligence">
+    <div class="section-header">
+      <span class="section-label">03</span>
+      <span class="section-title">System Intelligence</span>
     </div>
 
-    <div style="font-size:14px; color:#444; line-height:1.6;">
-
-      <b>Primary Pattern</b><br>
-      Matches are decided by which team creates phases where the game tightens—and sustains them
-      <br><br>
-
-      <b>Supporting Observations</b><br>
-      • Wickets only matter if they lead to control (Match 2, 5, 7)<br>
-      • One uncontrolled phase is enough to lose a game (Match 4, 5)<br>
-      • Powerplay advantage must translate into middle or death phase control (Match 1, 7)<br>
-      • Death overs redefine totals more than middle overs buildup (Match 6)<br>
-      
-<b>What the System is Testing Next</b><br>
-• Whether powerplay dominance consistently leads to control phases<br>
-• Whether middle overs are the most common failure point<br>
-• Whether wicket-taking without control continues to fail as a strategy<br>
-<br>
-    </div>
-    <div class="section">
-  <h2>Decision Layer</h2>
-
-  <div class="card">
-
-    <div class="card-desc" style="margin-bottom:10px;">
-      Translating observed patterns into actionable T20 decision principles:
-    </div>
-
-    <div style="font-size:14px; color:#444; line-height:1.6;">
-
-      <b>1. Create a Control Phase Early</b><br>
-      If the game never tightens, you are relying on errors. Powerplay or early middle overs must establish control.
-      <br><br>
-
-      <b>2. Don’t Just Take Wickets — Build Pressure Around Them</b><br>
-      Wickets without control overs release pressure instead of increasing it.
-      <br><br>
-
-      <b>3. Convert Advantage Immediately</b><br>
-      Strong starts or rebuilds only matter if followed by acceleration or squeeze. Delay loses control.
-      <br><br>
-
-      <b>4. Identify and Attack the Weak Phase</b><br>
-      Every innings has a soft phase (e.g., spin overs, fifth bowler). Winning teams target that phase decisively.
-      <br><br>
-
-      <b>5. One Batter Must Control the Chase</b><br>
-      In chases, at least one batter must dictate tempo. Without that, momentum becomes fragile.
-      <br><br>
-
-      <b>6. Adapt Within the First 2–3 Overs of Failure</b><br>
-      If Plan A is not working, delay in adjustment compounds damage. Tactical inertia loses games.
-
-    </div>
-
-  </div>
-</div>
-    
-
-  </div>
-</div>
-
-  <!-- DASHBOARD -->
-  <div class="section">
-    <h2>System Dashboard</h2>
-
-    <div class="metrics">
-      <div class="metric-box">
-        <div class="metric-title">Matches Analyzed</div>
-        <div class="metric-value">9</div>
+    <a class="tool-card" href="https://jatinbhutani7.github.io/ipl-intelligence.html">
+      <div class="tool-card-left">
+        <div class="tool-chip">Live Tool</div>
+        <div class="tool-name">Team Intelligence Filter</div>
+        <div class="tool-desc">Query phase control by team, match phase, and pattern. Includes team performance ratings across all matches.</div>
       </div>
+      <div class="tool-arrow">→</div>
+    </a>
 
-      <div class="metric-box">
-        <div class="metric-title">Team chasing won</div>
-        <div class="metric-value">7</div>
+    <div class="obs-grid">
+      <div class="obs-card">
+        <div class="obs-title">Supporting Observations</div>
+        <ul class="obs-list">
+          <li>Wickets only matter if they lead to control (M2, M5, M7)</li>
+          <li>One uncontrolled phase is enough to lose a game (M4, M5)</li>
+          <li>Powerplay advantage must translate into middle or death phase control (M1, M7)</li>
+          <li>Death overs redefine totals more than middle overs buildup (M6)</li>
+        </ul>
       </div>
-
-      <div class="metric-box">
-        <div class="metric-title">Key Pattern</div>
-        <div class="metric-value">Matches are decided by which team creates phases where the game tightens—and sustains them</div>
-        <b>Secondary Pattern</b><br>
-Matches are often decided by failure to convert advantage into control across phases
-Matches are often decided by how teams respond immediately after disruption (wicket, collapse, or momentum break)
-<br><br>
+      <div class="obs-card">
+        <div class="obs-title">What the System is Testing Next</div>
+        <ul class="obs-list obs-testing">
+          <li>Whether powerplay dominance consistently leads to control phases</li>
+          <li>Whether middle overs are the most common failure point</li>
+          <li>Whether wicket-taking without control continues to fail as a strategy</li>
+        </ul>
       </div>
     </div>
-  
+  </div>
+
+  <!-- DECISION LAYER -->
+  <div class="section" id="decisions">
+    <div class="section-header">
+      <span class="section-label">04</span>
+      <span class="section-title">Decision Layer</span>
+    </div>
+    <div class="decision-grid">
+      <div class="decision-card">
+        <div class="dc-num">01</div>
+        <div class="dc-title">Create a Control Phase Early</div>
+        <div class="dc-body">If the game never tightens, you are relying on errors. Powerplay or early middle overs must establish control.</div>
+      </div>
+      <div class="decision-card">
+        <div class="dc-num">02</div>
+        <div class="dc-title">Don't Just Take Wickets — Build Pressure Around Them</div>
+        <div class="dc-body">Wickets without control overs release pressure instead of increasing it.</div>
+      </div>
+      <div class="decision-card">
+        <div class="dc-num">03</div>
+        <div class="dc-title">Convert Advantage Immediately</div>
+        <div class="dc-body">Strong starts or rebuilds only matter if followed by acceleration or squeeze. Delay loses control.</div>
+      </div>
+      <div class="decision-card">
+        <div class="dc-num">04</div>
+        <div class="dc-title">Identify and Attack the Weak Phase</div>
+        <div class="dc-body">Every innings has a soft phase — spin overs, fifth bowler. Winning teams target that phase decisively.</div>
+      </div>
+      <div class="decision-card">
+        <div class="dc-num">05</div>
+        <div class="dc-title">One Batter Must Control the Chase</div>
+        <div class="dc-body">In chases, at least one batter must dictate tempo. Without that, momentum becomes fragile.</div>
+      </div>
+      <div class="decision-card">
+        <div class="dc-num">06</div>
+        <div class="dc-title">Adapt Within the First 2–3 Overs of Failure</div>
+        <div class="dc-body">If Plan A is not working, delay in adjustment compounds damage. Tactical inertia loses games.</div>
+      </div>
+    </div>
   </div>
 
   <!-- MATCH OUTPUTS -->
-<div class="section">
-  <h2>Match Outputs</h2>
-
-  
-  <div class="card">
-    <div class="card-title">
-      <a href="IPL 2026/match1_rcb-vs-srh.html">Match 1_RCB vs SRH</a>
+  <div class="section" id="matches">
+    <div class="section-header">
+      <span class="section-label">05</span>
+      <span class="section-title">Match Outputs</span>
     </div>
-    <div class="card-desc">
-      Early collapse risk + lack of disruption defined match control
+    <div class="match-list">
+      <a class="match-card" href="IPL 2026/match1_rcb-vs-srh.html">
+        <div class="match-num">1</div>
+        <div class="match-info">
+          <div class="match-title">RCB vs SRH</div>
+          <div class="match-desc">Early collapse risk + lack of disruption defined match control</div>
+        </div>
+        <div class="match-arrow">→</div>
+      </a>
+      <a class="match-card" href="IPL 2026/match2_mi-vs-kkr.html">
+        <div class="match-num">2</div>
+        <div class="match-info">
+          <div class="match-title">MI vs KKR</div>
+          <div class="match-desc">No early wickets + middle overs slowdown removed KKR's control</div>
+        </div>
+        <div class="match-arrow">→</div>
+      </a>
+      <a class="match-card" href="IPL 2026/match3_rr-vs-csk.html">
+        <div class="match-num">3</div>
+        <div class="match-info">
+          <div class="match-title">RR vs CSK</div>
+          <div class="match-desc">Correct reading of conditions + disciplined lengths decided game in powerplay</div>
+        </div>
+        <div class="match-arrow">→</div>
+      </a>
+      <a class="match-card" href="IPL 2026/match4_pbks-vs-gt.html">
+        <div class="match-num">4</div>
+        <div class="match-info">
+          <div class="match-title">PBKS vs GT</div>
+          <div class="match-desc">Middle overs control + late composure outweighed early advantage</div>
+        </div>
+        <div class="match-arrow">→</div>
+      </a>
+      <a class="match-card" href="IPL 2026/match5_lsg-vs-dc.html">
+        <div class="match-num">5</div>
+        <div class="match-info">
+          <div class="match-title">LSG vs DC</div>
+          <div class="match-desc">Early wickets without control overs allowed DC to recover and take control</div>
+        </div>
+        <div class="match-arrow">→</div>
+      </a>
+      <a class="match-card" href="IPL 2026/match6_srh-vs-kkr.html">
+        <div class="match-num">6</div>
+        <div class="match-info">
+          <div class="match-title">KKR vs SRH</div>
+          <div class="match-desc">KKR reached control but lost it; SRH's death overs removed margin for recovery</div>
+        </div>
+        <div class="match-arrow">→</div>
+      </a>
+      <a class="match-card" href="IPL 2026/match7_pbks-vs-csk.html">
+        <div class="match-num">7</div>
+        <div class="match-info">
+          <div class="match-title">PBKS vs CSK</div>
+          <div class="match-desc">Early powerplay damage removed pressure; CSK never created a control phase</div>
+        </div>
+        <div class="match-arrow">→</div>
+      </a>
+      <a class="match-card" href="IPL 2026/match8_mi-vs-dc.html">
+        <div class="match-num">8</div>
+        <div class="match-info">
+          <div class="match-title">MI vs DC</div>
+          <div class="match-desc">MI failed to convert at the death; DC took control through middle overs execution</div>
+        </div>
+        <div class="match-arrow">→</div>
+      </a>
+      <a class="match-card" href="IPL 2026/match9_rr-vs-gt.html">
+        <div class="match-num">9</div>
+        <div class="match-info">
+          <div class="match-title">RR vs GT</div>
+          <div class="match-desc">GT lost control after key wicket cluster and failed to reset the chase</div>
+        </div>
+        <div class="match-arrow">→</div>
+      </a>
     </div>
   </div>
-
-  <div class="card">
-    <div class="card-title">
-      <a href="IPL 2026/match2_mi-vs-kkr.html">Match2_MI vs KKR</a>
-    </div>
-    <div class="card-desc">
-      No early wickets + middle overs slowdown removed KKR’s control
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">
-      <a href="IPL 2026/match3_rr-vs-csk.html">Match 3_RR vs CSK</a>
-    </div>
-    <div class="card-desc">
-      Correct reading of conditions + disciplined lengths decided game in powerplay
-    </div>
-  </div>
-  
-    <div class="card">
-    <div class="card-title">
-      <a href="IPL 2026/match4_pbks-vs-gt.html">Match4_PBKS vs GT</a>
-    </div>
-    <div class="card-desc">
-      Middle overs control + late composure outweighed early advantage
-    </div>
-  </div>
-
-  <div class="card">
-  <div class="card-title">
-    <a href="IPL 2026/match5_lsg-vs-dc.html">Match 5_LSG vs DC</a>
-  </div>
-  <div class="card-desc">
-    Early wickets without control overs allowed DC to recover and take control
-  </div>
-</div>
-
-<div class="card">
-  <div class="card-title">
-    <a href="IPL 2026/match6_srh-vs-kkr.html">Match 6_KKR vs SRH</a>
-  </div>
-  <div class="card-desc">
-    KKR reached control but lost it; SRH’s death overs removed margin for recovery
-  </div>
-</div>
-
-  <div class="card">
-  <div class="card-title">
-    <a href="IPL 2026/match7_pbks-vs-csk.html">Match 7_PBKS vs CSK</a>
-  </div>
-  <div class="card-desc">
-    Early powerplay damage removed pressure; CSK never created a control phase
-  </div>
-</div>
-
-  <div class="card">
-  <div class="card-title">
-    <a href="IPL 2026/match8_mi-vs-dc.html">Match 8_MI vs DC</a>
-  </div>
-  <div class="card-desc">
-    MI failed to convert at the death; DC took control through middle overs execution
-  </div>
-</div>
-
-  <div class="card">
-  <div class="card-title">
-    <a href="IPL 2026/match9_rr-vs-gt.html">Match 9_RR vs GT</a>
-  </div>
-  <div class="card-desc">
-    GT lost control after key wicket cluster and failed to reset the chase
-  </div>
-</div>
-  
-</div>
 
   <!-- SYSTEM LOGIC -->
-  <div class="section">
-    <h2>System Logic</h2>
-
-    <div class="card">
-
-      <div class="card-desc" style="margin-bottom:10px;">
-        The system converts match inputs into structured decision insights using a consistent analytical framework.
+  <div class="section" id="logic">
+    <div class="section-header">
+      <span class="section-label">06</span>
+      <span class="section-title">System Logic</span>
+    </div>
+    <div class="logic-row">
+      <div class="logic-card">
+        <div class="lc-label">Input Layer</div>
+        <div class="lc-title">Match Narratives</div>
+        <div class="lc-body">Match summaries, score progression, and key in-game events — structured before analysis begins.</div>
       </div>
-
-      <div style="font-size:13px; color:#555; line-height:1.6;">
-
-        <b>Input Layer:</b><br>
-        Match summaries, score progression, and key in-game events<br><br>
-
-        <b>Analytical Framework:</b><br>
-        Phase Control · Turning Points · Decision Pressure across match phases<br><br>
-
-        <b>Output Layer:</b><br>
-        Decision insights, win probability shifts, and reusable match patterns
-
+      <div class="logic-card">
+        <div class="lc-label">Analytical Framework</div>
+        <div class="lc-title">Phase Control</div>
+        <div class="lc-body">Phase Control · Turning Points · Decision Pressure evaluated consistently across every match.</div>
       </div>
-
+      <div class="logic-card">
+        <div class="lc-label">Output Layer</div>
+        <div class="lc-title">Decision Insights</div>
+        <div class="lc-body">Win probability shifts, reusable match patterns, and principles that transfer across teams and conditions.</div>
+      </div>
     </div>
   </div>
 
-  <!-- FOOTER -->
-  <div class="footer">
-    © 2026 Jatin Bhutani
-  </div>
+</main>
 
-</div>
+<footer>
+  <div class="footer-inner">
+    <div class="footer-copy">© 2026 Jatin Bhutani</div>
+    <div class="footer-tag">AI Decision System · IPL 2026</div>
+  </div>
+</footer>
 
 </body>
 </html>
