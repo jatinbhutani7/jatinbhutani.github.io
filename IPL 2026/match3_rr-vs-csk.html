@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Match 2 — MI vs KKR · AI Decision System</title>
+<title>Match 3 — RR vs CSK · AI Decision System</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <style>
@@ -13,7 +13,7 @@
     --accent:#8b6240;--accent-light:rgba(139,98,64,0.07);--accent-mid:rgba(139,98,64,0.14);
     --green:#3d7a56;--green-light:rgba(61,122,86,0.09);
     --red:#9a3d3d;--red-light:rgba(154,61,61,0.09);
-    --team-a:#004ba0;--team-b:#3a225d;
+    --team-a:#ff1f6a;--team-b:#f5a623;
     --team-a-light:rgba(80,80,180,0.08);--team-b-light:rgba(180,80,40,0.08);
   }
   *{margin:0;padding:0;box-sizing:border-box;}
@@ -118,29 +118,29 @@
   <div class="header-nav">
     <a class="back-link" href="https://jatinbhutani7.github.io/ipl-system.html">← System Hub</a>
     <span class="breadcrumb-sep">/</span>
-    <span class="breadcrumb-cur">Match 2 · MI vs KKR</span>
+    <span class="breadcrumb-cur">Match 3 · RR vs CSK</span>
   </div>
 </div>
 
 <div class="match-hero">
   <div class="match-hero-inner">
     <div>
-      <div class="match-eyebrow">Match 2 · IPL 2026 · Phase Analysis</div>
+      <div class="match-eyebrow">Match 3 · IPL 2026 · Phase Analysis</div>
       <h1 class="match-title">
-        <span class="team-a">MI</span>
+        <span class="team-a">RR</span>
         <span class="sep"> vs </span>
-        <span class="team-b">KKR</span>
+        <span class="team-b">CSK</span>
       </h1>
       <div class="match-meta">
-        <span class="meta-chip winner">MI Won</span>
-        <span class="meta-chip">Chasing team won</span>
-        <span class="meta-chip">Match 2 of 9</span>
+        <span class="meta-chip winner">RR Won</span>
+        <span class="meta-chip">Defending team won</span>
+        <span class="meta-chip">Match 3 of 9</span>
       </div>
     </div>
     <div class="result-card">
       <div class="result-label">Winner</div>
-      <div class="result-winner">MI</div>
-      <div class="result-sub">Chase · Middle overs decisive</div>
+      <div class="result-winner">RR</div>
+      <div class="result-sub">Defended · Powerplay decisive</div>
     </div>
   </div>
 </div>
@@ -156,22 +156,22 @@
         <div class="tp-item" onclick="toggleTP(this)">
           <div class="tp-index">1</div>
           <div class="tp-content">
-            <div class="tp-label">No Early Wickets for MI in the Field</div>
-            <div class="tp-detail">KKR settled into their innings without disruption. When a team bats without wicket pressure in the powerplay, they don't just score runs — they build confidence and structural rhythm that compounds through the innings.</div>
+            <div class="tp-label">RR Bowlers Read Conditions from Over 1</div>
+            <div class="tp-detail">The phase was decided by intent before CSK had set their batting plan. Reading conditions early — pitch, dew, carry — and acting on that reading in the first three overs removed CSK's ability to set their own tempo.</div>
           </div>
         </div>
         <div class="tp-item" onclick="toggleTP(this)">
           <div class="tp-index">2</div>
           <div class="tp-content">
-            <div class="tp-label">KKR Middle Overs Stall</div>
-            <div class="tp-detail">KKR's run rate stalled without boundaries as a trigger. The slowdown wasn't forced by wickets — it was self-inflicted. A middle-overs stall without a tactical prompt from the opposition is a control gift, not a defensive victory.</div>
+            <div class="tp-label">CSK Failed to Rotate Strike in Powerplay</div>
+            <div class="tp-detail">Pressure accumulated passively. CSK didn't collapse — they drifted. Every dot ball in the powerplay isn't just a lost run; it compounds the required run rate and compresses later batting phases.</div>
           </div>
         </div>
         <div class="tp-item" onclick="toggleTP(this)">
           <div class="tp-index">3</div>
           <div class="tp-content">
-            <div class="tp-label">MI Chase Built on Platform — No Panic Phase Reached</div>
-            <div class="tp-detail">MI chased with calm accumulation. No phase became a crisis. When the opposition's total is already compromised, the chase becomes a formality of execution rather than a test of nerve.</div>
+            <div class="tp-label">RR Total Set a Structural Chase Problem</div>
+            <div class="tp-detail">The total RR posted demanded CSK play above their powerplay failure. When a chasing team begins 20–30 runs behind par at the end of the powerplay, every subsequent phase carries the weight of that deficit.</div>
           </div>
         </div>
 
@@ -184,32 +184,32 @@
     <div class="section-head">
       <div class="section-head-left"><span class="section-num">02</span><span class="section-title">Phase Control</span></div>
       <div class="phase-toggle">
-        <button class="phase-toggle-btn active" onclick="switchPhaseView(this,'a')">MI View</button>
-        <button class="phase-toggle-btn" onclick="switchPhaseView(this,'b')">KKR View</button>
+        <button class="phase-toggle-btn active" onclick="switchPhaseView(this,'a')">RR View</button>
+        <button class="phase-toggle-btn" onclick="switchPhaseView(this,'b')">CSK View</button>
       </div>
     </div>
     <div class="section-body">
       <div class="phase-grid">
-        <div class="phase-card lost" id="pp-card">
+        <div class="phase-card dominated" id="pp-card">
           <div class="phase-name">Powerplay</div>
-          <div class="phase-controller" id="pp-controller">MI</div>
-          <div class="phase-verdict" id="pp-verdict">Ceded</div>
-          <div class="phase-note team-note visible" id="pp-a">MI in field — no early wickets. KKR settled and set their own tempo from the first over.</div>
-          <div class="phase-note team-note" id="pp-b">KKR set their platform without disruption. Clean powerplay — but they couldn't sustain it into the middle overs.</div>
+          <div class="phase-controller" id="pp-controller">RR</div>
+          <div class="phase-verdict" id="pp-verdict">Controlled</div>
+          <div class="phase-note team-note visible" id="pp-a">Disciplined lengths, conditions read correctly. RR's powerplay bowling was a planned phase assault, not reactive.</div>
+          <div class="phase-note team-note" id="pp-b">CSK couldn't rotate strike or find boundaries. No collapse — but a drift that removed the foundation for a competitive total.</div>
         </div>
         <div class="phase-card dominated" id="mid-card">
           <div class="phase-name">Middle Overs</div>
-          <div class="phase-controller" id="mid-controller">MI</div>
-          <div class="phase-verdict" id="mid-verdict">Seized</div>
-          <div class="phase-note team-note visible" id="mid-a">KKR's middle-overs stall handed MI control. MI's bowling restricted KKR to under-par scoring through overs 7–14.</div>
-          <div class="phase-note team-note" id="mid-b">Self-inflicted slowdown. No boundaries, no intent reset. KKR let the phase drift without tactical adjustment.</div>
+          <div class="phase-controller" id="mid-controller">RR</div>
+          <div class="phase-verdict" id="mid-verdict">Built On</div>
+          <div class="phase-note team-note visible" id="mid-a">RR built their total on the powerplay platform. No risk required — the advantage was structural, not momentum-dependent.</div>
+          <div class="phase-note team-note" id="mid-b">CSK's middle overs were repair work, not control. Recovering from a powerplay deficit rarely produces a competitive total.</div>
         </div>
-        <div class="phase-card dominated" id="death-card">
+        <div class="phase-card contested" id="death-card">
           <div class="phase-name">Death Overs</div>
-          <div class="phase-controller" id="death-controller">MI</div>
-          <div class="phase-verdict" id="death-verdict">Comfortable</div>
-          <div class="phase-note team-note visible" id="death-a">Chase completed without a pressure phase. The total was already contained — MI batted through the death at their own pace.</div>
-          <div class="phase-note team-note" id="death-b">KKR's death overs batting couldn't recover from the middle stall. The total was under-par — death acceleration came too late.</div>
+          <div class="phase-controller" id="death-controller">RR</div>
+          <div class="phase-verdict" id="death-verdict">Defended</div>
+          <div class="phase-note team-note visible" id="death-a">CSK fought hard in the death overs but the deficit was structural. RR's total held.</div>
+          <div class="phase-note team-note" id="death-b">Late aggression came against an insurmountable gap. Death acceleration can reduce margins, not erase phase-level deficits.</div>
         </div>
 
       </div>
@@ -222,35 +222,35 @@
     </div>
     <div class="section-body">
       <div class="prob-label-row">
-        <span class="prob-team-label" style="color:var(--team-a)">← MI Ahead</span>
-        <span class="prob-team-label" style="color:var(--team-b)">KKR Ahead →</span>
+        <span class="prob-team-label" style="color:var(--team-a)">← RR Ahead</span>
+        <span class="prob-team-label" style="color:var(--team-b)">CSK Ahead →</span>
       </div>
       <div class="prob-timeline">
         <div class="prob-track"><div class="prob-fill" id="prob-fill" style="width:50%"></div></div>
         <div class="prob-nodes">
-          <div class="prob-node" onclick="activateNode(this,0)" data-fill="30" data-team="ahead-b" data-label="KKR's Innings — Settled Start" data-detail="KKR powerplay with no wickets creates a controlled foundation. Match is evenly poised but KKR have structural advantage.">
+          <div class="prob-node" onclick="activateNode(this,0)" data-fill="45" data-team="ahead-a" data-label="RR Innings — Powerplay Platform" data-detail="RR bat first and build on conditions. Platform being laid — not yet decisive but directionally ahead.">
             <div class="prob-dot"></div>
-            <div class="prob-node-label">30</div>
+            <div class="prob-node-label">45</div>
           </div>
-          <div class="prob-node" onclick="activateNode(this,1)" data-fill="35" data-team="ahead-b" data-label="KKR Middle Overs Stall Begins" data-detail="Run rate slows — but no external trigger. KKR are self-limiting. MI begin to take phase control through containment.">
+          <div class="prob-node" onclick="activateNode(this,1)" data-fill="60" data-team="ahead-a" data-label="RR Total Set — Above Par" data-detail="RR post a total that demands CSK play above their powerplay performance. Structural target set.">
             <div class="prob-dot"></div>
-            <div class="prob-node-label">35</div>
+            <div class="prob-node-label">60</div>
           </div>
-          <div class="prob-node" onclick="activateNode(this,2)" data-fill="55" data-team="ahead-a" data-label="Middle Overs Drift — KKR Total Capped" data-detail="KKR's total is now visibly under-par. The phase has been ceded without any MI wicket cluster — pure drift.">
+          <div class="prob-node" onclick="activateNode(this,2)" data-fill="55" data-team="ahead-a" data-label="CSK Powerplay — Drift Begins" data-detail="CSK fail to rotate strike. No wickets but no momentum. The deficit starts accumulating passively.">
             <div class="prob-dot"></div>
             <div class="prob-node-label">55</div>
           </div>
-          <div class="prob-node" onclick="activateNode(this,3)" data-fill="65" data-team="ahead-a" data-label="MI Chase Begins — No Pressure" data-detail="MI powerplay in the chase is calm and controlled. No wickets, no scoreboard pressure. Chase trajectory established.">
+          <div class="prob-node" onclick="activateNode(this,3)" data-fill="70" data-team="ahead-a" data-label="CSK Middle — Repair Mode" data-detail="CSK's middle overs are recovery-focused. Cannot generate control from a deficit start. RR maintain phase advantage.">
             <div class="prob-dot"></div>
-            <div class="prob-node-label">65</div>
+            <div class="prob-node-label">70</div>
           </div>
-          <div class="prob-node" onclick="activateNode(this,4)" data-fill="80" data-team="ahead-a" data-label="MI Middle Overs — No Crisis" data-detail="MI continue without disruption. KKR have no wicket cluster to spark a momentum shift. The chase follows one direction.">
+          <div class="prob-node" onclick="activateNode(this,4)" data-fill="80" data-team="ahead-a" data-label="CSK Death — Late Push" data-detail="CSK accelerate but the total is too distant. Death overs cannot close a full-phase gap.">
             <div class="prob-dot"></div>
             <div class="prob-node-label">80</div>
           </div>
-          <div class="prob-node" onclick="activateNode(this,5)" data-fill="95" data-team="ahead-a" data-label="Chase Complete — Formality" data-detail="MI complete the chase without a meaningful pressure phase. KKR's middle-overs failure proved structurally decisive.">
+          <div class="prob-node" onclick="activateNode(this,5)" data-fill="90" data-team="ahead-a" data-label="RR Defend — Match Decided" data-detail="RR's total holds. The match was decided in the powerplay — everything after was arithmetic.">
             <div class="prob-dot"></div>
-            <div class="prob-node-label">95</div>
+            <div class="prob-node-label">90</div>
           </div>
 
         </div>
@@ -269,8 +269,8 @@
     <div class="section-body">
       <div class="decider-card">
         <div class="decider-label">The moment that made the game</div>
-        <div class="decider-title">KKR's Middle Overs Without a Trigger</div>
-        <div class="decider-body">The match was decided not by a moment, but by an absence. KKR's middle-overs slowdown had no tactical cause — no wickets, no bowling variation, no field pressure. When teams stall in the middle without external forcing, they hand the game without being beaten.</div>
+        <div class="decider-title">RR's Powerplay Bowling Plan</div>
+        <div class="decider-body">The match was decided by preparation, not reaction. RR's bowlers arrived with a conditions-specific plan — specific lengths, field settings calibrated to the pitch — and executed it before CSK could set their own agenda. In T20, the team that controls the powerplay's terms usually controls the match.</div>
       </div>
     </div>
   </div>
@@ -282,7 +282,7 @@
     <div class="section-body">
       <div class="insight-card">
         <div class="insight-label">Core analytical finding</div>
-        <div class="insight-text">KKR had the powerplay but couldn't convert into sustained control. A middle-overs stall without wickets as the trigger is a self-inflicted control loss. The dangerous pattern isn't being outplayed — it's drifting when no one is forcing you to.</div>
+        <div class="insight-text">Games are sometimes decided by one team arriving prepared and the other not. CSK's powerplay wasn't a collapse — it was a drift. Drift without correction becomes the match. The difference between preparation and adaptation is the difference between controlling a phase and reacting to losing one.</div>
       </div>
     </div>
   </div>
@@ -294,20 +294,20 @@
     <div class="section-body">
       <div class="framework-grid">
         <div class="fw-card">
-          <div class="fw-title">Middle overs without intent is the most dangerous phase</div>
-          <div class="fw-body">Teams that stall in the middle without tactical reasons are giving the opposition control for free. Boundaries don't need to come every over — but intent must.</div>
+          <div class="fw-title">Conditions reading at over 1 is a decisive skill</div>
+          <div class="fw-body">Teams that adjust to pitch, dew, and carry from the first ball remove the opposition's ability to set tempo. RR didn't react to conditions — they anticipated them.</div>
         </div>
         <div class="fw-card">
-          <div class="fw-title">Powerplay control must compound, not conclude</div>
-          <div class="fw-body">KKR won the powerplay and gained nothing from it. Platforms matter only if they create scoring acceleration or decision pressure in subsequent phases.</div>
+          <div class="fw-title">Passive drift compounds faster than aggressive failure</div>
+          <div class="fw-body">CSK's powerplay didn't feature collapses — it featured dots. Passive dot balls in the powerplay compound exponentially as the required rate rises each over.</div>
         </div>
         <div class="fw-card">
-          <div class="fw-title">Wicket-free drift cannot be corrected late</div>
-          <div class="fw-body">Once the middle overs drift, the total is already set below par. Death overs acceleration cannot make up a full-phase concession.</div>
+          <div class="fw-title">Total must be structurally threatening, not just large</div>
+          <div class="fw-body">RR's total was effective because it demanded CSK play above their powerplay failure. The number mattered less than what it required of the chase.</div>
         </div>
         <div class="fw-card">
-          <div class="fw-title">Chase without pressure phases is controlled execution</div>
-          <div class="fw-body">MI never had to find a gear shift. When opposition totals are under-par, chasing becomes competence display rather than pressure management.</div>
+          <div class="fw-title">Defending teams control games before the chase starts</div>
+          <div class="fw-body">RR's advantage was established in their own innings. The chase was a formality — confirmation of an advantage built phases earlier.</div>
         </div>
 
       </div>
@@ -320,7 +320,7 @@
   <div class="match-footer-inner">
     <a class="footer-nav-link" href="https://jatinbhutani7.github.io/ipl-system.html">← System Hub</a>
     <span class="footer-copy">© 2026 Jatin Bhutani</span>
-    <a class="footer-nav-link" href="match3_rr-vs-csk.html">Match 3: RR vs CSK →</a>
+    <a class="footer-nav-link" href="match4_pbks-vs-gt.html">Match 4: PBKS vs GT →</a>
   </div>
 </div>
 
@@ -330,7 +330,7 @@ function toggleTP(el){
   document.querySelectorAll('.tp-item').forEach(i=>i.classList.remove('active'));
   if(!was)el.classList.add('active');
 }
-var phaseData = {"pp": {"cls_a": "lost", "ctrl_a": "MI", "v_a": "Ceded", "cls_b": "dominated", "ctrl_b": "KKR", "v_b": "Controlled"}, "mid": {"cls_a": "dominated", "ctrl_a": "MI", "v_a": "Seized", "cls_b": "lost", "ctrl_b": "KKR", "v_b": "Lost"}, "death": {"cls_a": "dominated", "ctrl_a": "MI", "v_a": "Comfortable", "cls_b": "lost", "ctrl_b": "KKR", "v_b": "Insufficient"}};
+var phaseData = {"pp": {"cls_a": "dominated", "ctrl_a": "RR", "v_a": "Controlled", "cls_b": "lost", "ctrl_b": "CSK", "v_b": "Drifted"}, "mid": {"cls_a": "dominated", "ctrl_a": "RR", "v_a": "Built On", "cls_b": "lost", "ctrl_b": "CSK", "v_b": "Recovery"}, "death": {"cls_a": "contested", "ctrl_a": "RR", "v_a": "Defended", "cls_b": "contested", "ctrl_b": "CSK", "v_b": "Too Late"}};
 function switchPhaseView(btn,team){
   document.querySelectorAll('.phase-toggle-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
