@@ -3,129 +3,451 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI Bias & Social Structure</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-
+<title>AI learns social structure — Jatin Bhutani</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-body {
-  font-family: 'Inter', sans-serif;
-  margin: 0;
-  background: #fafafa;
-  color: #111;
-}
+  :root {
+    --bg: #F6F4EF;
+    --surface: #FFFFFF;
+    --ink: #111111;
+    --ink-mid: #444444;
+    --ink-light: #888888;
+    --accent: #1B3A5C;
+    --accent-warm: #B8895A;
+    --border: #E2DDD6;
+    --border-light: #EDEAE4;
+  }
 
-.container {
-  max-width: 800px;
-  margin: auto;
-  padding: 40px 20px;
-}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-h1 {
-  font-size: 28px;
-  margin-bottom: 10px;
-}
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.7;
+  }
 
-.subtitle {
-  color: #666;
-  margin-bottom: 30px;
-}
+  .site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    border-bottom: 1px solid var(--border);
+  }
 
-.section {
-  margin-bottom: 30px;
-}
+  .site-header .logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--ink);
+    text-decoration: none;
+    letter-spacing: 0.03em;
+  }
 
-.section h2 {
-  font-size: 16px;
-  margin-bottom: 8px;
-}
+  .back-link {
+    font-size: 12px;
+    color: var(--ink-light);
+    text-decoration: none;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
 
-.section p {
-  color: #444;
-  line-height: 1.7;
-}
+  .back-link:hover { color: var(--accent); }
 
-.highlight {
-  background: #fff;
-  padding: 15px;
-  border-left: 3px solid #000;
-  margin-top: 10px;
-}
+  .article-wrap {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 60px 24px 80px;
+  }
 
-.footer {
-  margin-top: 50px;
-  font-size: 12px;
-  color: #888;
-}
+  .article-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.5s ease forwards;
+  }
+
+  .meta-tag {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-warm);
+    font-weight: 500;
+  }
+
+  .meta-dot {
+    width: 3px;
+    height: 3px;
+    background: var(--border);
+    border-radius: 50%;
+  }
+
+  .meta-read {
+    font-size: 12px;
+    color: var(--ink-light);
+  }
+
+  .article-headline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(32px, 5vw, 46px);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    margin-bottom: 16px;
+    opacity: 0;
+    animation: fadeUp 0.5s 0.1s ease forwards;
+  }
+
+  .article-sub {
+    font-size: 16px;
+    color: var(--ink-mid);
+    font-style: italic;
+    font-family: 'Cormorant Garamond', serif;
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: fadeUp 0.5s 0.15s ease forwards;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: fadeUp 0.5s 0.2s ease forwards;
+  }
+
+  .article-body {
+    opacity: 0;
+    animation: fadeUp 0.6s 0.25s ease forwards;
+  }
+
+  .article-body p {
+    font-size: 15px;
+    color: var(--ink-mid);
+    line-height: 1.85;
+    margin-bottom: 24px;
+  }
+
+  .article-body h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--ink);
+    margin: 44px 0 16px;
+    letter-spacing: 0.01em;
+  }
+
+  /* Opening context block — India example */
+  .context-block {
+    background: var(--surface);
+    border: 1px solid var(--border-light);
+    border-top: 3px solid var(--accent);
+    padding: 28px 28px 24px;
+    border-radius: 0 0 4px 4px;
+    margin-bottom: 36px;
+  }
+
+  .context-block-label {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+
+  .context-block p {
+    font-size: 15px;
+    color: var(--ink-mid);
+    line-height: 1.8;
+    margin-bottom: 12px;
+  }
+
+  .context-block p:last-child { margin-bottom: 0; }
+
+  .context-block strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  /* Pull quote */
+  .pull-quote {
+    border-left: 3px solid var(--accent);
+    margin: 36px 0;
+    padding: 20px 28px;
+    background: var(--surface);
+  }
+
+  .pull-quote p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-style: italic;
+    color: var(--accent);
+    line-height: 1.5;
+    margin: 0 !important;
+  }
+
+  /* Three-column problem grid */
+  .problem-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px;
+    margin: 32px 0;
+  }
+
+  .problem-card {
+    background: var(--surface);
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    padding: 20px 18px;
+  }
+
+  .problem-card-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+
+  .problem-card p {
+    font-size: 13px;
+    color: var(--ink-mid);
+    line-height: 1.65;
+    margin: 0 !important;
+  }
+
+  /* Trade-off box */
+  .tradeoff-box {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 32px 0;
+  }
+
+  .tradeoff-header {
+    background: var(--surface);
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    font-weight: 500;
+  }
+
+  .tradeoff-body {
+    padding: 22px 20px;
+    background: #FDFCF9;
+  }
+
+  .tradeoff-body p {
+    font-size: 14px;
+    color: var(--ink-mid);
+    line-height: 1.75;
+    margin-bottom: 16px;
+  }
+
+  .tradeoff-body p:last-child { margin-bottom: 0; }
+
+  .tradeoff-tension {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+  }
+
+  .tension-item {
+    flex: 1;
+    text-align: center;
+    background: var(--surface);
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    padding: 14px 12px;
+    font-size: 13px;
+    color: var(--ink-mid);
+    font-weight: 500;
+  }
+
+  .tension-vs {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    flex-shrink: 0;
+  }
+
+  /* Takeaway */
+  .takeaway {
+    background: var(--accent);
+    padding: 28px 28px;
+    border-radius: 4px;
+    margin-top: 44px;
+  }
+
+  .takeaway-label {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+
+  .takeaway p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    color: #FFFFFF;
+    line-height: 1.55;
+    margin: 0 !important;
+    font-style: italic;
+  }
+
+  .article-footer {
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .article-footer a {
+    font-size: 12px;
+    color: var(--ink-light);
+    text-decoration: none;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .article-footer a:hover { color: var(--accent); }
+
+  .footer-copy { font-size: 12px; color: var(--ink-light); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @media (max-width: 600px) {
+    .site-header { padding: 16px 20px; }
+    .problem-grid { grid-template-columns: 1fr; }
+    .tradeoff-tension { flex-direction: column; }
+  }
 </style>
 </head>
 
 <body>
 
-<div class="container">
+<header class="site-header">
+  <a href="index.html" class="logo">Jatin Bhutani</a>
+  <a href="index.html" class="back-link">← Back</a>
+</header>
 
-<h1>AI learns social structure. Not just language.</h1>
-<p class="subtitle">A note on bias, localization, and deployment risk</p>
+<div class="article-wrap">
 
-<div class="section">
-<p>
-In India, names carry signals—caste, geography, class. AI models infer this without being explicitly trained on it.
-</p>
-<p>
-In controlled tests, models mapped upper-caste names to high-status roles and marginalised identities to lower-status work. Not because of instructions, but because these patterns exist in the data.
-</p>
-<p>
-This is the core issue: models don’t just learn words. They learn structure.
-</p>
-</div>
+  <div class="article-meta">
+    <span class="meta-tag">AI Bias</span>
+    <span class="meta-dot"></span>
+    <span class="meta-read">4 min read</span>
+  </div>
 
-<div class="section">
-<h2>Why this matters</h2>
-<p>
-As AI moves into hiring, lending, and healthcare, bias becomes structural, not visible. Outputs may appear neutral, but decisions are not. Standard fairness checks often miss what sits deeper in the model.
-</p>
-</div>
+  <h1 class="article-headline">AI learns social structure.<br>Not just language.</h1>
+  <p class="article-sub">A note on bias, localisation, and deployment risk</p>
+  <div class="divider"></div>
 
-<div class="section">
-<h2>Where current approaches fall short</h2>
-<p>
-Most mitigation focuses on filtering outputs. The problem sits in representations. Most benchmarks are global, while the risk is local.
-</p>
-</div>
+  <div class="article-body">
 
-<div class="section">
-<h2>What needs to change</h2>
-<p>
-Evaluation must be localized. Models should be tested using real-world proxies like names, regions, and institutions—not to optimise outcomes, but to surface hidden bias.
-</p>
-<p>
-The focus must shift from filtering to auditing. And governance needs to happen at the use-case level, not just at the model level.
-</p>
-</div>
+    <div class="context-block">
+      <div class="context-block-label">Starting Point — India</div>
+      <p>
+        In India, <strong>names carry signals</strong> — caste, geography, class. AI models infer this without being explicitly trained on it.
+      </p>
+      <p>
+        In controlled tests, models mapped upper-caste names to high-status roles and marginalised identities to lower-status work. 
+        Not because of instructions — but because these patterns exist in the data.
+      </p>
+      <p>
+        This is the core issue: <strong>models don't just learn words. They learn structure.</strong>
+      </p>
+    </div>
 
-<div class="section">
-<h2>The trade-off</h2>
-<p>
-The highest-value use cases—healthcare, credit, policing—will adopt AI because the upside is too large.
-</p>
-<p>
-Which means the question is no longer whether to deploy, but how to constrain deployment.
-</p>
-<p>
-This creates a real trade-off between scale and control. There is no clean resolution.
-</p>
-</div>
+    <h2>Why this matters</h2>
 
-<div class="section">
-<h2>Key takeaway</h2>
-<div class="highlight">
-AI will not remove societal bias. It will standardise and scale it—unless actively constrained.
-</div>
-</div>
+    <p>
+      As AI moves into hiring, lending, and healthcare, bias becomes structural rather than visible. 
+      Outputs may appear neutral, but decisions are not. Standard fairness checks often miss what sits deeper in the model.
+    </p>
 
-<div class="footer">
-© 2026 Jatin Bhutani
-</div>
+    <h2>Where current approaches fall short</h2>
+
+    <div class="problem-grid">
+      <div class="problem-card">
+        <div class="problem-card-label">Wrong Layer</div>
+        <p>Most mitigation focuses on filtering outputs. The problem sits in representations — further upstream.</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-card-label">Wrong Scope</div>
+        <p>Most benchmarks are global. The risk is local — specific to names, regions, and institutions.</p>
+      </div>
+      <div class="problem-card">
+        <div class="problem-card-label">Wrong Level</div>
+        <p>Governance is applied at the model level. The real exposure sits at the use-case level.</p>
+      </div>
+    </div>
+
+    <h2>What needs to change</h2>
+
+    <p>
+      Evaluation must be localised. Models should be tested using real-world proxies — names, regions, institutions — 
+      not to optimise outcomes, but to surface hidden bias.
+    </p>
+
+    <p>
+      The focus must shift from filtering to auditing. And governance needs to happen at the use-case level, 
+      not just at the model level.
+    </p>
+
+    <h2>The trade-off</h2>
+
+    <div class="tradeoff-box">
+      <div class="tradeoff-header">The Deployment Problem</div>
+      <div class="tradeoff-body">
+        <p>
+          The highest-value use cases — healthcare, credit, policing — will adopt AI because the upside is too large to ignore.
+          Which means the question is no longer whether to deploy, but how to constrain deployment.
+        </p>
+        <div class="tradeoff-tension">
+          <div class="tension-item">Scale &amp; Efficiency</div>
+          <div class="tension-vs">vs</div>
+          <div class="tension-item">Fairness &amp; Control</div>
+        </div>
+        <p>There is no clean resolution to this tension.</p>
+      </div>
+    </div>
+
+    <div class="pull-quote">
+      <p>"AI will not remove societal bias. It will standardise and scale it — unless actively constrained."</p>
+    </div>
+
+    <div class="takeaway">
+      <div class="takeaway-label">Key Takeaway</div>
+      <p>The problem is not the model producing bias. It is bias becoming invisible — systematised into decisions that appear objective.</p>
+    </div>
+
+  </div>
+
+  <div class="article-footer">
+    <a href="index.html">← Back to portfolio</a>
+    <span class="footer-copy">© 2026 Jatin Bhutani</span>
+  </div>
 
 </div>
 
