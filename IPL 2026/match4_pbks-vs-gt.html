@@ -1,86 +1,380 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>PBKS vs GT – Match Analysis</title>
-  <style>
-    body {
-      font-family: Arial;
-      margin: 40px;
-      background: #f5f5f5;
-    }
-    .output-box {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Match 4 — PBKS vs GT · AI Decision System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#f7f5f1;--surface:#ffffff;--border:#e4e0d8;--border-2:#d0cbc0;
+    --text-primary:#1a1814;--text-secondary:#5a564e;--text-muted:#9a9690;
+    --accent:#8b6240;--accent-light:rgba(139,98,64,0.07);--accent-mid:rgba(139,98,64,0.14);
+    --green:#3d7a56;--green-light:rgba(61,122,86,0.09);
+    --red:#9a3d3d;--red-light:rgba(154,61,61,0.09);
+    --team-a:#ed1f27;--team-b:#1b4f8a;
+    --team-a-light:rgba(80,80,180,0.08);--team-b-light:rgba(180,80,40,0.08);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text-primary);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;}
+  .site-header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;}
+  .header-nav{max-width:900px;margin:auto;display:flex;align-items:center;padding:14px 0;gap:6px;}
+  .back-link{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color 0.15s;}
+  .back-link:hover{color:var(--accent);}
+  .breadcrumb-sep{color:var(--border-2);font-size:12px;}
+  .breadcrumb-cur{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-secondary);}
+  .match-hero{background:var(--surface);border-bottom:1px solid var(--border);padding:40px 32px 36px;}
+  .match-hero-inner{max-width:900px;margin:auto;display:grid;grid-template-columns:1fr auto;gap:32px;align-items:start;}
+  .match-eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+  .match-title{font-family:'Cormorant',serif;font-size:clamp(28px,5vw,46px);font-weight:500;line-height:1.1;letter-spacing:-0.01em;margin-bottom:12px;}
+  .match-title .team-a{color:var(--team-a);} .match-title .team-b{color:var(--team-b);} .match-title .sep{color:var(--border-2);font-style:italic;}
+  .match-meta{display:flex;gap:16px;flex-wrap:wrap;}
+  .meta-chip{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;padding:4px 10px;border:1px solid var(--border);color:var(--text-muted);border-radius:2px;}
+  .meta-chip.winner{border-color:rgba(61,122,86,0.3);background:var(--green-light);color:var(--green);}
+  .result-card{text-align:center;min-width:130px;}
+  .result-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;}
+  .result-winner{font-family:'Cormorant',serif;font-size:32px;font-weight:600;color:var(--green);line-height:1;margin-bottom:4px;}
+  .result-sub{font-size:11px;color:var(--text-muted);font-weight:300;}
+  main{max-width:900px;margin:auto;padding:40px 32px 80px;display:flex;flex-direction:column;gap:2px;}
+  .section{background:var(--surface);border:1px solid var(--border);opacity:0;transform:translateY(10px);animation:reveal 0.4s ease forwards;}
+  .section:nth-child(1){animation-delay:0.05s;} .section:nth-child(2){animation-delay:0.1s;} .section:nth-child(3){animation-delay:0.15s;} .section:nth-child(4){animation-delay:0.2s;} .section:nth-child(5){animation-delay:0.25s;} .section:nth-child(6){animation-delay:0.3s;} .section:nth-child(7){animation-delay:0.35s;}
+  @keyframes reveal{to{opacity:1;transform:translateY(0);}}
+  .section-head{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .section-head-left{display:flex;align-items:center;gap:12px;}
+  .section-num{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.18em;color:var(--border-2);}
+  .section-title{font-family:'Cormorant',serif;font-size:18px;font-weight:500;color:var(--text-primary);letter-spacing:-0.01em;}
+  .section-body{padding:24px;}
+  .tp-list{display:flex;flex-direction:column;gap:2px;}
+  .tp-item{display:grid;grid-template-columns:32px 1fr;border:1px solid var(--border);cursor:pointer;transition:border-color 0.15s;}
+  .tp-item:hover{border-color:var(--border-2);} .tp-item.active{border-color:var(--accent);}
+  .tp-index{display:flex;align-items:center;justify-content:center;background:var(--bg);border-right:1px solid var(--border);font-family:'Cormorant',serif;font-size:16px;font-weight:600;color:var(--border-2);transition:all 0.15s;}
+  .tp-item.active .tp-index{background:var(--accent-light);color:var(--accent);border-right-color:var(--accent);}
+  .tp-content{padding:14px 16px;}
+  .tp-label{font-size:12.5px;font-weight:500;color:var(--text-primary);margin-bottom:4px;}
+  .tp-detail{font-size:12px;color:var(--text-secondary);font-weight:300;line-height:1.55;display:none;padding-top:6px;border-top:1px solid var(--border);margin-top:4px;}
+  .tp-item.active .tp-detail{display:block;}
+  .tp-expand-hint{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-top:12px;text-align:right;}
+  .phase-toggle{display:flex;gap:2px;}
+  .phase-toggle-btn{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;padding:4px 10px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;transition:all 0.15s;}
+  .phase-toggle-btn.active{background:var(--accent-light);border-color:var(--accent);color:var(--accent);}
+  .phase-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;}
+  .phase-card{border:1px solid var(--border);padding:18px 16px;transition:border-color 0.2s;}
+  .phase-card.dominated{border-color:rgba(61,122,86,0.3);background:var(--green-light);}
+  .phase-card.lost{border-color:rgba(154,61,61,0.3);background:var(--red-light);}
+  .phase-card.contested{border-color:var(--border-2);background:rgba(160,150,140,0.05);}
+  .phase-name{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;}
+  .phase-controller{font-family:'Cormorant',serif;font-size:20px;font-weight:600;margin-bottom:6px;line-height:1;}
+  .phase-card.dominated .phase-controller{color:var(--green);} .phase-card.lost .phase-controller{color:var(--red);} .phase-card.contested .phase-controller{color:var(--text-muted);font-size:14px;}
+  .phase-verdict{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;padding:2px 6px;border-radius:1px;display:inline-block;margin-bottom:8px;}
+  .phase-card.dominated .phase-verdict{background:var(--green-light);color:var(--green);border:1px solid rgba(61,122,86,0.2);}
+  .phase-card.lost .phase-verdict{background:var(--red-light);color:var(--red);border:1px solid rgba(154,61,61,0.2);}
+  .phase-card.contested .phase-verdict{background:var(--bg);color:var(--text-muted);border:1px solid var(--border);}
+  .phase-note{font-size:11.5px;color:var(--text-secondary);line-height:1.55;font-weight:300;}
+  .team-note{display:none;} .team-note.visible{display:block;}
+  .prob-timeline{position:relative;padding:8px 0 0;}
+  .prob-track{position:relative;height:4px;background:var(--border);border-radius:2px;margin:16px 0 32px;}
+  .prob-fill{position:absolute;left:0;top:0;height:100%;background:var(--green);border-radius:2px;transition:width 0.6s ease;}
+  .prob-nodes{display:flex;justify-content:space-between;gap:2px;}
+  .prob-node{flex:1;cursor:pointer;position:relative;}
+  .prob-dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--border-2);background:var(--surface);margin:0 auto 8px;transition:all 0.15s;position:relative;top:-19px;}
+  .prob-node:hover .prob-dot,.prob-node.active .prob-dot{border-color:var(--accent);background:var(--accent);}
+  .prob-node-label{font-size:10.5px;color:var(--text-muted);text-align:center;line-height:1.4;transition:color 0.15s;font-weight:300;}
+  .prob-node.active .prob-node-label{color:var(--text-primary);font-weight:400;}
+  .prob-detail-box{background:var(--bg);border:1px solid var(--border);padding:14px 16px;margin-top:12px;min-height:52px;}
+  .prob-detail-team{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.16em;text-transform:uppercase;margin-bottom:4px;}
+  .prob-detail-team.ahead-a{color:var(--team-a);} .prob-detail-team.ahead-b{color:var(--team-b);} .prob-detail-team.ahead-both{color:var(--text-muted);}
+  .prob-detail-text{font-size:12.5px;color:var(--text-secondary);font-weight:300;line-height:1.55;}
+  .prob-label-row{display:flex;justify-content:space-between;margin-bottom:6px;}
+  .prob-team-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);}
+  .decider-card{background:var(--accent-light);border:1px solid var(--accent-mid);padding:20px 22px;}
+  .decider-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+  .decider-title{font-family:'Cormorant',serif;font-size:20px;font-weight:500;color:var(--text-primary);margin-bottom:8px;}
+  .decider-body{font-size:13px;color:var(--text-secondary);font-weight:300;line-height:1.65;}
+  .insight-card{border-left:3px solid var(--accent);padding:20px 22px;background:var(--surface);border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+  .insight-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+  .insight-text{font-family:'Cormorant',serif;font-size:19px;font-style:italic;color:var(--text-primary);line-height:1.55;font-weight:400;}
+  .framework-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;}
+  .fw-card{border:1px solid var(--border);padding:16px 18px;transition:border-color 0.15s;}
+  .fw-card:hover{border-color:var(--border-2);}
+  .fw-title{font-size:12.5px;font-weight:500;color:var(--text-primary);margin-bottom:5px;display:flex;align-items:flex-start;gap:8px;}
+  .fw-title::before{content:'→';color:var(--accent);flex-shrink:0;margin-top:1px;}
+  .fw-body{font-size:12px;color:var(--text-muted);font-weight:300;line-height:1.6;padding-left:18px;}
+  .match-footer{background:var(--surface);border-top:1px solid var(--border);padding:20px 32px;}
+  .match-footer-inner{max-width:900px;margin:auto;display:flex;justify-content:space-between;align-items:center;}
+  .footer-nav-link{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color 0.15s;}
+  .footer-nav-link:hover{color:var(--accent);}
+  .footer-copy{font-family:'DM Mono',monospace;font-size:10px;color:var(--border-2);letter-spacing:0.06em;}
+  @media(max-width:640px){
+    .match-hero-inner{grid-template-columns:1fr;} .result-card{text-align:left;}
+    .phase-grid,.framework-grid{grid-template-columns:1fr;}
+    main{padding:24px 18px 60px;} .site-header,.match-hero,.match-footer{padding-left:18px;padding-right:18px;}
+  }
+</style>
 </head>
 <body>
 
-<h1>PBKS vs GT – Match Analysis</h1>
-
-<div class="output-box">
-
-<h3>Turning Points</h3>
-<ul>
-  <li><b>Chahal’s middle overs spell:</b> Shifted GT from a platform (54/1) to a capped innings. Gill’s wicket came out of pressure, not a mistake.</li>
-  
-  <li><b>Buttler’s stalled innings:</b> Dot balls built pressure. He never got ahead of the game, and the dismissal followed.</li>
-  
-  <li><b>PBKS collapse (118/2 → 118/5):</b> Brought GT back into the game. Only phase where PBKS lost control.</li>
-</ul>
-
-<h3>Phase Control</h3>
-
-<p><b>Powerplay:</b><br>
-GT: Solid start, slightly ahead.<br>
-PBKS: Matched scoring in the chase.<br>
-→ Slight GT edge, not decisive.</p>
-
-<p><b>Middle Overs:</b><br>
-GT: Lost control. Couldn’t rotate or accelerate. Chahal dictated tempo.<br>
-PBKS: Managed chase well before collapse.<br>
-→ PBKS ahead through control of tempo.</p>
-
-<p><b>Death Overs:</b><br>
-GT: Took wickets but lacked control.<br>
-PBKS: Regained composure through Connolly and finished clearly.<br>
-→ PBKS controlled the decisive phase.</p>
-
-<p><b>Net:</b> GT had early control; PBKS had late control.</p>
-
-<h3>Match Decider</h3>
-<p><b>GT’s middle overs slowdown</b><br>
-They had the platform but no one took ownership after Gill. Dot balls increased, and the total stayed 15–20 runs short of pressure.</p>
-
-<h3>Decision Insight</h3>
-<p>
-PBKS trusted spin early and stayed with it. Chahal was introduced at the right time and used to create pressure rather than chase wickets. GT reacted late and were already behind when they tried to accelerate.
-</p>
-
-<h3>Win Probability Shift (directional)</h3>
-<ul>
-  <li>54/1: GT slightly ahead</li>
-  <li>Chahal phase + Gill wicket: game evens out</li>
-  <li>Buttler slowdown: PBKS edge</li>
-  <li>PBKS collapse (118/5): GT back ahead</li>
-  <li>Final overs: PBKS close it</li>
-</ul>
-
-<p><b>Key point:</b> GT had control early; PBKS had control late. Late control decided the game.</p>
-
-<h3>Framework Insights</h3>
-<ul>
-  <li><b>Starts need a middle overs driver:</b> GT built a base but never converted.</li>
-  
-  <li><b>Dot balls create wickets:</b> Pressure builds before dismissal.</li>
-  
-  <li><b>One calm batter can stabilize a chase:</b> Connolly held the innings together.</li>
-  
-  <li><b>Wickets alone aren’t enough at the death:</b> Control still matters.</li>
-</ul>
-
+<div class="site-header">
+  <div class="header-nav">
+    <a class="back-link" href="https://jatinbhutani7.github.io/ipl-system.html">← System Hub</a>
+    <span class="breadcrumb-sep">/</span>
+    <span class="breadcrumb-cur">Match 4 · PBKS vs GT</span>
+  </div>
 </div>
 
+<div class="match-hero">
+  <div class="match-hero-inner">
+    <div>
+      <div class="match-eyebrow">Match 4 · IPL 2026 · Phase Analysis</div>
+      <h1 class="match-title">
+        <span class="team-a">PBKS</span>
+        <span class="sep"> vs </span>
+        <span class="team-b">GT</span>
+      </h1>
+      <div class="match-meta">
+        <span class="meta-chip winner">PBKS Won</span>
+        <span class="meta-chip">Chasing team won</span>
+        <span class="meta-chip">Match 4 of 9</span>
+      </div>
+    </div>
+    <div class="result-card">
+      <div class="result-label">Winner</div>
+      <div class="result-winner">PBKS</div>
+      <div class="result-sub">Chase · Middle overs decisive</div>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">01</span><span class="section-title">Turning Points</span></div>
+    </div>
+    <div class="section-body">
+      <div class="tp-list">
+        <div class="tp-item" onclick="toggleTP(this)">
+          <div class="tp-index">1</div>
+          <div class="tp-content">
+            <div class="tp-label">GT Early Advantage — Expectation Without Sustained Control</div>
+            <div class="tp-detail">GT took the powerplay advantage and created the expectation of a competitive total. But early advantage in T20 must be converted immediately into the next phase — GT's failure to hold the middle overs made the powerplay irrelevant.</div>
+          </div>
+        </div>
+        <div class="tp-item" onclick="toggleTP(this)">
+          <div class="tp-index">2</div>
+          <div class="tp-content">
+            <div class="tp-label">PBKS Middle-Overs Shift — The Game's Defining Phase</div>
+            <div class="tp-detail">PBKS seized the middle overs and reversed the match's direction. The middle overs aren't just about run rate — they determine which team sets the conditions for the death. PBKS controlled those conditions.</div>
+          </div>
+        </div>
+        <div class="tp-item" onclick="toggleTP(this)">
+          <div class="tp-index">3</div>
+          <div class="tp-content">
+            <div class="tp-label">PBKS Death Composure — Wobble Absorbed</div>
+            <div class="tp-detail">There was late pressure, but PBKS didn't lose the phase. Absorbing a wobble without surrendering the phase is a different skill from dominant control — and often more valuable in a close chase.</div>
+          </div>
+        </div>
+
+      </div>
+      <div class="tp-expand-hint">Click any point to expand →</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">02</span><span class="section-title">Phase Control</span></div>
+      <div class="phase-toggle">
+        <button class="phase-toggle-btn active" onclick="switchPhaseView(this,'a')">PBKS View</button>
+        <button class="phase-toggle-btn" onclick="switchPhaseView(this,'b')">GT View</button>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="phase-grid">
+        <div class="phase-card lost" id="pp-card">
+          <div class="phase-name">Powerplay</div>
+          <div class="phase-controller" id="pp-controller">PBKS</div>
+          <div class="phase-verdict" id="pp-verdict">Conceded</div>
+          <div class="phase-note team-note visible" id="pp-a">GT took the early advantage batting first. PBKS in field — powerplay was GT's phase.</div>
+          <div class="phase-note team-note" id="pp-b">GT powerplay set their platform. But the platform became expectation without follow-through in the middle.</div>
+        </div>
+        <div class="phase-card dominated" id="mid-card">
+          <div class="phase-name">Middle Overs</div>
+          <div class="phase-controller" id="mid-controller">PBKS</div>
+          <div class="phase-verdict" id="mid-verdict">Reversed</div>
+          <div class="phase-note team-note visible" id="mid-a">PBKS seized the middle overs and reversed the game's direction. GT couldn't hold the initiative through overs 7–15.</div>
+          <div class="phase-note team-note" id="mid-b">GT couldn't convert their powerplay advantage into middle-overs control. The game's pivot phase slipped.</div>
+        </div>
+        <div class="phase-card dominated" id="death-card">
+          <div class="phase-name">Death Overs</div>
+          <div class="phase-controller" id="death-controller">PBKS</div>
+          <div class="phase-verdict" id="death-verdict">Held</div>
+          <div class="phase-note team-note visible" id="death-a">Late wobble absorbed without losing the phase. PBKS completed the chase with composure under pressure.</div>
+          <div class="phase-note team-note" id="death-b">GT's death bowling created pressure but couldn't reclaim the phase. The deficit from the middle overs proved decisive.</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">03</span><span class="section-title">Win Probability Shift</span></div>
+    </div>
+    <div class="section-body">
+      <div class="prob-label-row">
+        <span class="prob-team-label" style="color:var(--team-a)">← PBKS Ahead</span>
+        <span class="prob-team-label" style="color:var(--team-b)">GT Ahead →</span>
+      </div>
+      <div class="prob-timeline">
+        <div class="prob-track"><div class="prob-fill" id="prob-fill" style="width:50%"></div></div>
+        <div class="prob-nodes">
+          <div class="prob-node" onclick="activateNode(this,0)" data-fill="35" data-team="ahead-b" data-label="GT Powerplay — Platform Set" data-detail="GT take early control batting first. Platform built — expectation of a competitive total. Match tilted toward GT.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">35</div>
+          </div>
+          <div class="prob-node" onclick="activateNode(this,1)" data-fill="40" data-team="ahead-b" data-label="GT Mid-Innings — Control Holds" data-detail="GT maintain their advantage through early middle overs. Phase still theirs but the grip loosens.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">40</div>
+          </div>
+          <div class="prob-node" onclick="activateNode(this,2)" data-fill="55" data-team="ahead-a" data-label="PBKS Middle-Overs Shift" data-detail="PBKS seize the game's pivot phase. GT's advantage reversed — the middle overs become PBKS's phase entirely.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">55</div>
+          </div>
+          <div class="prob-node" onclick="activateNode(this,3)" data-fill="65" data-team="ahead-a" data-label="PBKS Chase Begins — With Momentum" data-detail="PBKS begin the chase with middle-overs momentum. The total is chaseable. No structural pressure on the batting side.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">65</div>
+          </div>
+          <div class="prob-node" onclick="activateNode(this,4)" data-fill="70" data-team="ahead-a" data-label="Late Wobble — Phase Pressure" data-detail="GT create late pressure in the death. PBKS have to hold composure — not dominate, just not lose the phase.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">70</div>
+          </div>
+          <div class="prob-node" onclick="activateNode(this,5)" data-fill="88" data-team="ahead-a" data-label="Wobble Absorbed — Chase Completed" data-detail="PBKS absorb the pressure without surrendering the phase. Chase complete. One uncontrolled phase was enough for GT to lose.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">88</div>
+          </div>
+
+        </div>
+        <div class="prob-detail-box" id="prob-detail-box">
+          <div class="prob-detail-team" id="prob-detail-team"></div>
+          <div class="prob-detail-text" id="prob-detail-text"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">04</span><span class="section-title">Match Decider</span></div>
+    </div>
+    <div class="section-body">
+      <div class="decider-card">
+        <div class="decider-label">The moment that made the game</div>
+        <div class="decider-title">GT's Middle Overs — The Phase They Couldn't Hold</div>
+        <div class="decider-body">GT did the hard work in the powerplay and undid it in the middle. The middle overs aren't just a scoring phase — they set the conditions under which the death overs will be played. By losing the middle, GT gave PBKS both momentum and a manageable target. One phase surrendered decided the match.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">05</span><span class="section-title">Decision Insight</span></div>
+    </div>
+    <div class="section-body">
+      <div class="insight-card">
+        <div class="insight-label">Core analytical finding</div>
+        <div class="insight-text">One uncontrolled phase is enough to lose. GT had the game and let the middle overs slip. PBKS didn't need dominance — they needed one phase to shift, and held everything from there. The system's core lesson: matches aren't lost in obvious moments but in the phase that quietly changes direction.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">06</span><span class="section-title">Framework Insights</span></div>
+    </div>
+    <div class="section-body">
+      <div class="framework-grid">
+        <div class="fw-card">
+          <div class="fw-title">Early advantage must convert to the next phase immediately</div>
+          <div class="fw-body">GT's powerplay was real but unconnected to the middle overs. Advantages in T20 have a very short half-life — they must compound or they vanish.</div>
+        </div>
+        <div class="fw-card">
+          <div class="fw-title">Middle overs set death conditions for both teams</div>
+          <div class="fw-body">The team that wins the middle doesn't just restrict scoring — they determine the pressure context under which the death overs are played. PBKS benefited from this twice.</div>
+        </div>
+        <div class="fw-card">
+          <div class="fw-title">Absorbing a wobble is a distinct skill from dominance</div>
+          <div class="fw-body">PBKS didn't dominate the death — they survived it. Maintaining phase control under pressure without acceleration is its own form of match intelligence.</div>
+        </div>
+        <div class="fw-card">
+          <div class="fw-title">One surrendered phase is the margin of defeat</div>
+          <div class="fw-body">GT didn't make multiple errors. They lost one phase. In T20, that is sufficient. The system's core pattern confirmed again.</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div class="match-footer">
+  <div class="match-footer-inner">
+    <a class="footer-nav-link" href="https://jatinbhutani7.github.io/ipl-system.html">← System Hub</a>
+    <span class="footer-copy">© 2026 Jatin Bhutani</span>
+    <a class="footer-nav-link" href="match5_lsg-vs-dc.html">Match 5: LSG vs DC →</a>
+  </div>
+</div>
+
+<script>
+function toggleTP(el){
+  const was=el.classList.contains('active');
+  document.querySelectorAll('.tp-item').forEach(i=>i.classList.remove('active'));
+  if(!was)el.classList.add('active');
+}
+var phaseData = {"pp": {"cls_a": "lost", "ctrl_a": "PBKS", "v_a": "Conceded", "cls_b": "dominated", "ctrl_b": "GT", "v_b": "Controlled"}, "mid": {"cls_a": "dominated", "ctrl_a": "PBKS", "v_a": "Reversed", "cls_b": "lost", "ctrl_b": "GT", "v_b": "Surrendered"}, "death": {"cls_a": "dominated", "ctrl_a": "PBKS", "v_a": "Held", "cls_b": "lost", "ctrl_b": "GT", "v_b": "Insufficient"}};
+function switchPhaseView(btn,team){
+  document.querySelectorAll('.phase-toggle-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  var phases=['pp','mid','death'];
+  phases.forEach(function(ph){
+    document.querySelectorAll('.team-note').forEach(n=>n.classList.remove('visible'));
+  });
+  phases.forEach(function(ph){
+    var suffix='-'+team;
+    var el=document.getElementById(ph+suffix);
+    if(el)el.classList.add('visible');
+    var d=phaseData[ph];
+    if(team==='a'){
+      setPhase(ph,d.cls_a,d.ctrl_a,d.v_a);
+    }else{
+      setPhase(ph,d.cls_b,d.ctrl_b,d.v_b);
+    }
+  });
+}
+function setPhase(phase,cls,controller,verdict){
+  var card=document.getElementById(phase+'-card');
+  card.className='phase-card '+cls;
+  document.getElementById(phase+'-controller').textContent=controller;
+  document.getElementById(phase+'-verdict').textContent=verdict;
+}
+function activateNode(el,idx){
+  document.querySelectorAll('.prob-node').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('prob-fill').style.width=el.dataset.fill+'%';
+  var teamEl=document.getElementById('prob-detail-team');
+  teamEl.className='prob-detail-team '+el.dataset.team;
+  teamEl.textContent=el.dataset.label;
+  document.getElementById('prob-detail-text').textContent=el.dataset.detail;
+}
+document.addEventListener('DOMContentLoaded',function(){
+  var first=document.querySelector('.prob-node');
+  if(first)activateNode(first,0);
+  // init phase A view
+  var d=phaseData;
+  ['pp','mid','death'].forEach(function(ph){
+    var el=document.getElementById(ph+'-a');
+    if(el)el.classList.add('visible');
+  });
+});
+</script>
 </body>
 </html>
