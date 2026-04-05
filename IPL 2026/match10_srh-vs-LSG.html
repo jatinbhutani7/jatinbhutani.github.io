@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Match 10 — SRH vs LSG · AI Decision System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#f7f5f1; --surface:#ffffff; --border:#e4e0d8; --border-2:#d0cbc0;
+    --text-primary:#1a1814; --text-secondary:#5a564e; --text-muted:#9a9690;
+    --accent:#8b6240; --accent-light:rgba(139,98,64,0.07); --accent-mid:rgba(139,98,64,0.14);
+    --green:#3d7a56; --green-light:rgba(61,122,86,0.09);
+    --red:#9a3d3d; --red-light:rgba(154,61,61,0.09);
+    --team-a:#FF6B00; --team-b:#0076CE;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text-primary);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;}
+  .site-header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;}
+  .header-nav{max-width:900px;margin:auto;display:flex;align-items:center;padding:14px 0;gap:6px;}
+  .back-link{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .15s;}
+  .back-link:hover{color:var(--accent);}
+  .breadcrumb-sep{color:var(--border-2);font-size:12px;}
+  .breadcrumb-cur{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-secondary);}
+  .match-hero{background:var(--surface);border-bottom:1px solid var(--border);padding:40px 32px 36px;}
+  .match-hero-inner{max-width:900px;margin:auto;display:grid;grid-template-columns:1fr auto;gap:32px;align-items:start;}
+  .match-eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+  .match-title{font-family:'Cormorant',serif;font-size:clamp(28px,5vw,46px);font-weight:500;line-height:1.1;letter-spacing:-.01em;margin-bottom:12px;}
+  .match-title .team-a{color:var(--team-a);} .match-title .team-b{color:var(--team-b);} .match-title .sep{color:var(--border-2);font-style:italic;}
+  .match-meta{display:flex;gap:10px;flex-wrap:wrap;}
+  .meta-chip{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border:1px solid var(--border);color:var(--text-muted);border-radius:2px;}
+  .meta-chip.winner{border-color:rgba(61,122,86,.3);background:var(--green-light);color:var(--green);}
+  .result-card{text-align:center;min-width:130px;}
+  .result-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;}
+  .result-winner{font-family:'Cormorant',serif;font-size:32px;font-weight:600;color:var(--green);line-height:1;margin-bottom:4px;}
+  .result-sub{font-size:11px;color:var(--text-muted);font-weight:300;}
+  main{max-width:900px;margin:auto;padding:40px 32px 80px;display:flex;flex-direction:column;gap:2px;}
+  .section{background:var(--surface);border:1px solid var(--border);opacity:0;transform:translateY(10px);animation:reveal .4s ease forwards;}
+  .section:nth-child(1){animation-delay:.05s;} .section:nth-child(2){animation-delay:.10s;}
+  .section:nth-child(3){animation-delay:.15s;} .section:nth-child(4){animation-delay:.20s;}
+  .section:nth-child(5){animation-delay:.25s;} .section:nth-child(6){animation-delay:.30s;}
+  .section:nth-child(7){animation-delay:.35s;}
+  @keyframes reveal{to{opacity:1;transform:translateY(0);}}
+  .section-head{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .section-head-left{display:flex;align-items:center;gap:12px;}
+  .section-num{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;color:var(--border-2);}
+  .section-title{font-family:'Cormorant',serif;font-size:18px;font-weight:500;color:var(--text-primary);letter-spacing:-.01em;}
+  .section-body{padding:24px;}
+  /* TURNING POINTS */
+  .tp-list{display:flex;flex-direction:column;gap:2px;}
+  .tp-item{display:grid;grid-template-columns:32px 1fr;gap:0;border:1px solid var(--border);cursor:pointer;transition:border-color .15s;}
+  .tp-item:hover{border-color:var(--border-2);} .tp-item.active{border-color:var(--accent);}
+  .tp-index{display:flex;align-items:center;justify-content:center;background:var(--bg);border-right:1px solid var(--border);font-family:'Cormorant',serif;font-size:16px;font-weight:600;color:var(--border-2);transition:all .15s;}
+  .tp-item.active .tp-index{background:var(--accent-light);color:var(--accent);border-right-color:var(--accent);}
+  .tp-content{padding:14px 16px;}
+  .tp-label{font-size:12.5px;font-weight:500;color:var(--text-primary);margin-bottom:4px;}
+  .tp-detail{font-size:12px;color:var(--text-secondary);font-weight:300;line-height:1.55;display:none;padding-top:6px;border-top:1px solid var(--border);margin-top:4px;}
+  .tp-item.active .tp-detail{display:block;}
+  .tp-expand-hint{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin-top:12px;text-align:right;}
+  /* PHASE */
+  .phase-toggle{display:flex;gap:2px;}
+  .phase-toggle-btn{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;padding:4px 10px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;transition:all .15s;}
+  .phase-toggle-btn.active{background:var(--accent-light);border-color:var(--accent);color:var(--accent);}
+  .phase-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;}
+  .phase-card{border:1px solid var(--border);padding:18px 16px;transition:border-color .2s;}
+  .phase-card.dominated{border-color:rgba(61,122,86,.3);background:var(--green-light);}
+  .phase-card.lost{border-color:rgba(154,61,61,.3);background:var(--red-light);}
+  .phase-card.contested{border-color:var(--border-2);background:rgba(160,150,140,.05);}
+  .phase-name{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;}
+  .phase-controller{font-family:'Cormorant',serif;font-size:20px;font-weight:600;margin-bottom:6px;line-height:1;}
+  .phase-card.dominated .phase-controller{color:var(--green);} .phase-card.lost .phase-controller{color:var(--red);} .phase-card.contested .phase-controller{color:var(--text-muted);font-size:14px;}
+  .phase-verdict{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:2px 6px;border-radius:1px;display:inline-block;margin-bottom:8px;}
+  .phase-card.dominated .phase-verdict{background:var(--green-light);color:var(--green);border:1px solid rgba(61,122,86,.2);}
+  .phase-card.lost .phase-verdict{background:var(--red-light);color:var(--red);border:1px solid rgba(154,61,61,.2);}
+  .phase-card.contested .phase-verdict{background:var(--bg);color:var(--text-muted);border:1px solid var(--border);}
+  .phase-note{font-size:11.5px;color:var(--text-secondary);line-height:1.55;font-weight:300;}
+  .team-note{display:none;} .team-note.visible{display:block;}
+  /* WIN PROB */
+  .prob-label-row{display:flex;justify-content:space-between;margin-bottom:6px;}
+  .prob-team-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);}
+  .prob-track{position:relative;height:4px;background:var(--border);border-radius:2px;margin:16px 0 32px;}
+  .prob-fill{position:absolute;left:0;top:0;height:100%;background:var(--green);border-radius:2px;transition:width .6s ease;}
+  .prob-nodes{display:flex;justify-content:space-between;gap:2px;}
+  .prob-node{flex:1;cursor:pointer;position:relative;}
+  .prob-dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--border-2);background:var(--surface);margin:0 auto 8px;transition:all .15s;position:relative;top:-19px;}
+  .prob-node:hover .prob-dot,.prob-node.active .prob-dot{border-color:var(--accent);background:var(--accent);}
+  .prob-node-label{font-size:10.5px;color:var(--text-muted);text-align:center;line-height:1.4;transition:color .15s;font-weight:300;}
+  .prob-node.active .prob-node-label{color:var(--text-primary);font-weight:400;}
+  .prob-detail-box{background:var(--bg);border:1px solid var(--border);padding:14px 16px;margin-top:12px;min-height:52px;}
+  .prob-detail-team{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:4px;}
+  .ahead-a{color:var(--team-a);} .ahead-b{color:var(--team-b);} .ahead-both{color:var(--text-muted);}
+  .prob-detail-text{font-size:12.5px;color:var(--text-secondary);font-weight:300;line-height:1.55;}
+  /* DECIDER */
+  .decider-card{background:var(--accent-light);border:1px solid var(--accent-mid);padding:20px 22px;}
+  .decider-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+  .decider-title{font-family:'Cormorant',serif;font-size:20px;font-weight:500;color:var(--text-primary);margin-bottom:8px;}
+  .decider-body{font-size:13px;color:var(--text-secondary);font-weight:300;line-height:1.65;}
+  /* INSIGHT */
+  .insight-card{border-left:3px solid var(--accent);padding:20px 22px;background:var(--surface);border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+  .insight-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+  .insight-text{font-family:'Cormorant',serif;font-size:19px;font-style:italic;color:var(--text-primary);line-height:1.55;font-weight:400;}
+  /* COUNTER PERSPECTIVE — NEW SECTION */
+  .fork-list{display:flex;flex-direction:column;gap:2px;}
+  .fork-card{border:1px solid var(--border);padding:0;}
+  .fork-header{padding:14px 18px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;transition:background .15s;}
+  .fork-header:hover{background:var(--bg);}
+  .fork-card.active .fork-header{background:var(--accent-light);border-bottom-color:var(--accent-mid);}
+  .fork-meta{display:flex;align-items:center;gap:10px;}
+  .fork-over{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;padding:2px 8px;border:1px solid var(--border);color:var(--text-muted);border-radius:1px;white-space:nowrap;}
+  .fork-card.active .fork-over{border-color:var(--accent);color:var(--accent);}
+  .fork-title{font-size:12.5px;font-weight:500;color:var(--text-primary);}
+  .fork-toggle-icon{font-size:14px;color:var(--text-muted);flex-shrink:0;transition:transform .15s;}
+  .fork-card.active .fork-toggle-icon{transform:rotate(45deg);color:var(--accent);}
+  .fork-body{display:none;padding:0 18px 18px;}
+  .fork-card.active .fork-body{display:block;}
+  .fork-row{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:14px;}
+  .fork-col{padding:14px 16px;border:1px solid var(--border);}
+  .fork-col.happened{background:var(--red-light);border-color:rgba(154,61,61,.25);}
+  .fork-col.alternative{background:var(--green-light);border-color:rgba(61,122,86,.25);}
+  .fork-col-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px;}
+  .fork-col.happened .fork-col-label{color:var(--red);}
+  .fork-col.alternative .fork-col-label{color:var(--green);}
+  .fork-col-text{font-size:12px;color:var(--text-secondary);font-weight:300;line-height:1.6;}
+  .fork-cost{margin-top:12px;padding:10px 14px;background:var(--bg);border:1px solid var(--border);font-size:12px;color:var(--text-muted);line-height:1.6;font-weight:300;}
+  .fork-cost strong{color:var(--text-secondary);font-weight:400;}
+  /* FRAMEWORK */
+  .framework-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;}
+  .fw-card{border:1px solid var(--border);padding:16px 18px;transition:border-color .15s;}
+  .fw-card:hover{border-color:var(--border-2);}
+  .fw-title{font-size:12.5px;font-weight:500;color:var(--text-primary);margin-bottom:5px;display:flex;align-items:flex-start;gap:8px;}
+  .fw-title::before{content:'→';color:var(--accent);flex-shrink:0;margin-top:1px;}
+  .fw-body{font-size:12px;color:var(--text-muted);font-weight:300;line-height:1.6;padding-left:18px;}
+  /* FOOTER */
+  .match-footer{background:var(--surface);border-top:1px solid var(--border);padding:20px 32px;}
+  .match-footer-inner{max-width:900px;margin:auto;display:flex;justify-content:space-between;align-items:center;}
+  .footer-nav-link{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .15s;}
+  .footer-nav-link:hover{color:var(--accent);}
+  .footer-copy{font-family:'DM Mono',monospace;font-size:10px;color:var(--border-2);letter-spacing:.06em;}
+  @media(max-width:640px){
+    .match-hero-inner{grid-template-columns:1fr;} .result-card{text-align:left;}
+    .phase-grid,.framework-grid,.fork-row{grid-template-columns:1fr;}
+    main{padding:24px 18px 60px;}
+    .site-header,.match-hero,.match-footer{padding-left:18px;padding-right:18px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <div class="header-nav">
+    <a class="back-link" href="https://jatinbhutani7.github.io/ipl-system.html">← System Hub</a>
+    <span class="breadcrumb-sep">/</span>
+    <span class="breadcrumb-cur">Match 10 · SRH vs LSG</span>
+  </div>
+</div>
+
+<div class="match-hero">
+  <div class="match-hero-inner">
+    <div>
+      <div class="match-eyebrow">Match 10 · IPL 2026 · Phase Analysis + Counter Perspective</div>
+      <h1 class="match-title">
+        <span class="team-a">SRH</span><span class="sep"> vs </span><span class="team-b">LSG</span>
+      </h1>
+      <div class="match-meta">
+        <span class="meta-chip winner">LSG Won</span>
+        <span class="meta-chip">Chasing team won</span>
+        <span class="meta-chip">SRH 156/9 · LSG 160/5</span>
+        <span class="meta-chip">Match 10 of 9+</span>
+      </div>
+    </div>
+    <div class="result-card">
+      <div class="result-label">Winner</div>
+      <div class="result-winner">LSG</div>
+      <div class="result-sub">5 wickets · Pant 68*</div>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <!-- 01. TURNING POINTS -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">01</span><span class="section-title">Turning Points</span></div>
+    </div>
+    <div class="section-body">
+      <div class="tp-list">
+
+        <div class="tp-item" onclick="toggleTP(this)">
+          <div class="tp-index">1</div>
+          <div class="tp-content">
+            <div class="tp-label">Shami Dismantles SRH's Top Three — Overs 1–4</div>
+            <div class="tp-detail">Shami, bowling against his former team, removed Abhishek with an offcutter in over 1 and Head with a slower ball in over 3. Prince Yadav then uprooted Kishan's off stump in over 4. SRH reached 11/3 after 4 overs — not a collapse of execution, but of top-order structure. Every specialist option at the top was gone before the powerplay ended. The innings had nowhere to go except a rescue mission.</div>
+          </div>
+        </div>
+
+        <div class="tp-item" onclick="toggleTP(this)">
+          <div class="tp-index">2</div>
+          <div class="tp-content">
+            <div class="tp-label">Klaasen–Reddy Rebuild: 11/3 to 134/4 in 13 Overs</div>
+            <div class="tp-detail">From 11/3 — a position where even 130 would have been a recovery — Klaasen and Reddy built a 94-run fifth-wicket stand, a new SRH record. In the final 30 balls of their partnership, they scored 79 runs with 7 fours and 5 sixes. The match was reversed mid-innings. At 134/4 after 17, SRH were looking at 175+. This partnership is what makes the subsequent collapse — and SRH's decision forks — analytically significant.</div>
+          </div>
+        </div>
+
+        <div class="tp-item" onclick="toggleTP(this)">
+          <div class="tp-index">3</div>
+          <div class="tp-content">
+            <div class="tp-label">LSG's Death Execution: 5 Wickets for 22 in 4 Overs</div>
+            <div class="tp-detail">From 134/4 after 17, SRH added only 22 runs and lost 5 wickets in the final 4 overs. Siddharth got Reddy caught at deep cover (over 18), Avesh then removed Klaasen with a reverse paddle miscued too fine, and had Dubey chopping on in the same over. Avesh gave away just 2 runs in over 19. The reverse swing was real — but LSG's bowling plan to attack the set batters at the death rather than simply contain was the decisive variable.</div>
+          </div>
+        </div>
+
+        <div class="tp-item" onclick="toggleTP(this)">
+          <div class="tp-index">4</div>
+          <div class="tp-content">
+            <div class="tp-label">LSG 108/4 After 14 — Pant Alone With 49 to Get</div>
+            <div class="tp-detail">Markram fell to a wrong'un at 10 overs. Badoni was stumped off Dubey. Pooran was run out in a miscommunication. Three very different dismissals in quick succession — but all while Pant was at the non-striker's end on 32 off 30. The wobble wasn't panic; it was partners taking risks that Pant couldn't manage. The question entering overs 15–20 was whether Pant could anchor the final phase. He had 16 overs of batting in his legs and knew exactly what the chase needed.</div>
+          </div>
+        </div>
+
+        <div class="tp-item" onclick="toggleTP(this)">
+          <div class="tp-index">5</div>
+          <div class="tp-content">
+            <div class="tp-label">Pant's Last Over — 4, 4, 6 Off Unadkat</div>
+            <div class="tp-detail">9 needed off the last over with Unadkat bowling. Full ball — Pant drilled straight for 4. Slow into the pitch — Pant swatted over mid-off for 4. Two dots. Then Pant launched the fifth ball over mid-off to win. What makes this decisive analytically: Pant had already hit Unadkat in overs 6 and 15. He had a read on the bowler. Unadkat's inability to change the plan — or SRH's unwillingness to change the bowler — was the final decision failure of the match.</div>
+          </div>
+        </div>
+
+      </div>
+      <div class="tp-expand-hint">Click any point to expand →</div>
+    </div>
+  </div>
+
+  <!-- 02. PHASE CONTROL -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">02</span><span class="section-title">Phase Control</span></div>
+      <div class="phase-toggle">
+        <button class="phase-toggle-btn active" onclick="switchPhaseView(this,'a')">SRH View</button>
+        <button class="phase-toggle-btn" onclick="switchPhaseView(this,'b')">LSG View</button>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="phase-grid">
+
+        <div class="phase-card lost" id="pp-card">
+          <div class="phase-name">Powerplay</div>
+          <div class="phase-controller" id="pp-ctrl">LSG</div>
+          <div class="phase-verdict" id="pp-verd">Dismantled</div>
+          <div class="phase-note team-note visible" id="pp-note-a">SRH's powerplay was structurally destroyed before it ended — 11/3, three specialist batters gone. Shami and Prince Yadav bowled to a clear plan: swing + slower balls + seam movement. SRH had no answer. The innings was a recovery mission from over 5 onwards.</div>
+          <div class="phase-note team-note" id="pp-note-b">LSG's bowling combination in the powerplay was exceptional. Shami's swing and pace variation (2/9 in 4 overs overall), Rathi's spin disruption, Prince Yadav's seam — three very different threats in 6 overs. LSG dominated both on wickets and on running rate restriction: SRH scored only 22.</div>
+        </div>
+
+        <div class="phase-card contested" id="mid-card">
+          <div class="phase-name">Middle Overs</div>
+          <div class="phase-controller" id="mid-ctrl">SRH</div>
+          <div class="phase-verdict" id="mid-verd">Rescued</div>
+          <div class="phase-note team-note visible" id="mid-note-a">Klaasen and Reddy turned a structural disaster into a competitive innings. 79 runs in the last 30 balls of their stand — a phase reclaimed by individual brilliance rather than team planning. In the chase, SRH bowling fought back well, taking 3 wickets in the middle (Markram, Badoni stumped, Pooran run out). The middle phase was genuinely contested across both innings.</div>
+          <div class="phase-note team-note" id="mid-note-b">LSG's middle-overs batting was fragile — Markram fell to a wrong'un, Badoni stumped, Pooran run out, all while Pant watched from the non-striker's end. SRH's bowling in the chase middle was sharp. The phase was contested — but Pant's anchor role meant LSG never lost complete control despite losing 3 wickets.</div>
+        </div>
+
+        <div class="phase-card lost" id="death-card">
+          <div class="phase-name">Death Overs</div>
+          <div class="phase-controller" id="death-ctrl">LSG</div>
+          <div class="phase-verdict" id="death-verd">Decisive Loss</div>
+          <div class="phase-note team-note visible" id="death-note-a">SRH's death overs were catastrophic — 5 wickets for 22 runs from 134/4. Then, in the chase death, Unadkat conceded 14 off the last over to a set Pant who had already read his plans. Both innings' death phases went decisively to LSG. SRH lost the match twice — once with the bat, once with the ball — in the same phase.</div>
+          <div class="phase-note team-note" id="death-note-b">LSG's death-overs bowling in SRH's innings was the match's best phase of bowling — reverse swing, wicket-to-wicket line, attacking set batters rather than containing. In the chase, Pant's death-overs batting was equally decisive. LSG won both death phases. When a team wins the death twice, the match is rarely close.</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 03. WIN PROBABILITY SHIFT -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">03</span><span class="section-title">Win Probability Shift</span></div>
+    </div>
+    <div class="section-body">
+      <div class="prob-label-row">
+        <span class="prob-team-label" style="color:var(--team-a)">← SRH Ahead</span>
+        <span class="prob-team-label" style="color:var(--team-b)">LSG Ahead →</span>
+      </div>
+      <div>
+        <div class="prob-track"><div class="prob-fill" id="prob-fill" style="width:50%"></div></div>
+        <div class="prob-nodes">
+
+          <div class="prob-node" onclick="activateNode(this)" data-fill="72" data-team="ahead-b" data-label="SRH 11/3 — After Powerplay" data-detail="SRH's top three gone in 4 overs. LSG clearly ahead — a total under 130 looks likely from here. The innings needs an exceptional rescue to make a competitive game.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">SRH<br>11/3</div>
+          </div>
+
+          <div class="prob-node" onclick="activateNode(this)" data-fill="48" data-team="ahead-b" data-label="Klaasen–Reddy Partnership in Full Flow" data-detail="The partnership has rebuilt the innings completely. SRH 94/4 after 14, on course for 175+. LSG's powerplay work is being erased. Match genuinely open — both teams in contention.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">Klaasen<br>Reddy 94</div>
+          </div>
+
+          <div class="prob-node" onclick="activateNode(this)" data-fill="42" data-team="ahead-a" data-label="SRH 134/4 After 17 — Looking at 175+" data-detail="SRH have two set batters with 3 overs left. The partnership has produced 79 in the previous 30 balls. SRH are slight favourites — they look like posting 175+, which would be a challenging chase.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">SRH<br>134/4</div>
+          </div>
+
+          <div class="prob-node" onclick="activateNode(this)" data-fill="73" data-team="ahead-b" data-label="SRH 156/9 — Death Collapse Complete" data-detail="5 wickets for 22 in 4 overs. SRH's total is 19 runs below what it looked like at over 17. ESPNcricinfo forecaster gave LSG 73% at this point. The target is achievable — 157 is a chase most batting lineups can target.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">SRH<br>156/9</div>
+          </div>
+
+          <div class="prob-node" onclick="activateNode(this)" data-fill="83" data-team="ahead-b" data-label="LSG 67/1 — Powerplay Dominant" data-detail="Markram 45 off 26, LSG ahead structurally. Comfortable chase platform — even losing a wicket at over 8 (Marsh at 38) hasn't disrupted the innings. Pant coming in at 3 is an upgrade in chasing conditions.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">LSG<br>67/1</div>
+          </div>
+
+          <div class="prob-node" onclick="activateNode(this)" data-fill="64" data-team="ahead-b" data-label="LSG 108/4 After 14 — Wobble Phase" data-detail="Three wickets in the middle overs — Markram, Badoni stumped, Pooran run out. 49 needed from 6 with Pant on 32 off 30 and Samad the last recognised partner. LSG still favourites but the chase is no longer a formality.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">LSG<br>108/4</div>
+          </div>
+
+          <div class="prob-node" onclick="activateNode(this)" data-fill="58" data-team="ahead-b" data-label="9 Needed From Last Over — Pant Facing Unadkat" data-detail="Harshal Patel's penultimate over conceded only 4. 9 needed from the last. Pant is set, Unadkat is bowling. Pant has already scored off Unadkat twice in this innings. The match is close but LSG's anchor is exactly who you want facing the last over.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">9 from<br>last over</div>
+          </div>
+
+        </div>
+        <div class="prob-detail-box" id="prob-detail-box">
+          <div class="prob-detail-team" id="prob-detail-team"></div>
+          <div class="prob-detail-text" id="prob-detail-text"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04. MATCH DECIDER -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">04</span><span class="section-title">Match Decider</span></div>
+    </div>
+    <div class="section-body">
+      <div class="decider-card">
+        <div class="decider-label">The moment that made the game</div>
+        <div class="decider-title">LSG's Death Bowling Converted SRH's Advantage Into a Manageable Target</div>
+        <div class="decider-body">SRH at 134/4 after 17 were on course for 175+. LSG's death overs — specifically Avesh with reverse swing, and Siddharth targeting Reddy at deep cover — reduced them to 156. That 19-run difference was the entire margin of the chase. Without it, Pant's heroics in the final over wouldn't have been enough. The match was won in overs 18 and 19 of SRH's innings, not in the last over of LSG's chase.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 05. DECISION INSIGHT -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">05</span><span class="section-title">Decision Insight</span></div>
+    </div>
+    <div class="section-body">
+      <div class="insight-card">
+        <div class="insight-label">Core analytical finding</div>
+        <div class="insight-text">SRH lost this match in two death phases — once with the bat, once with the ball. A team that loses the same phase in both innings on the same day hasn't made two errors; it has revealed a structural vulnerability. Death-phase planning — who bowls, what length, which batter to attack, who anchors — was the defining gap between these two sides.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 06. COUNTER-TEAM PERSPECTIVE (NEW) -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">06</span><span class="section-title">Counter-Team Perspective</span></div>
+    </div>
+    <div class="section-body">
+      <p style="font-size:12.5px;color:var(--text-secondary);font-weight:300;line-height:1.65;margin-bottom:16px;">Where SRH had genuine decision forks — moments where an alternative was available, not just visible in hindsight — and what those alternatives would have required and cost.</p>
+
+      <div class="fork-list">
+
+        <!-- FORK 1 -->
+        <div class="fork-card" id="fork1">
+          <div class="fork-header" onclick="toggleFork('fork1')">
+            <div>
+              <div class="fork-meta">
+                <span class="fork-over">Overs 17–19 · SRH Batting</span>
+              </div>
+              <div class="fork-title" style="margin-top:6px;">Should one of Klaasen or Reddy have anchored rather than both pressing at the death?</div>
+            </div>
+            <div class="fork-toggle-icon">+</div>
+          </div>
+          <div class="fork-body">
+            <div style="font-size:12px;color:var(--text-secondary);font-weight:300;line-height:1.65;">At 134/4 after 17, SRH had three overs with two set batters who had scored 79 in the previous 30 balls. The natural instinct — press both — led to both falling in overs 18 and 19. Reddy caught at deep cover off Siddharth. Klaasen reverse paddling too fine off Avesh. A third batter also fell in the same over. SRH went from 134/4 to 146/7 in 2 overs.</div>
+            <div class="fork-row">
+              <div class="fork-col happened">
+                <div class="fork-col-label">What Happened</div>
+                <div class="fork-col-text">Both Reddy and Klaasen went for maximum in overs 18–19. Both fell to attacking shots that could have been avoided — Reddy to a conventional deep cover drive, Klaasen to an improvised reverse paddle. Five wickets fell in 4 overs. SRH finished on 156 instead of a likely 172–178.</div>
+              </div>
+              <div class="fork-col alternative">
+                <div class="fork-col-label">The Available Alternative</div>
+                <div class="fork-col-text">One batter anchors (likely Klaasen, who was on 40 off 27 entering over 18) — rotating and taking singles — while Reddy goes for the boundary options. Losing one at the death is recoverable with the other set. The combined damage of losing both in sequence collapsed the innings' structural integrity and left the tail to face two overs.</div>
+              </div>
+            </div>
+            <div class="fork-cost"><strong>What it would have cost:</strong> Marginally fewer sixes in overs 18–19. But if Klaasen stays to over 20 on 50–55, SRH likely add another 15–20 runs. At 172–178, Pant's last-over heroics don't win the match.</div>
+          </div>
+        </div>
+
+        <!-- FORK 2 -->
+        <div class="fork-card" id="fork2" style="margin-top:2px;">
+          <div class="fork-header" onclick="toggleFork('fork2')">
+            <div>
+              <div class="fork-meta">
+                <span class="fork-over">Over 20 · LSG Chase</span>
+              </div>
+              <div class="fork-title" style="margin-top:6px;">Should Harshal Patel have bowled the final over instead of Unadkat, who Pant had already targeted twice?</div>
+            </div>
+            <div class="fork-toggle-icon">+</div>
+          </div>
+          <div class="fork-body">
+            <div style="font-size:12px;color:var(--text-secondary);font-weight:300;line-height:1.65;">Pant hit Unadkat in over 6 (LSG 67/1 powerplay) and over 15. Harshal Patel bowled an exceptional penultimate over — 4 runs, nearly got Choudhary lbw, beat Pant with pace. SRH chose to go back to Unadkat for the final over with 9 needed. Pant, who had a clear read on him, scored 14 off 5 balls to win.</div>
+            <div class="fork-row">
+              <div class="fork-col happened">
+                <div class="fork-col-label">What Happened</div>
+                <div class="fork-col-text">Unadkat bowled the final over. Pant, who already had a read on his variations, scored 4 (full, drilled straight), 4 (slow, swatted over mid-off), then 6 (launched over mid-off) off balls 1, 2, and 5. Unadkat was unable to change his plan — or SRH gave him no licence to do so. 14 off 5 balls ended the match.</div>
+              </div>
+              <div class="fork-col alternative">
+                <div class="fork-col-label">The Available Alternative</div>
+                <div class="fork-col-text">Harshal Patel had the ball in hand and had just bowled an excellent over. A death-over specialist who was beating Pant with pace would have been the logical choice for the final over. Pant hadn't faced Harshal — the read advantage Pant held over Unadkat would not have existed. 9 from the last over is gettable against anyone, but the bowler choice matters at this margin.</div>
+              </div>
+            </div>
+            <div class="fork-cost"><strong>What it would have cost:</strong> Harshal would have been unavailable if the chase extended (it didn't). The risk of using your best death bowler in the last over when you need to defend 9 runs is essentially zero — there is no downside. This was a straightforward decision that went wrong.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 07. FRAMEWORK INSIGHTS -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">07</span><span class="section-title">Framework Insights</span></div>
+    </div>
+    <div class="section-body">
+      <div class="framework-grid">
+        <div class="fw-card">
+          <div class="fw-title">Losing the death phase twice in one match reveals structure, not bad luck</div>
+          <div class="fw-body">SRH lost the death with the bat (5 wickets for 22) and with the ball (14 off the last over). One death-phase failure is a match event. Two in the same game is a systemic pattern — death-over planning, batter protection, and bowler selection all need examination.</div>
+        </div>
+        <div class="fw-card">
+          <div class="fw-title">An exceptional partnership mid-innings can reverse a match — but it needs protection</div>
+          <div class="fw-body">The Klaasen-Reddy stand is one of the most valuable SRH partnerships this tournament. Its value was partially erased by the death collapse. A partnership rescue mission only changes the match if the batting side can protect one of the architects for the final phase.</div>
+        </div>
+        <div class="fw-card">
+          <div class="fw-title">Bowler familiarity is a real chase advantage — captains must account for it</div>
+          <div class="fw-body">Pant had faced Unadkat twice in this innings and read his variations. That read translated directly into the last over — 4, 4, 6. When a set batter has demonstrated they can score off a specific bowler, the bowling captain must either change the plan within that bowler or change the bowler. SRH did neither.</div>
+        </div>
+        <div class="fw-card">
+          <div class="fw-title">An anchor in a chase wobble is worth more than runs on the board</div>
+          <div class="fw-body">Pant scored 32 off 30 at the point of LSG's wobble — a strike rate that would look pedestrian in isolation. But his presence while three partners fell meant LSG never fully lost control. An anchor doesn't need to score fast when the team is wobbling — they need to still be there when the wobble ends.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div class="match-footer">
+  <div class="match-footer-inner">
+    <a class="footer-nav-link" href="match9_rr-vs-gt.html">← Match 9: RR vs GT</a>
+    <span class="footer-copy">© 2026 Jatin Bhutani</span>
+    <span></span>
+  </div>
+</div>
+
+<script>
+const PHASES_A = {
+  pp:    {ctrl:"LSG",  cls:"lost",      verd:"Dismantled"},
+  mid:   {ctrl:"SRH", cls:"contested", verd:"Rescued"},
+  death: {ctrl:"LSG",  cls:"lost",      verd:"Decisive Loss"}
+};
+const PHASES_B = {
+  pp:    {ctrl:"LSG", cls:"dominated", verd:"Controlled"},
+  mid:   {ctrl:"LSG", cls:"contested", verd:"Managed"},
+  death: {ctrl:"LSG", cls:"dominated", verd:"Decisive"}
+};
+
+function toggleTP(el){
+  const was=el.classList.contains('active');
+  document.querySelectorAll('.tp-item').forEach(i=>i.classList.remove('active'));
+  if(!was) el.classList.add('active');
+}
+
+function switchPhaseView(btn,team){
+  document.querySelectorAll('.phase-toggle-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const data=team==='a'?PHASES_A:PHASES_B;
+  ['pp','mid','death'].forEach(ph=>{
+    const d=data[ph];
+    const card=document.getElementById(ph+'-card');
+    card.className='phase-card '+d.cls;
+    document.getElementById(ph+'-ctrl').textContent=d.ctrl;
+    document.getElementById(ph+'-verd').textContent=d.verd;
+    document.querySelectorAll('#'+ph+'-card .team-note').forEach(n=>n.classList.remove('visible'));
+    const noteEl=document.getElementById(ph+'-note-'+team);
+    if(noteEl) noteEl.classList.add('visible');
+  });
+}
+
+function activateNode(el){
+  document.querySelectorAll('.prob-node').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('prob-fill').style.width=el.dataset.fill+'%';
+  const t=document.getElementById('prob-detail-team');
+  t.className='prob-detail-team '+el.dataset.team;
+  t.textContent=el.dataset.label;
+  document.getElementById('prob-detail-text').textContent=el.dataset.detail;
+}
+
+function toggleFork(id){
+  const card=document.getElementById(id);
+  const was=card.classList.contains('active');
+  document.querySelectorAll('.fork-card').forEach(c=>c.classList.remove('active'));
+  if(!was) card.classList.add('active');
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  const first=document.querySelector('.prob-node');
+  if(first) activateNode(first);
+});
+</script>
+</body>
+</html>
