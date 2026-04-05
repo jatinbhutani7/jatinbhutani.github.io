@@ -1,87 +1,365 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>MI vs DC – Match Analysis</title>
-  <style>
-    body {
-      font-family: Arial;
-      margin: 40px;
-      background: #f5f5f5;
-    }
-    .output-box {
-      background: white;
-      padding: 20px;
-      border-radius: 8px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Match 8 — MI vs DC · AI Decision System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#f7f5f1; --surface:#ffffff; --border:#e4e0d8; --border-2:#d0cbc0;
+    --text-primary:#1a1814; --text-secondary:#5a564e; --text-muted:#9a9690;
+    --accent:#8b6240; --accent-light:rgba(139,98,64,0.07); --accent-mid:rgba(139,98,64,0.14);
+    --green:#3d7a56; --green-light:rgba(61,122,86,0.09);
+    --red:#9a3d3d; --red-light:rgba(154,61,61,0.09);
+    --team-a:#003B71; --team-b:#004C97;
+    --team-a-light:rgba(0,0,0,0.06); --team-b-light:rgba(0,0,0,0.06);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text-primary);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;}
+  .site-header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;}
+  .header-nav{max-width:900px;margin:auto;display:flex;align-items:center;padding:14px 0;gap:6px;}
+  .back-link{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .15s;}
+  .back-link:hover{color:var(--accent);}
+  .breadcrumb-sep{color:var(--border-2);font-size:12px;}
+  .breadcrumb-cur{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-secondary);}
+  .match-hero{background:var(--surface);border-bottom:1px solid var(--border);padding:40px 32px 36px;}
+  .match-hero-inner{max-width:900px;margin:auto;display:grid;grid-template-columns:1fr auto;gap:32px;align-items:start;}
+  .match-eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+  .match-title{font-family:'Cormorant',serif;font-size:clamp(28px,5vw,46px);font-weight:500;line-height:1.1;letter-spacing:-.01em;margin-bottom:12px;}
+  .match-title .team-a{color:var(--team-a);} .match-title .team-b{color:var(--team-b);} .match-title .sep{color:var(--border-2);font-style:italic;}
+  .match-meta{display:flex;gap:16px;flex-wrap:wrap;}
+  .meta-chip{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border:1px solid var(--border);color:var(--text-muted);border-radius:2px;}
+  .meta-chip.winner{border-color:rgba(61,122,86,.3);background:var(--green-light);color:var(--green);}
+  .result-card{text-align:center;min-width:130px;}
+  .result-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;}
+  .result-winner{font-family:'Cormorant',serif;font-size:32px;font-weight:600;color:var(--green);line-height:1;margin-bottom:4px;}
+  .result-sub{font-size:11px;color:var(--text-muted);font-weight:300;}
+  main{max-width:900px;margin:auto;padding:40px 32px 80px;display:flex;flex-direction:column;gap:2px;}
+  .section{background:var(--surface);border:1px solid var(--border);opacity:0;transform:translateY(10px);animation:reveal .4s ease forwards;}
+  .section:nth-child(1){animation-delay:.05s;} .section:nth-child(2){animation-delay:.10s;}
+  .section:nth-child(3){animation-delay:.15s;} .section:nth-child(4){animation-delay:.20s;}
+  .section:nth-child(5){animation-delay:.25s;} .section:nth-child(6){animation-delay:.30s;}
+  @keyframes reveal{to{opacity:1;transform:translateY(0);}}
+  .section-head{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .section-head-left{display:flex;align-items:center;gap:12px;}
+  .section-num{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;color:var(--border-2);}
+  .section-title{font-family:'Cormorant',serif;font-size:18px;font-weight:500;color:var(--text-primary);letter-spacing:-.01em;}
+  .section-body{padding:24px;}
+  .tp-list{display:flex;flex-direction:column;gap:2px;}
+  .tp-item{display:grid;grid-template-columns:32px 1fr;gap:0;border:1px solid var(--border);cursor:pointer;transition:border-color .15s;}
+  .tp-item:hover{border-color:var(--border-2);} .tp-item.active{border-color:var(--accent);}
+  .tp-index{display:flex;align-items:center;justify-content:center;background:var(--bg);border-right:1px solid var(--border);font-family:'Cormorant',serif;font-size:16px;font-weight:600;color:var(--border-2);transition:all .15s;}
+  .tp-item.active .tp-index{background:var(--accent-light);color:var(--accent);border-right-color:var(--accent);}
+  .tp-content{padding:14px 16px;}
+  .tp-label{font-size:12.5px;font-weight:500;color:var(--text-primary);margin-bottom:4px;}
+  .tp-detail{font-size:12px;color:var(--text-secondary);font-weight:300;line-height:1.55;display:none;padding-top:6px;border-top:1px solid var(--border);margin-top:4px;}
+  .tp-item.active .tp-detail{display:block;}
+  .tp-expand-hint{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin-top:12px;text-align:right;}
+  .phase-toggle{display:flex;gap:2px;}
+  .phase-toggle-btn{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;padding:4px 10px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;transition:all .15s;}
+  .phase-toggle-btn.active{background:var(--accent-light);border-color:var(--accent);color:var(--accent);}
+  .phase-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;}
+  .phase-card{border:1px solid var(--border);padding:18px 16px;transition:border-color .2s;}
+  .phase-card.dominated{border-color:rgba(61,122,86,.3);background:var(--green-light);}
+  .phase-card.lost{border-color:rgba(154,61,61,.3);background:var(--red-light);}
+  .phase-card.contested{border-color:var(--border-2);background:rgba(160,150,140,.05);}
+  .phase-name{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;}
+  .phase-controller{font-family:'Cormorant',serif;font-size:20px;font-weight:600;margin-bottom:6px;line-height:1;}
+  .phase-card.dominated .phase-controller{color:var(--green);} .phase-card.lost .phase-controller{color:var(--red);} .phase-card.contested .phase-controller{color:var(--text-muted);font-size:14px;}
+  .phase-verdict{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:2px 6px;border-radius:1px;display:inline-block;margin-bottom:8px;}
+  .phase-card.dominated .phase-verdict{background:var(--green-light);color:var(--green);border:1px solid rgba(61,122,86,.2);}
+  .phase-card.lost .phase-verdict{background:var(--red-light);color:var(--red);border:1px solid rgba(154,61,61,.2);}
+  .phase-card.contested .phase-verdict{background:var(--bg);color:var(--text-muted);border:1px solid var(--border);}
+  .phase-note{font-size:11.5px;color:var(--text-secondary);line-height:1.55;font-weight:300;}
+  .team-note{display:none;} .team-note.visible{display:block;}
+  .prob-label-row{display:flex;justify-content:space-between;margin-bottom:6px;}
+  .prob-team-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);}
+  .prob-track{position:relative;height:4px;background:var(--border);border-radius:2px;margin:16px 0 32px;}
+  .prob-fill{position:absolute;left:0;top:0;height:100%;background:var(--green);border-radius:2px;transition:width .6s ease;}
+  .prob-nodes{display:flex;justify-content:space-between;gap:2px;}
+  .prob-node{flex:1;cursor:pointer;position:relative;}
+  .prob-dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--border-2);background:var(--surface);margin:0 auto 8px;transition:all .15s;position:relative;top:-19px;}
+  .prob-node:hover .prob-dot,.prob-node.active .prob-dot{border-color:var(--accent);background:var(--accent);}
+  .prob-node-label{font-size:10.5px;color:var(--text-muted);text-align:center;line-height:1.4;transition:color .15s;font-weight:300;}
+  .prob-node.active .prob-node-label{color:var(--text-primary);font-weight:400;}
+  .prob-detail-box{background:var(--bg);border:1px solid var(--border);padding:14px 16px;margin-top:12px;min-height:52px;}
+  .prob-detail-team{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:4px;}
+  .ahead-a{color:var(--team-a);} .ahead-b{color:var(--team-b);} .ahead-both{color:var(--text-muted);}
+  .prob-detail-text{font-size:12.5px;color:var(--text-secondary);font-weight:300;line-height:1.55;}
+  .decider-card{background:var(--accent-light);border:1px solid var(--accent-mid);padding:20px 22px;}
+  .decider-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+  .decider-title{font-family:'Cormorant',serif;font-size:20px;font-weight:500;color:var(--text-primary);margin-bottom:8px;}
+  .decider-body{font-size:13px;color:var(--text-secondary);font-weight:300;line-height:1.65;}
+  .insight-card{border-left:3px solid var(--accent);padding:20px 22px;background:var(--surface);border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+  .insight-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+  .insight-text{font-family:'Cormorant',serif;font-size:19px;font-style:italic;color:var(--text-primary);line-height:1.55;font-weight:400;}
+  .framework-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;}
+  .fw-card{border:1px solid var(--border);padding:16px 18px;transition:border-color .15s;}
+  .fw-card:hover{border-color:var(--border-2);}
+  .fw-title{font-size:12.5px;font-weight:500;color:var(--text-primary);margin-bottom:5px;display:flex;align-items:flex-start;gap:8px;}
+  .fw-title::before{content:'→';color:var(--accent);flex-shrink:0;margin-top:1px;}
+  .fw-body{font-size:12px;color:var(--text-muted);font-weight:300;line-height:1.6;padding-left:18px;}
+  .match-footer{background:var(--surface);border-top:1px solid var(--border);padding:20px 32px;}
+  .match-footer-inner{max-width:900px;margin:auto;display:flex;justify-content:space-between;align-items:center;}
+  .footer-nav-link{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .15s;}
+  .footer-nav-link:hover{color:var(--accent);}
+  .footer-copy{font-family:'DM Mono',monospace;font-size:10px;color:var(--border-2);letter-spacing:.06em;}
+  @media(max-width:640px){
+    .match-hero-inner{grid-template-columns:1fr;} .result-card{text-align:left;}
+    .phase-grid,.framework-grid{grid-template-columns:1fr;}
+    main{padding:24px 18px 60px;}
+    .site-header,.match-hero,.match-footer{padding-left:18px;padding-right:18px;}
+  }
+</style>
 </head>
 <body>
 
-<h1>MI vs DC – Match Analysis</h1>
-
-<div class="output-box">
-
-<h3>Turning Points</h3>
-<ul>
-  <li><b>MI death overs stall (+38 in last 4 overs):</b> With a set batter and wickets in hand, failure to finish capped the total ~10–15 runs short.</li>
-  
-  <li><b>Rizvi’s 20-run over:</b> Shifted chase from balanced to controlled. From caution → intent.</li>
-  
-  <li><b>No disruption after Rizvi settled:</b> MI missed the only window. Once set, he dictated the chase.</li>
-</ul>
-
-<h3>Phase Control</h3>
-
-<p><b>Powerplay:</b><br>
-MI: Early wickets, never fully settled.<br>
-DC: Early wickets, but Nissanka countered.<br>
-→ Slight DC edge through recovery.</p>
-
-<p><b>Middle Overs:</b><br>
-MI: One batter controlling, limited support.<br>
-DC: Rizvi dictated tempo, picked matchups.<br>
-→ DC clearly ahead.</p>
-
-<p><b>Death Overs:</b><br>
-MI: Poor finish cost runs.<br>
-DC: No pressure, chase already under control.<br>
-→ DC removed need for a final contest.</p>
-
-<p><b>Net:</b> MI failed to convert platform; DC controlled middle phase.</p>
-
-<h3>Match Decider</h3>
-<p><b>MI’s failure to finish innings</b><br>
-With a set batter and wickets in hand, they didn’t accelerate. That kept the chase within reach.</p>
-
-<h3>Decision Insight</h3>
-<p>
-MI didn’t adjust to slowing conditions. Continued attacking instead of rotating. Lost momentum. DC adapted through Rizvi and took control.
-</p>
-
-<h3>Win Probability Shift (directional)</h3>
-<ul>
-  <li>MI 22/2: DC ahead</li>
-  <li>Surya rebuild: game evens</li>
-  <li>MI weak finish: DC edge</li>
-  <li>DC 8/2: MI brief control</li>
-  <li>Rizvi phase: strong shift to DC</li>
-  <li>Post that: controlled finish</li>
-</ul>
-
-<p><b>Key point:</b> Both teams had setbacks; DC adapted better and held control.</p>
-
-<h3>Framework Insights</h3>
-<ul>
-  <li><b>Death overs define par:</b> Finishing strength matters more than starts.</li>
-  
-  <li><b>One batter can control middle overs:</b> Rizvi shaped the chase.</li>
-  
-  <li><b>Adaptation beats intent:</b> DC adjusted; MI didn’t.</li>
-  
-  <li><b>Windows are short:</b> Miss early disruption and control is lost.</li>
-</ul>
-
+<div class="site-header">
+  <div class="header-nav">
+    <a class="back-link" href="https://jatinbhutani7.github.io/ipl-system.html">← System Hub</a>
+    <span class="breadcrumb-sep">/</span>
+    <span class="breadcrumb-cur">Match 8 · MI vs DC</span>
+  </div>
 </div>
 
+<div class="match-hero">
+  <div class="match-hero-inner">
+    <div>
+      <div class="match-eyebrow">Match 8 · IPL 2026 · Phase Analysis</div>
+      <h1 class="match-title">
+        <span class="team-a">MI</span><span class="sep"> vs </span><span class="team-b">DC</span>
+      </h1>
+      <div class="match-meta">
+        <span class="meta-chip winner">DC Won</span>
+        <span class="meta-chip">Chasing team won</span>
+        <span class="meta-chip">Match 8 of 9</span>
+      </div>
+    </div>
+    <div class="result-card">
+      <div class="result-label">Winner</div>
+      <div class="result-winner">DC</div>
+      <div class="result-sub">Chase · Death overs failure</div>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">01</span><span class="section-title">Turning Points</span></div>
+    </div>
+    <div class="section-body">
+      <div class="tp-list">
+        
+        <div class="tp-item" onclick="toggleTP(this)">
+          <div class="tp-index">1</div>
+          <div class="tp-content">
+            <div class="tp-label">MI Middle-Overs Control</div>
+            <div class="tp-detail">MI held the middle overs with disciplined bowling and structured batting. The game looked theirs — phase control established across the innings' pivot phase.</div>
+          </div>
+        </div>
+        <div class="tp-item" onclick="toggleTP(this)">
+          <div class="tp-index">2</div>
+          <div class="tp-content">
+            <div class="tp-label">MI Death Overs Failure to Convert</div>
+            <div class="tp-detail">MI's death-overs execution collapsed. No set batter to anchor, no death-bowling plan to hold. A team that controls the middle but loses the death has done the hard work and discarded it.</div>
+          </div>
+        </div>
+        <div class="tp-item" onclick="toggleTP(this)">
+          <div class="tp-index">3</div>
+          <div class="tp-content">
+            <div class="tp-label">DC Middle-Overs Execution</div>
+            <div class="tp-detail">DC took control of the middle overs with precision execution. Their phase ownership set the chase parameters — MI's death collapse then made those parameters easily achievable.</div>
+          </div>
+        </div>
+      </div>
+      <div class="tp-expand-hint">Click any point to expand →</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">02</span><span class="section-title">Phase Control</span></div>
+      <div class="phase-toggle">
+        <button class="phase-toggle-btn active" onclick="switchPhaseView(this,'a')">MI View</button>
+        <button class="phase-toggle-btn" onclick="switchPhaseView(this,'b')">DC View</button>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="phase-grid">
+        
+        <div class="phase-card dominated" id="pp-card">
+          <div class="phase-name">Powerplay</div>
+          <div class="phase-controller" id="pp-ctrl">MI</div>
+          <div class="phase-verdict" id="pp-verd">Structured</div>
+          <div class="phase-note team-note visible" id="pp-note-a">MI set a decent powerplay platform. The phase was theirs — the question was whether middle-to-death execution would match.</div>
+          <div class="phase-note team-note" id="pp-note-b">DC conceded the powerplay. The game was MI's to control — but DC had a middle-overs plan ready.</div>
+        </div>
+        <div class="phase-card dominated" id="mid-card">
+          <div class="phase-name">Middle Overs</div>
+          <div class="phase-controller" id="mid-ctrl">DC</div>
+          <div class="phase-verdict" id="mid-verd">Decisive</div>
+          <div class="phase-note team-note visible" id="mid-note-a">DC's middle-overs execution was precise — controlled batting, disciplined bowling. The game turned here.</div>
+          <div class="phase-note team-note" id="mid-note-b">MI surrendered the middle overs despite a strong powerplay. A structural vulnerability exposed in the pivot phase.</div>
+        </div>
+        <div class="phase-card dominated" id="death-card">
+          <div class="phase-name">Death Overs</div>
+          <div class="phase-controller" id="death-ctrl">DC</div>
+          <div class="phase-verdict" id="death-verd">Completed</div>
+          <div class="phase-note team-note visible" id="death-note-a">DC completed the chase with control. Middle-overs platform translated directly into death-phase execution.</div>
+          <div class="phase-note team-note" id="death-note-b">MI's death overs collapsed under pressure. No set batter, no bowling plan — the phase was lost comprehensively.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">03</span><span class="section-title">Win Probability Shift</span></div>
+    </div>
+    <div class="section-body">
+      <div class="prob-label-row">
+        <span class="prob-team-label" style="color:var(--team-a)">← MI Ahead</span>
+        <span class="prob-team-label" style="color:var(--team-b)">DC Ahead →</span>
+      </div>
+      <div>
+        <div class="prob-track"><div class="prob-fill" id="prob-fill" style="width:50%"></div></div>
+        <div class="prob-nodes">
+          <div class="prob-node" onclick="activateNode(this)" data-fill="62" data-team="ahead-a" data-label="MI Powerplay Platform" data-detail="MI set a structured powerplay. The game looks theirs — platform established with intent.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">MI Powerplay Platform</div>
+          </div>
+          <div class="prob-node" onclick="activateNode(this)" data-fill="65" data-team="ahead-a" data-label="MI Middle Entry" data-detail="MI ahead entering the middle overs. The key phase — can MI hold the initiative they've built?">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">MI Middle Entry</div>
+          </div>
+          <div class="prob-node" onclick="activateNode(this)" data-fill="52" data-team="ahead-a" data-label="DC Middle Takeover" data-detail="DC take the middle overs. MI's phase control slips — the match begins to shift.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">DC Middle Takeover</div>
+          </div>
+          <div class="prob-node" onclick="activateNode(this)" data-fill="40" data-team="ahead-b" data-label="MI Death Collapse" data-detail="MI's death overs execution collapses. No set batter, no plan — the middle-overs shift accelerates into a death-phase defeat.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">MI Death Collapse</div>
+          </div>
+          <div class="prob-node" onclick="activateNode(this)" data-fill="30" data-team="ahead-b" data-label="DC Chase Launched" data-detail="DC enter the chase with middle-overs momentum. MI's total is achievable — the structure of their innings has set the terms.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">DC Chase Launched</div>
+          </div>
+          <div class="prob-node" onclick="activateNode(this)" data-fill="15" data-team="ahead-b" data-label="DC Chase Complete" data-detail="DC complete the chase with control. Middle-overs execution translated directly — MI never found a pressure phase in defence.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">DC Chase Complete</div>
+          </div></div>
+        <div class="prob-detail-box" id="prob-detail-box">
+          <div class="prob-detail-team" id="prob-detail-team"></div>
+          <div class="prob-detail-text" id="prob-detail-text"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">04</span><span class="section-title">Match Decider</span></div>
+    </div>
+    <div class="section-body">
+      <div class="decider-card">
+        <div class="decider-label">The moment that made the game</div>
+        <div class="decider-title">MI's Death Overs Collapse</div>
+        <div class="decider-body">MI controlled the middle overs but couldn't convert. Their death overs execution collapsed — no set batter, predictable bowling, no phase discipline in the final stretch. DC's middle-overs execution had already set the chase terms; MI's death made it easier.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">05</span><span class="section-title">Decision Insight</span></div>
+    </div>
+    <div class="section-body">
+      <div class="insight-card">
+        <div class="insight-label">Core analytical finding</div>
+        <div class="insight-text">Control without conversion is the most frustrating form of defeat. MI structured the game well through the middle and then let it unravel at the death. DC's execution in the middle overs set the chase terms — and MI's death-overs failure made those terms achievable.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">06</span><span class="section-title">Framework Insights</span></div>
+    </div>
+    <div class="section-body">
+      <div class="framework-grid">
+        <div class="fw-card">
+          <div class="fw-title">Middle-overs control without death execution is incomplete</div>
+          <div class="fw-body">MI owned the middle but not the death. Phase control is cumulative — losing the final phase negates prior work more than any other phase combination.</div>
+        </div>
+        <div class="fw-card">
+          <div class="fw-title">Set batter at the death is non-negotiable</div>
+          <div class="fw-body">MI's death collapse was partly structural — no batter positioned to anchor the final phase. Death-overs planning starts in the middle, not at over 16.</div>
+        </div>
+        <div class="fw-card">
+          <div class="fw-title">DC's middle precision set the chase terms</div>
+          <div class="fw-body">DC didn't just survive the middle overs — they dominated them. Their batting and bowling execution in the pivot phase determined what the chase would require.</div>
+        </div>
+        <div class="fw-card">
+          <div class="fw-title">Converting control is a distinct skill from acquiring it</div>
+          <div class="fw-body">MI demonstrated they can build control. The gap was in converting it — death-overs execution, bowling discipline, and phase continuity. Acquisition without conversion is insufficient.</div>
+        </div></div>
+    </div>
+  </div>
+
+</main>
+
+<div class="match-footer">
+  <div class="match-footer-inner">
+    <a class="footer-nav-link" href="match7_pbks-vs-csk.html">← Match 7: PBKS vs CSK</a>
+    <span class="footer-copy">© 2026 Jatin Bhutani</span>
+    <a class="footer-nav-link" href="match9_rr-vs-gt.html">Match 9: RR vs GT →</a>
+  </div>
+</div>
+
+<script>
+const PHASES_A = {"pp": {"ctrl": "MI", "cls": "dominated", "verd": "Structured"}, "mid": {"ctrl": "DC", "cls": "dominated", "verd": "Decisive"}, "death": {"ctrl": "DC", "cls": "dominated", "verd": "Completed"}};
+const PHASES_B = {"pp": {"ctrl": "DC", "cls": "lost", "verd": "Conceded"}, "mid": {"ctrl": "MI", "cls": "lost", "verd": "Surrendered"}, "death": {"ctrl": "MI", "cls": "lost", "verd": "Collapsed"}};
+
+function toggleTP(el){
+  const was=el.classList.contains('active');
+  document.querySelectorAll('.tp-item').forEach(i=>i.classList.remove('active'));
+  if(!was) el.classList.add('active');
+}
+
+function switchPhaseView(btn,team){
+  document.querySelectorAll('.phase-toggle-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const data = team==='a' ? PHASES_A : PHASES_B;
+  ['pp','mid','death'].forEach(ph=>{
+    const d=data[ph];
+    const card=document.getElementById(ph+'-card');
+    card.className='phase-card '+d.cls;
+    document.getElementById(ph+'-ctrl').textContent=d.ctrl;
+    document.getElementById(ph+'-verd').textContent=d.verd;
+    document.querySelectorAll('#'+ph+'-card .team-note').forEach(n=>n.classList.remove('visible'));
+    const noteEl=document.getElementById(ph+'-note-'+team);
+    if(noteEl) noteEl.classList.add('visible');
+  });
+}
+
+function activateNode(el){
+  document.querySelectorAll('.prob-node').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('prob-fill').style.width=el.dataset.fill+'%';
+  const t=document.getElementById('prob-detail-team');
+  t.className='prob-detail-team '+el.dataset.team;
+  t.textContent=el.dataset.label;
+  document.getElementById('prob-detail-text').textContent=el.dataset.detail;
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+  const first=document.querySelector('.prob-node');
+  if(first) activateNode(first);
+});
+</script>
 </body>
 </html>
