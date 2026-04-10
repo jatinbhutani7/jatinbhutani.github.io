@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Match 13 — RR vs MI · AI Decision System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#f7f5f1;--surface:#ffffff;--border:#e4e0d8;--border-2:#d0cbc0;
+    --text-primary:#1a1814;--text-secondary:#5a564e;--text-muted:#9a9690;
+    --accent:#8b6240;--accent-light:rgba(139,98,64,0.07);--accent-mid:rgba(139,98,64,0.14);
+    --green:#3d7a56;--green-light:rgba(61,122,86,0.09);
+    --red:#9a3d3d;--red-light:rgba(154,61,61,0.09);
+    --team-a:#E91E8C;--team-b:#003B71;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text-primary);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;}
+  .site-header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;}
+  .header-nav{max-width:900px;margin:auto;display:flex;align-items:center;padding:14px 0;gap:6px;}
+  .back-link{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .15s;}
+  .back-link:hover{color:var(--accent);}
+  .breadcrumb-sep{color:var(--border-2);font-size:12px;}
+  .breadcrumb-cur{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-secondary);}
+  .match-hero{background:var(--surface);border-bottom:1px solid var(--border);padding:40px 32px 36px;}
+  .match-hero-inner{max-width:900px;margin:auto;display:grid;grid-template-columns:1fr auto;gap:32px;align-items:start;}
+  .match-eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+  .match-title{font-family:'Cormorant',serif;font-size:clamp(28px,5vw,46px);font-weight:500;line-height:1.1;letter-spacing:-.01em;margin-bottom:12px;}
+  .match-title .team-a{color:var(--team-a);}.match-title .team-b{color:var(--team-b);}.match-title .sep{color:var(--border-2);font-style:italic;}
+  .match-meta{display:flex;gap:10px;flex-wrap:wrap;}
+  .meta-chip{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border:1px solid var(--border);color:var(--text-muted);border-radius:2px;}
+  .meta-chip.winner{border-color:rgba(61,122,86,.3);background:var(--green-light);color:var(--green);}
+  .meta-chip.reduced{border-color:rgba(139,98,64,.3);background:var(--accent-light);color:var(--accent);}
+  .result-card{text-align:center;min-width:130px;}
+  .result-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;}
+  .result-winner{font-family:'Cormorant',serif;font-size:32px;font-weight:600;color:var(--green);line-height:1;margin-bottom:4px;}
+  .result-sub{font-size:11px;color:var(--text-muted);font-weight:300;}
+  main{max-width:900px;margin:auto;padding:40px 32px 80px;display:flex;flex-direction:column;gap:2px;}
+  .section{background:var(--surface);border:1px solid var(--border);opacity:0;transform:translateY(10px);animation:reveal .4s ease forwards;}
+  .section:nth-child(1){animation-delay:.05s;}.section:nth-child(2){animation-delay:.10s;}
+  .section:nth-child(3){animation-delay:.15s;}.section:nth-child(4){animation-delay:.20s;}
+  .section:nth-child(5){animation-delay:.25s;}.section:nth-child(6){animation-delay:.30s;}
+  .section:nth-child(7){animation-delay:.35s;}
+  @keyframes reveal{to{opacity:1;transform:translateY(0);}}
+  .section-head{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .section-head-left{display:flex;align-items:center;gap:12px;}
+  .section-num{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;color:var(--border-2);}
+  .section-title{font-family:'Cormorant',serif;font-size:18px;font-weight:500;color:var(--text-primary);letter-spacing:-.01em;}
+  .section-body{padding:24px;}
+  .context-banner{background:var(--accent-light);border:1px solid var(--accent-mid);padding:12px 16px;margin-bottom:16px;font-size:12px;color:var(--text-secondary);font-weight:300;line-height:1.55;}
+  .context-banner strong{color:var(--accent);font-weight:500;}
+  .tp-list{display:flex;flex-direction:column;gap:2px;}
+  .tp-item{display:grid;grid-template-columns:32px 1fr;gap:0;border:1px solid var(--border);cursor:pointer;transition:border-color .15s;}
+  .tp-item:hover{border-color:var(--border-2);}.tp-item.active{border-color:var(--accent);}
+  .tp-index{display:flex;align-items:center;justify-content:center;background:var(--bg);border-right:1px solid var(--border);font-family:'Cormorant',serif;font-size:16px;font-weight:600;color:var(--border-2);transition:all .15s;}
+  .tp-item.active .tp-index{background:var(--accent-light);color:var(--accent);border-right-color:var(--accent);}
+  .tp-content{padding:14px 16px;}
+  .tp-label{font-size:12.5px;font-weight:500;color:var(--text-primary);margin-bottom:4px;}
+  .tp-detail{font-size:12px;color:var(--text-secondary);font-weight:300;line-height:1.55;display:none;padding-top:6px;border-top:1px solid var(--border);margin-top:4px;}
+  .tp-item.active .tp-detail{display:block;}
+  .tp-expand-hint{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin-top:12px;text-align:right;}
+  .phase-toggle{display:flex;gap:2px;}
+  .phase-toggle-btn{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;padding:4px 10px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;transition:all .15s;}
+  .phase-toggle-btn.active{background:var(--accent-light);border-color:var(--accent);color:var(--accent);}
+  .phase-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;}
+  .phase-card{border:1px solid var(--border);padding:18px 16px;transition:border-color .2s;}
+  .phase-card.dominated{border-color:rgba(61,122,86,.3);background:var(--green-light);}
+  .phase-card.lost{border-color:rgba(154,61,61,.3);background:var(--red-light);}
+  .phase-card.contested{border-color:var(--border-2);background:rgba(160,150,140,.05);}
+  .phase-name{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;}
+  .phase-sub{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);opacity:.7;margin-bottom:8px;}
+  .phase-controller{font-family:'Cormorant',serif;font-size:20px;font-weight:600;margin-bottom:6px;line-height:1;}
+  .phase-card.dominated .phase-controller{color:var(--green);}.phase-card.lost .phase-controller{color:var(--red);}.phase-card.contested .phase-controller{color:var(--text-muted);font-size:14px;}
+  .phase-verdict{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:2px 6px;border-radius:1px;display:inline-block;margin-bottom:8px;}
+  .phase-card.dominated .phase-verdict{background:var(--green-light);color:var(--green);border:1px solid rgba(61,122,86,.2);}
+  .phase-card.lost .phase-verdict{background:var(--red-light);color:var(--red);border:1px solid rgba(154,61,61,.2);}
+  .phase-card.contested .phase-verdict{background:var(--bg);color:var(--text-muted);border:1px solid var(--border);}
+  .phase-note{font-size:11.5px;color:var(--text-secondary);line-height:1.55;font-weight:300;}
+  .team-note{display:none;}.team-note.visible{display:block;}
+  .prob-label-row{display:flex;justify-content:space-between;margin-bottom:6px;}
+  .prob-team-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);}
+  .prob-track{position:relative;height:4px;background:var(--border);border-radius:2px;margin:16px 0 32px;}
+  .prob-fill{position:absolute;left:0;top:0;height:100%;background:var(--green);border-radius:2px;transition:width .6s ease;}
+  .prob-nodes{display:flex;justify-content:space-between;gap:2px;}
+  .prob-node{flex:1;cursor:pointer;position:relative;}
+  .prob-dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--border-2);background:var(--surface);margin:0 auto 8px;transition:all .15s;position:relative;top:-19px;}
+  .prob-node:hover .prob-dot,.prob-node.active .prob-dot{border-color:var(--accent);background:var(--accent);}
+  .prob-node-label{font-size:10.5px;color:var(--text-muted);text-align:center;line-height:1.4;transition:color .15s;font-weight:300;}
+  .prob-node.active .prob-node-label{color:var(--text-primary);font-weight:400;}
+  .prob-detail-box{background:var(--bg);border:1px solid var(--border);padding:14px 16px;margin-top:12px;min-height:52px;}
+  .prob-detail-team{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:4px;}
+  .ahead-a{color:var(--team-a);}.ahead-b{color:var(--team-b);}.ahead-both{color:var(--text-muted);}
+  .prob-detail-text{font-size:12.5px;color:var(--text-secondary);font-weight:300;line-height:1.55;}
+  .decider-card{background:var(--accent-light);border:1px solid var(--accent-mid);padding:20px 22px;}
+  .decider-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+  .decider-title{font-family:'Cormorant',serif;font-size:20px;font-weight:500;color:var(--text-primary);margin-bottom:8px;}
+  .decider-body{font-size:13px;color:var(--text-secondary);font-weight:300;line-height:1.65;}
+  .insight-card{border-left:3px solid var(--accent);padding:20px 22px;background:var(--surface);border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+  .insight-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+  .insight-text{font-family:'Cormorant',serif;font-size:19px;font-style:italic;color:var(--text-primary);line-height:1.55;font-weight:400;}
+  .fork-list{display:flex;flex-direction:column;gap:2px;}
+  .fork-card{border:1px solid var(--border);padding:0;}
+  .fork-header{padding:14px 18px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;transition:background .15s;}
+  .fork-header:hover{background:var(--bg);}
+  .fork-card.active .fork-header{background:var(--accent-light);border-bottom-color:var(--accent-mid);}
+  .fork-meta{display:flex;align-items:center;gap:10px;}
+  .fork-over{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;padding:2px 8px;border:1px solid var(--border);color:var(--text-muted);border-radius:1px;white-space:nowrap;}
+  .fork-card.active .fork-over{border-color:var(--accent);color:var(--accent);}
+  .fork-title{font-size:12.5px;font-weight:500;color:var(--text-primary);}
+  .fork-toggle-icon{font-size:14px;color:var(--text-muted);flex-shrink:0;transition:transform .15s;}
+  .fork-card.active .fork-toggle-icon{transform:rotate(45deg);color:var(--accent);}
+  .fork-body{display:none;padding:0 18px 18px;}
+  .fork-card.active .fork-body{display:block;}
+  .fork-row{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:14px;}
+  .fork-col{padding:14px 16px;border:1px solid var(--border);}
+  .fork-col.happened{background:var(--red-light);border-color:rgba(154,61,61,.25);}
+  .fork-col.alternative{background:var(--green-light);border-color:rgba(61,122,86,.25);}
+  .fork-col-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px;}
+  .fork-col.happened .fork-col-label{color:var(--red);}
+  .fork-col.alternative .fork-col-label{color:var(--green);}
+  .fork-col-text{font-size:12px;color:var(--text-secondary);font-weight:300;line-height:1.6;}
+  .fork-cost{margin-top:12px;padding:10px 14px;background:var(--bg);border:1px solid var(--border);font-size:12px;color:var(--text-muted);line-height:1.6;font-weight:300;}
+  .fork-cost strong{color:var(--text-secondary);font-weight:400;}
+  .framework-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;}
+  .fw-card{border:1px solid var(--border);padding:16px 18px;transition:border-color .15s;}
+  .fw-card:hover{border-color:var(--border-2);}
+  .fw-title{font-size:12.5px;font-weight:500;color:var(--text-primary);margin-bottom:5px;display:flex;align-items:flex-start;gap:8px;}
+  .fw-title::before{content:'→';color:var(--accent);flex-shrink:0;margin-top:1px;}
+  .fw-body{font-size:12px;color:var(--text-muted);font-weight:300;line-height:1.6;padding-left:18px;}
+  .match-footer{background:var(--surface);border-top:1px solid var(--border);padding:20px 32px;}
+  .match-footer-inner{max-width:900px;margin:auto;display:flex;justify-content:space-between;align-items:center;}
+  .footer-nav-link{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .15s;}
+  .footer-nav-link:hover{color:var(--accent);}
+  .footer-copy{font-family:'DM Mono',monospace;font-size:10px;color:var(--border-2);letter-spacing:.06em;}
+  @media(max-width:640px){
+    .match-hero-inner{grid-template-columns:1fr;}.result-card{text-align:left;}
+    .phase-grid,.framework-grid,.fork-row{grid-template-columns:1fr;}
+    main{padding:24px 18px 60px;}
+    .site-header,.match-hero,.match-footer{padding-left:18px;padding-right:18px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <div class="header-nav">
+    <a class="back-link" href="https://jatinbhutani7.github.io/ipl-system.html">← System Hub</a>
+    <span class="breadcrumb-sep">/</span>
+    <span class="breadcrumb-cur">Match 13 · RR vs MI</span>
+  </div>
+</div>
+
+<div class="match-hero">
+  <div class="match-hero-inner">
+    <div>
+      <div class="match-eyebrow">Match 13 · IPL 2026 · Phase Analysis + Counter Perspective</div>
+      <h1 class="match-title">
+        <span class="team-a">RR</span><span class="sep"> vs </span><span class="team-b">MI</span>
+      </h1>
+      <div class="match-meta">
+        <span class="meta-chip winner">RR Won</span>
+        <span class="meta-chip">Defending team won</span>
+        <span class="meta-chip reduced">Rain-reduced · 11 overs</span>
+        <span class="meta-chip">RR 150/3 · MI 123/9</span>
+      </div>
+    </div>
+    <div class="result-card">
+      <div class="result-label">Winner</div>
+      <div class="result-winner">RR</div>
+      <div class="result-sub">27 runs · Jaiswal 77* off 32</div>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <!-- 01 TURNING POINTS -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">01</span><span class="section-title">Turning Points</span></div>
+    </div>
+    <div class="section-body">
+      <div class="context-banner"><strong>Format context:</strong> Match reduced to 11 overs a side, powerplay truncated to 3.2 overs. In this format, the powerplay is the match — 3.2 overs set the entire structural direction. Standard analytical weights shift: the powerplay carries disproportionate leverage, and a single over of 22 runs has the same relative impact as 4 overs in a full match.</div>
+      <div class="tp-list">
+
+        <div class="tp-item" onclick="toggleTP(this)">
+          <div class="tp-index">1</div>
+          <div class="tp-content">
+            <div class="tp-label">Jaiswal–Sooryavanshi: 80 Runs in 4.6 Overs — Opening Partnership</div>
+            <div class="tp-detail">Chahar's first over went for 22 (Jaiswal smashed). Bumrah's second over: Sooryavanshi hit two sixes but was run out. Boult's third over went for 22. In a truncated powerplay of just 3.2 overs, RR reached 59/0. The opening stand of 80 in 4.6 overs — Jaiswal 77* off 32, Sooryavanshi 39 off 14 (SR 278) — was the match. In an 11-over game, an 80-run first-wicket partnership covering nearly half the innings is the structural foundation no bowling attack can recover from.</div>
+          </div>
+        </div>
+
+        <div class="tp-item" onclick="toggleTP(this)">
+          <div class="tp-index">2</div>
+          <div class="tp-content">
+            <div class="tp-label">Ghazanfar: 2/21 in 2 Overs — MI's Best Bowling Performance</div>
+            <div class="tp-detail">After the powerplay carnage, Ghazanfar was MI's only bowler to consistently contain and take wickets. He dismissed Jurel (lbw, skiddy delivery) and Parag (caught long-on) to finish 2/21. His economy of 10.50 was the best among the wicket-takers. Without Ghazanfar, RR could plausibly have reached 165+. Even his 21 runs across 2 overs had a disciplined structure — the only MI bowler who didn't concede boundary-heavy overs in the RR innings.</div>
+          </div>
+        </div>
+
+        <div class="tp-item" onclick="toggleTP(this)">
+          <div class="tp-index">3</div>
+          <div class="tp-content">
+            <div class="tp-label">MI's Powerplay Collapse: Three Wickets in 3.2 Overs — 30/3</div>
+            <div class="tp-detail">Archer got Rickelton (over 1, top edge, hard length around off). Burger deceived SKY with a change of pace (over 2, caught at deep backward square leg). Sandeep bowled Rohit (over 3, yorker on middle after Rohit pre-committed to a fine paddle). Three completely different dismissals — no single pattern — meaning MI's top order had no shared structural problem, just individual execution failures. Chasing 151 in 11 overs at 13.7 per over with 30/3 after the powerplay is not a cricket problem. It is a mathematical impossibility without a single extraordinary innings.</div>
+          </div>
+        </div>
+
+        <div class="tp-item" onclick="toggleTP(this)">
+          <div class="tp-index">4</div>
+          <div class="tp-content">
+            <div class="tp-label">Bishnoi Drops Rutherford — 25 off 8 at 312 SR Follows</div>
+            <div class="tp-detail">Bishnoi should have had Rutherford caught at long-off first ball — a straightforward chance that Jaiswal shelled running in. Rutherford was reprieved on 0 and went on to make 25 off 8 at a strike rate of 312 (back-to-back fours off Bishnoi, then Deshpande for a four and two sixes). The drop didn't change the match result — MI were already 46/5 when Rutherford came in — but the difference between 93 and 123 for MI's total is largely attributable to that dropped chance. In a shortened format, every dropped catch has amplified consequences.</div>
+          </div>
+        </div>
+
+        <div class="tp-item" onclick="toggleTP(this)">
+          <div class="tp-index">5</div>
+          <div class="tp-content">
+            <div class="tp-label">Sandeep Catches Rutherford Off Deshpande — MI's Last Hope Ends</div>
+            <div class="tp-detail">MI's only realistic path to a competitive total required Rutherford to bat through to over 11. Deshpande bowled a slower hard-length ball outside off; Rutherford slashed and got a thick outside edge. Sandeep at short third dived forward and took a catch millimetres off the ground. A remarkable piece of fielding that ended Rutherford's innings at 25 off 8 and MI's last productive batting resource. From 93/6, MI finished 123/9 — the final 30 runs came from the tail in a lost cause.</div>
+          </div>
+        </div>
+
+      </div>
+      <div class="tp-expand-hint">Click any point to expand →</div>
+    </div>
+  </div>
+
+  <!-- 02 PHASE CONTROL -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">02</span><span class="section-title">Phase Control</span></div>
+      <div class="phase-toggle">
+        <button class="phase-toggle-btn active" onclick="switchPhaseView(this,'a')">RR View</button>
+        <button class="phase-toggle-btn" onclick="switchPhaseView(this,'b')">MI View</button>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="phase-grid">
+
+        <div class="phase-card dominated" id="pp-card">
+          <div class="phase-name">Powerplay</div>
+          <div class="phase-sub">3.2 overs · truncated</div>
+          <div class="phase-controller" id="pp-ctrl">RR</div>
+          <div class="phase-verdict" id="pp-verd">Decisive</div>
+          <div class="phase-note team-note visible" id="pp-note-a">59/0 in 3.2 overs. Jaiswal and Sooryavanshi dismantled all three powerplay bowlers. In an 11-over format, this phase set the match's entire structural direction — RR's total was already beyond MI's realistic reach before the powerplay ended.</div>
+          <div class="phase-note team-note" id="pp-note-b">MI conceded 59/0 in the powerplay bowling — their worst possible outcome. Then, chasing, they lost 30/3. Both powerplay phases went to RR. When a team loses both powerplays in an 11-over game, the match is decided before the 4th over of either innings.</div>
+        </div>
+
+        <div class="phase-card dominated" id="mid-card">
+          <div class="phase-name">Middle Overs</div>
+          <div class="phase-sub">overs 4–8</div>
+          <div class="phase-controller" id="mid-ctrl">RR</div>
+          <div class="phase-verdict" id="mid-verd">Controlled</div>
+          <div class="phase-note team-note visible" id="mid-note-a">Ghazanfar took Jurel and Parag (2/21 in 2 overs) — MI fought back with wickets — but Jaiswal continued to score at 240+ SR and Parag added 20 off 10 before falling. RR reached 121/3 after 8.5 overs, comfortably on course. The middle overs reduced RR's eventual total but never threatened to reverse the match's direction.</div>
+          <div class="phase-note team-note" id="mid-note-b">MI's middle-over bowling was genuinely competitive — Ghazanfar's 2 wickets and economy were excellent. In the chase, Bishnoi's 2/25 reduced MI to 46/5. But Rutherford and Dhir then counter-attacked to reach 93/6 before Rutherford was caught. The middle phase was MI's best sustained moment of the match — too late and from too deep a position to matter.</div>
+        </div>
+
+        <div class="phase-card dominated" id="death-card">
+          <div class="phase-name">Death Overs</div>
+          <div class="phase-sub">overs 9–11</div>
+          <div class="phase-controller" id="death-ctrl">RR</div>
+          <div class="phase-verdict" id="death-verd">Completed</div>
+          <div class="phase-note team-note visible" id="death-note-a">Jaiswal finished 77* off 32, striking three fours off Thakur in the last over. Hetmyer (6 off 7) couldn't get going — but the total was already beyond MI. RR's death phase was uncontested because the match was structurally decided.</div>
+          <div class="phase-note team-note" id="death-note-b">MI's death overs in the chase — from 93/6 — were tail batting against an already-won match. 30 runs in 3 overs from 6 down was irrelevant. The margin of 27 runs flatters MI; without Rutherford's 25 off 8 and Dhir's 25, the loss would have been 50+.</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 WIN PROBABILITY -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">03</span><span class="section-title">Win Probability Shift</span></div>
+    </div>
+    <div class="section-body">
+      <div class="prob-label-row">
+        <span class="prob-team-label" style="color:var(--team-b)">← MI Ahead</span>
+        <span class="prob-team-label" style="color:var(--team-a)">RR Ahead →</span>
+      </div>
+      <div>
+        <div class="prob-track"><div class="prob-fill" id="prob-fill" style="width:52%"></div></div>
+        <div class="prob-nodes">
+
+          <div class="prob-node" onclick="activateNode(this)" data-fill="52" data-team="ahead-a" data-label="Toss — MI Choose to Bowl" data-detail="MI win the toss and bowl. An even start — neither team has a clear advantage yet. In shortened games, teams that choose to bowl often prefer to know the target. RR marginally ahead simply because their batting lineup suits powerplay formats.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">Toss<br>MI bowl</div>
+          </div>
+
+          <div class="prob-node" onclick="activateNode(this)" data-fill="72" data-team="ahead-a" data-label="RR 59/0 After Powerplay (3.2 Overs)" data-detail="RR reached 59/0 in the truncated 3.2-over powerplay. Jaiswal and Sooryavanshi have dismantled three MI bowlers. In an 11-over game, this powerplay start means RR are already well clear — a total of 140+ is near-certain.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">RR 59/0<br>powerplay</div>
+          </div>
+
+          <div class="prob-node" onclick="activateNode(this)" data-fill="84" data-team="ahead-a" data-label="RR 150/3 — Target Set" data-detail="RR post 150/3 — requiring MI to score at 13.7/over. Jaiswal unbeaten on 77 off 32. The target is above par for this format and ground. RR strongly favoured — MI need a flawless powerplay to have any chance.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">RR 150/3<br>set</div>
+          </div>
+
+          <div class="prob-node" onclick="activateNode(this)" data-fill="95" data-team="ahead-a" data-label="MI 30/3 After Powerplay — Top Three Gone" data-detail="Rickelton, SKY, Rohit — all out in the 3.2-over powerplay. MI need 121 from 7.4 overs at ~16 per over with their best three batters gone. This is effectively match over — only an extraordinary Hardik innings could change this, and he was next to fall.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">MI 30/3<br>powerplay</div>
+          </div>
+
+          <div class="prob-node" onclick="activateNode(this)" data-fill="97" data-team="ahead-a" data-label="MI 46/5 After 5 Overs — Bishnoi Takes Two" data-detail="Hardik caught Jaiswal at long-on, Tilak taken next ball by a wrong'un. MI are 46/5 after 5 overs, needing 105 from 6 overs at 17.5 per over. Five of MI's seven specialist batters are gone. Match completely decided.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">MI 46/5<br>5 overs</div>
+          </div>
+
+          <div class="prob-node" onclick="activateNode(this)" data-fill="99" data-team="ahead-a" data-label="Rutherford Out — MI 93/6 After 7.5 Overs" data-detail="Rutherford (25 off 8, SR 312) caught by Sandeep at short third off Deshpande — a diving low catch. MI's last batting resource gone. From 93/6, only tail remains. The final margin of 27 is respectful only because of Rutherford's extraordinary cameo.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">Rutherford<br>out 93/6</div>
+          </div>
+
+        </div>
+        <div class="prob-detail-box" id="prob-detail-box">
+          <div class="prob-detail-team ahead-a" id="prob-detail-team"></div>
+          <div class="prob-detail-text" id="prob-detail-text"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 MATCH DECIDER -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">04</span><span class="section-title">Match Decider</span></div>
+    </div>
+    <div class="section-body">
+      <div class="decider-card">
+        <div class="decider-label">The moment that made the game</div>
+        <div class="decider-title">The Powerplay — Both Innings, Both Directions</div>
+        <div class="decider-body">RR won the powerplay batting (59/0 in 3.2 overs). RR won the powerplay bowling (MI 30/3 in 3.2 overs). In an 11-over match, the powerplay is not one phase among three — it is the match's structural foundation. Winning both powerplays produced an 89-run aggregate swing before either team had bowled or batted half their allotment. No middle-overs recovery or death-overs acceleration can overcome that deficit in the remaining 7.4 overs at 13+ per over.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 05 DECISION INSIGHT -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">05</span><span class="section-title">Decision Insight</span></div>
+    </div>
+    <div class="section-body">
+      <div class="insight-card">
+        <div class="insight-label">Core analytical finding</div>
+        <div class="insight-text">In shortened formats, the powerplay is not a phase — it is the match compressed. The analytical framework of Powerplay / Middle / Death phases applies, but their relative weights shift fundamentally: 3.2 overs carry the leverage of 6 in a full game. Every team decision — toss, new-ball pairing, batting order, first-ball intent — must be evaluated against this compression.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 06 COUNTER-TEAM PERSPECTIVE -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">06</span><span class="section-title">Counter-Team Perspective</span></div>
+    </div>
+    <div class="section-body">
+      <p style="font-size:12.5px;color:var(--text-secondary);font-weight:300;line-height:1.65;margin-bottom:16px;">Where MI had genuine decision forks — moments where an available alternative existed — and what those alternatives would have required and cost.</p>
+      <div class="fork-list">
+
+        <div class="fork-card" id="fork1">
+          <div class="fork-header" onclick="toggleFork('fork1')">
+            <div>
+              <div class="fork-meta"><span class="fork-over">Over 1 · RR Batting</span></div>
+              <div class="fork-title" style="margin-top:6px;">Should Bumrah have opened the attack instead of Chahar, given wet ball conditions neutralised Chahar's primary weapon — swing?</div>
+            </div>
+            <div class="fork-toggle-icon">+</div>
+          </div>
+          <div class="fork-body">
+            <div style="font-size:12px;color:var(--text-secondary);font-weight:300;line-height:1.65;">Chahar's primary asset is swing — an outswinger that troubles top-order batters in the early overs. In a match that had been delayed by 3+ hours of rain, with the ball wet from the start, the conditions that make Chahar dangerous were absent. Bumrah's primary assets — pace, hard-length accuracy, yorker control — are not condition-dependent in the same way. The commentary itself noted: "Did MI err by not giving Trent Boult the new ball? He is here bowling the third over with the ball already wet." The same question applies to Chahar in over 1.</div>
+            <div class="fork-row">
+              <div class="fork-col happened">
+                <div class="fork-col-label">What Happened</div>
+                <div class="fork-col-text">Chahar opened with a wet ball, conceded 22 in 1 over — Jaiswal smashed a half-tracker for 4, a six over midwicket, a cut over point, a four over mid-off, and a cover drive. 22/0 after 1 over. Bumrah bowled 3 overs in total for 0/32 (economy 10.67) — his best economy was in the conditions that followed the powerplay, not the powerplay itself.</div>
+              </div>
+              <div class="fork-col alternative">
+                <div class="fork-col-label">The Available Alternative</div>
+                <div class="fork-col-text">Bumrah opening means Jaiswal faces him cold, in over 1, before settling. In these specific conditions — wet ball, night game, no swing — Bumrah's hard-length and pace is the most dangerous new-ball option MI had. Even if Bumrah concedes 12–14 in over 1, that is 8–10 fewer runs than Chahar conceded. In an 11-over match, 8 runs across one over changes the chase calculation materially.</div>
+              </div>
+            </div>
+            <div class="fork-cost"><strong>What it would have cost:</strong> Bumrah opened instead of Chahar means Chahar comes in later — against a more settled Jaiswal. Chahar's economy was 22 per over anyway; bowling him later does not obviously cost more. The trade is clear: MI's best bowler in the conditions MI were playing in should have had the new ball.</div>
+          </div>
+        </div>
+
+        <div class="fork-card" id="fork2" style="margin-top:2px;">
+          <div class="fork-header" onclick="toggleFork('fork2')">
+            <div>
+              <div class="fork-meta"><span class="fork-over">Over 3 · MI Batting</span></div>
+              <div class="fork-title" style="margin-top:6px;">Rohit pre-committed to a fine paddle against Sandeep — the bowler who had dismissed him five times before — and was bowled by a yorker on middle. Should he have trusted his natural game?</div>
+            </div>
+            <div class="fork-toggle-icon">+</div>
+          </div>
+          <div class="fork-body">
+            <div style="font-size:12px;color:var(--text-secondary);font-weight:300;line-height:1.65;">Rohit entered over 3 with MI already 22/2, chasing 151 in 11 overs at 13.7 per over. He played two dot balls — 83 SR from an opener who needed to be at 150+ from ball one — then attempted a fine paddle against Sandeep Sharma, who had dismissed him five times in 12 previous IPL innings. The paddle pre-commitment meant Rohit moved across his stumps early. Sandeep read it completely and nailed a yorker on middle. Rohit reviewed. Ball tracker: middle of middle.</div>
+            <div class="fork-row">
+              <div class="fork-col happened">
+                <div class="fork-col-label">What Happened</div>
+                <div class="fork-col-text">Rohit played 2 dot balls at 83 SR, then tried a fine paddle — an improvised shot against a bowler who has repeatedly dismissed him. He pre-committed and moved across his stumps. Sandeep recognised it immediately and bowled a yorker on middle. Plumb lbw. Rohit out for 5 off 6, MI 22/3. The chase was statistically over before Hardik faced his first ball.</div>
+              </div>
+              <div class="fork-col alternative">
+                <div class="fork-col-label">The Available Alternative</div>
+                <div class="fork-col-text">Against a bowler with a known history of dismissing you, the last thing to do is pre-commit to an unconventional shot. Rohit's natural game against pace — driving straight, pulling the short ball — is better suited to Sandeep's lengths than a paddle-sweep. Attacking intent from ball one through his natural arc would have been both more productive and less likely to be dismissed in this specific way. Sandeep cannot bowl a yorker every delivery.</div>
+              </div>
+            </div>
+            <div class="fork-cost"><strong>What this reveals:</strong> Rohit's dismissal wasn't unlucky — it was a predictable outcome of pre-committing against a bowler who knows exactly how to dismiss him. The fine paddle against a seamer bowling yorkers, with a wicketkeeper up to the stumps, requires near-perfect timing. Against Sandeep specifically, with 5 previous dismissals in the record, attempting an improvised shot is giving the bowler what he wants — the batter pre-moving before the ball is bowled.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 07 FRAMEWORK INSIGHTS -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">07</span><span class="section-title">Framework Insights</span></div>
+    </div>
+    <div class="section-body">
+      <div class="framework-grid">
+        <div class="fw-card">
+          <div class="fw-title">In shortened formats, the powerplay is the match — the other phases are consequence</div>
+          <div class="fw-body">59/0 batting and 30/3 bowling in 3.2-over powerplays produced a combined 89-run swing before over 4 of either innings. No team recovers from losing both powerplays in 11 overs. Standard phase analysis must recalibrate: powerplay weight in an 11-over game approximates 55% of total match leverage.</div>
+        </div>
+        <div class="fw-card">
+          <div class="fw-title">Bowler selection must account for conditions, not just capability</div>
+          <div class="fw-body">Chahar is a capable bowler. But in wet-ball conditions where swing is neutralised, his primary threat is removed. The selection decision — new ball pairing — must be conditional on the actual match environment, not the bowler's general profile. Bumrah's hard-length accuracy works in all conditions.</div>
+        </div>
+        <div class="fw-card">
+          <div class="fw-title">Prior dismissal patterns create exploitable pre-commitments</div>
+          <div class="fw-body">Sandeep had dismissed Rohit 5 times in 12 innings. Rohit pre-committed to a paddle — exactly the shot a bowler with that record would plan for. When a bowler has repeated success against a batter, the batter's adjustment must come before the shot, not after. Rohit's paddle attempt gave Sandeep the early information he needed.</div>
+        </div>
+        <div class="fw-card">
+          <div class="fw-title">Dropped catches in short formats have amplified financial cost</div>
+          <div class="fw-body">Jaiswal dropped Rutherford on 0; Rutherford made 25 off 8. In a full game, one dropped catch rarely defines the result. In 11 overs, a single batter scoring 25 off 8 represents a significant portion of the total innings — 20% of MI's total came from the drop. Short-format catching standards must be treated as execution-critical, not routine.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div class="match-footer">
+  <div class="match-footer-inner">
+    <a class="footer-nav-link" href="match11_rcb-vs-csk.html">← Match 11: RCB vs CSK</a>
+    <span class="footer-copy">© 2026 Jatin Bhutani</span>
+    <span></span>
+  </div>
+</div>
+
+<script>
+const PHASES_A={
+  pp:   {ctrl:"RR",cls:"dominated",verd:"Decisive"},
+  mid:  {ctrl:"RR",cls:"dominated",verd:"Controlled"},
+  death:{ctrl:"RR",cls:"dominated",verd:"Completed"}
+};
+const PHASES_B={
+  pp:   {ctrl:"RR",cls:"lost",verd:"Both Innings"},
+  mid:  {ctrl:"Contested",cls:"contested",verd:"MI Fought"},
+  death:{ctrl:"RR",cls:"lost",verd:"Irrelevant"}
+};
+function toggleTP(el){
+  const was=el.classList.contains('active');
+  document.querySelectorAll('.tp-item').forEach(i=>i.classList.remove('active'));
+  if(!was) el.classList.add('active');
+}
+function switchPhaseView(btn,team){
+  document.querySelectorAll('.phase-toggle-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const data=team==='a'?PHASES_A:PHASES_B;
+  ['pp','mid','death'].forEach(ph=>{
+    const d=data[ph];
+    const card=document.getElementById(ph+'-card');
+    card.className='phase-card '+d.cls;
+    document.getElementById(ph+'-ctrl').textContent=d.ctrl;
+    document.getElementById(ph+'-verd').textContent=d.verd;
+    document.querySelectorAll('#'+ph+'-card .team-note').forEach(n=>n.classList.remove('visible'));
+    const noteEl=document.getElementById(ph+'-note-'+team);
+    if(noteEl) noteEl.classList.add('visible');
+  });
+}
+function activateNode(el){
+  document.querySelectorAll('.prob-node').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('prob-fill').style.width=el.dataset.fill+'%';
+  const t=document.getElementById('prob-detail-team');
+  t.className='prob-detail-team '+el.dataset.team;
+  t.textContent=el.dataset.label;
+  document.getElementById('prob-detail-text').textContent=el.dataset.detail;
+}
+function toggleFork(id){
+  const card=document.getElementById(id);
+  const was=card.classList.contains('active');
+  document.querySelectorAll('.fork-card').forEach(c=>c.classList.remove('active'));
+  if(!was) card.classList.add('active');
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  const first=document.querySelector('.prob-node');
+  if(first) activateNode(first);
+});
+</script>
+</body>
+</html>
