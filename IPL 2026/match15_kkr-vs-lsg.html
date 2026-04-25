@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Match 15 — KKR vs LSG · AI Decision System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#f7f5f1;--surface:#ffffff;--border:#e4e0d8;--border-2:#d0cbc0;
+    --text-primary:#1a1814;--text-secondary:#5a564e;--text-muted:#9a9690;
+    --accent:#8b6240;--accent-light:rgba(139,98,64,0.07);--accent-mid:rgba(139,98,64,0.14);
+    --green:#3d7a56;--green-light:rgba(61,122,86,0.09);
+    --red:#9a3d3d;--red-light:rgba(154,61,61,0.09);
+    --team-a:#3B1D8F;--team-b:#004C99;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text-primary);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;}
+  .site-header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;}
+  .header-nav{max-width:900px;margin:auto;display:flex;align-items:center;padding:14px 0;gap:6px;}
+  .back-link{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .15s;}
+  .back-link:hover{color:var(--accent);}
+  .breadcrumb-sep{color:var(--border-2);font-size:12px;}
+  .breadcrumb-cur{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-secondary);}
+  .match-hero{background:var(--surface);border-bottom:1px solid var(--border);padding:40px 32px 36px;}
+  .match-hero-inner{max-width:900px;margin:auto;display:grid;grid-template-columns:1fr auto;gap:32px;align-items:start;}
+  .match-eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+  .match-title{font-family:'Cormorant',serif;font-size:clamp(28px,5vw,46px);font-weight:500;line-height:1.1;letter-spacing:-.01em;margin-bottom:12px;}
+  .match-title .team-a{color:var(--team-a);}.match-title .team-b{color:var(--team-b);}.match-title .sep{color:var(--border-2);font-style:italic;}
+  .match-meta{display:flex;gap:10px;flex-wrap:wrap;}
+  .meta-chip{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border:1px solid var(--border);color:var(--text-muted);border-radius:2px;}
+  .meta-chip.winner{border-color:rgba(61,122,86,.3);background:var(--green-light);color:var(--green);}
+  .meta-chip.thriller{border-color:rgba(139,98,64,.3);background:var(--accent-light);color:var(--accent);}
+  .result-card{text-align:center;min-width:130px;}
+  .result-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;}
+  .result-winner{font-family:'Cormorant',serif;font-size:32px;font-weight:600;color:var(--green);line-height:1;margin-bottom:4px;}
+  .result-sub{font-size:11px;color:var(--text-muted);font-weight:300;}
+  main{max-width:900px;margin:auto;padding:40px 32px 80px;display:flex;flex-direction:column;gap:2px;}
+  .section{background:var(--surface);border:1px solid var(--border);opacity:0;transform:translateY(10px);animation:reveal .4s ease forwards;}
+  .section:nth-child(1){animation-delay:.05s;}.section:nth-child(2){animation-delay:.10s;}
+  .section:nth-child(3){animation-delay:.15s;}.section:nth-child(4){animation-delay:.20s;}
+  .section:nth-child(5){animation-delay:.25s;}.section:nth-child(6){animation-delay:.30s;}
+  .section:nth-child(7){animation-delay:.35s;}
+  @keyframes reveal{to{opacity:1;transform:translateY(0);}}
+  .section-head{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .section-head-left{display:flex;align-items:center;gap:12px;}
+  .section-num{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;color:var(--border-2);}
+  .section-title{font-family:'Cormorant',serif;font-size:18px;font-weight:500;color:var(--text-primary);letter-spacing:-.01em;}
+  .section-body{padding:24px;}
+  .tp-list{display:flex;flex-direction:column;gap:2px;}
+  .tp-item{display:grid;grid-template-columns:32px 1fr;gap:0;border:1px solid var(--border);cursor:pointer;transition:border-color .15s;}
+  .tp-item:hover{border-color:var(--border-2);}.tp-item.active{border-color:var(--accent);}
+  .tp-index{display:flex;align-items:center;justify-content:center;background:var(--bg);border-right:1px solid var(--border);font-family:'Cormorant',serif;font-size:16px;font-weight:600;color:var(--border-2);transition:all .15s;}
+  .tp-item.active .tp-index{background:var(--accent-light);color:var(--accent);border-right-color:var(--accent);}
+  .tp-content{padding:14px 16px;}
+  .tp-label{font-size:12.5px;font-weight:500;color:var(--text-primary);margin-bottom:4px;}
+  .tp-detail{font-size:12px;color:var(--text-secondary);font-weight:300;line-height:1.55;display:none;padding-top:6px;border-top:1px solid var(--border);margin-top:4px;}
+  .tp-item.active .tp-detail{display:block;}
+  .tp-expand-hint{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin-top:12px;text-align:right;}
+  .phase-toggle{display:flex;gap:2px;}
+  .phase-toggle-btn{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;padding:4px 10px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;transition:all .15s;}
+  .phase-toggle-btn.active{background:var(--accent-light);border-color:var(--accent);color:var(--accent);}
+  .phase-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;}
+  .phase-card{border:1px solid var(--border);padding:18px 16px;}
+  .phase-card.dominated{border-color:rgba(61,122,86,.3);background:var(--green-light);}
+  .phase-card.lost{border-color:rgba(154,61,61,.3);background:var(--red-light);}
+  .phase-card.contested{border-color:var(--border-2);background:rgba(160,150,140,.05);}
+  .phase-name{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;}
+  .phase-controller{font-family:'Cormorant',serif;font-size:20px;font-weight:600;margin-bottom:6px;line-height:1;}
+  .phase-card.dominated .phase-controller{color:var(--green);}
+  .phase-card.lost .phase-controller{color:var(--red);}
+  .phase-card.contested .phase-controller{color:var(--text-muted);font-size:14px;}
+  .phase-verdict{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:2px 6px;border-radius:1px;display:inline-block;margin-bottom:8px;}
+  .phase-card.dominated .phase-verdict{background:var(--green-light);color:var(--green);border:1px solid rgba(61,122,86,.2);}
+  .phase-card.lost .phase-verdict{background:var(--red-light);color:var(--red);border:1px solid rgba(154,61,61,.2);}
+  .phase-card.contested .phase-verdict{background:var(--bg);color:var(--text-muted);border:1px solid var(--border);}
+  .phase-note{font-size:11.5px;color:var(--text-secondary);line-height:1.55;font-weight:300;}
+  .team-note{display:none;}.team-note.visible{display:block;}
+  .prob-label-row{display:flex;justify-content:space-between;margin-bottom:6px;}
+  .prob-team-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);}
+  .prob-track{position:relative;height:4px;background:var(--border);border-radius:2px;margin:16px 0 32px;}
+  .prob-fill{position:absolute;left:0;top:0;height:100%;background:var(--green);border-radius:2px;transition:width .6s ease;}
+  .prob-nodes{display:flex;justify-content:space-between;gap:2px;}
+  .prob-node{flex:1;cursor:pointer;position:relative;}
+  .prob-dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--border-2);background:var(--surface);margin:0 auto 8px;transition:all .15s;position:relative;top:-19px;}
+  .prob-node:hover .prob-dot,.prob-node.active .prob-dot{border-color:var(--accent);background:var(--accent);}
+  .prob-node-label{font-size:10.5px;color:var(--text-muted);text-align:center;line-height:1.4;transition:color .15s;font-weight:300;}
+  .prob-node.active .prob-node-label{color:var(--text-primary);font-weight:400;}
+  .prob-detail-box{background:var(--bg);border:1px solid var(--border);padding:14px 16px;margin-top:12px;min-height:52px;}
+  .prob-detail-team{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:4px;}
+  .ahead-a{color:var(--team-a);}.ahead-b{color:var(--team-b);}.ahead-both{color:var(--text-muted);}
+  .prob-detail-text{font-size:12.5px;color:var(--text-secondary);font-weight:300;line-height:1.55;}
+  .decider-card{background:var(--accent-light);border:1px solid var(--accent-mid);padding:20px 22px;}
+  .decider-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+  .decider-title{font-family:'Cormorant',serif;font-size:20px;font-weight:500;color:var(--text-primary);margin-bottom:8px;}
+  .decider-body{font-size:13px;color:var(--text-secondary);font-weight:300;line-height:1.65;}
+  .insight-card{border-left:3px solid var(--accent);padding:20px 22px;background:var(--surface);border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+  .insight-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+  .insight-text{font-family:'Cormorant',serif;font-size:19px;font-style:italic;color:var(--text-primary);line-height:1.55;font-weight:400;}
+  .fork-list{display:flex;flex-direction:column;gap:2px;}
+  .fork-card{border:1px solid var(--border);padding:0;}
+  .fork-header{padding:14px 18px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;transition:background .15s;}
+  .fork-header:hover{background:var(--bg);}
+  .fork-card.active .fork-header{background:var(--accent-light);border-bottom-color:var(--accent-mid);}
+  .fork-meta{display:flex;align-items:center;gap:10px;}
+  .fork-over{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;padding:2px 8px;border:1px solid var(--border);color:var(--text-muted);border-radius:1px;white-space:nowrap;}
+  .fork-card.active .fork-over{border-color:var(--accent);color:var(--accent);}
+  .fork-title{font-size:12.5px;font-weight:500;color:var(--text-primary);}
+  .fork-toggle-icon{font-size:14px;color:var(--text-muted);flex-shrink:0;transition:transform .15s;}
+  .fork-card.active .fork-toggle-icon{transform:rotate(45deg);color:var(--accent);}
+  .fork-body{display:none;padding:0 18px 18px;}
+  .fork-card.active .fork-body{display:block;}
+  .fork-row{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:14px;}
+  .fork-col{padding:14px 16px;border:1px solid var(--border);}
+  .fork-col.happened{background:var(--red-light);border-color:rgba(154,61,61,.25);}
+  .fork-col.alternative{background:var(--green-light);border-color:rgba(61,122,86,.25);}
+  .fork-col-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px;}
+  .fork-col.happened .fork-col-label{color:var(--red);}
+  .fork-col.alternative .fork-col-label{color:var(--green);}
+  .fork-col-text{font-size:12px;color:var(--text-secondary);font-weight:300;line-height:1.6;}
+  .fork-cost{margin-top:12px;padding:10px 14px;background:var(--bg);border:1px solid var(--border);font-size:12px;color:var(--text-muted);line-height:1.6;font-weight:300;}
+  .fork-cost strong{color:var(--text-secondary);font-weight:400;}
+  .framework-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;}
+  .fw-card{border:1px solid var(--border);padding:16px 18px;transition:border-color .15s;}
+  .fw-card:hover{border-color:var(--border-2);}
+  .fw-title{font-size:12.5px;font-weight:500;color:var(--text-primary);margin-bottom:5px;display:flex;align-items:flex-start;gap:8px;}
+  .fw-title::before{content:'→';color:var(--accent);flex-shrink:0;margin-top:1px;}
+  .fw-body{font-size:12px;color:var(--text-muted);font-weight:300;line-height:1.6;padding-left:18px;}
+  .match-footer{background:var(--surface);border-top:1px solid var(--border);padding:20px 32px;}
+  .match-footer-inner{max-width:900px;margin:auto;display:flex;justify-content:space-between;align-items:center;}
+  .footer-nav-link{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .15s;}
+  .footer-nav-link:hover{color:var(--accent);}
+  .footer-copy{font-family:'DM Mono',monospace;font-size:10px;color:var(--border-2);letter-spacing:.06em;}
+  @media(max-width:640px){
+    .match-hero-inner{grid-template-columns:1fr;}.result-card{text-align:left;}
+    .phase-grid,.framework-grid,.fork-row{grid-template-columns:1fr;}
+    main{padding:24px 18px 60px;}
+    .site-header,.match-hero,.match-footer{padding-left:18px;padding-right:18px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <div class="header-nav">
+    <a class="back-link" href="https://jatinbhutani7.github.io/ipl-system.html">← System Hub</a>
+    <span class="breadcrumb-sep">/</span>
+    <span class="breadcrumb-cur">Match 15 · KKR vs LSG</span>
+  </div>
+</div>
+
+<div class="match-hero">
+  <div class="match-hero-inner">
+    <div>
+      <div class="match-eyebrow">Match 15 · IPL 2026 · Phase Analysis + Counter Perspective</div>
+      <h1 class="match-title">
+        <span class="team-a">KKR</span><span class="sep"> vs </span><span class="team-b">LSG</span>
+      </h1>
+      <div class="match-meta">
+        <span class="meta-chip winner">LSG Won</span>
+        <span class="meta-chip">Chasing team won</span>
+        <span class="meta-chip thriller">Last-ball thriller</span>
+        <span class="meta-chip">KKR 181/4 · LSG 182/7</span>
+      </div>
+    </div>
+    <div class="result-card">
+      <div class="result-label">Winner</div>
+      <div class="result-winner">LSG</div>
+      <div class="result-sub">3 wickets · Choudhary 54* off 27</div>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <!-- 01 TURNING POINTS -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">01</span><span class="section-title">Turning Points</span></div>
+    </div>
+    <div class="section-body">
+      <div class="tp-list">
+
+        <div class="tp-item" onclick="toggleTP(this)">
+          <div class="tp-index">1</div>
+          <div class="tp-content">
+            <div class="tp-label">Rahane–Raghuvanshi: 84-Run Stand, Then Both Fall in 12 Balls</div>
+            <div class="tp-detail">KKR's second-wicket partnership of 84 runs in 52 balls (Rahane 41 off 24, Raghuvanshi 45 off 33) was the platform their innings needed. But the manner of their dismissals in quick succession defined the match's middle phase. Rahane dragged a Rathi delivery to midwicket — playing against the turn against a legspinner — and was caught by Shami for 41. Then Raghuvanshi advanced against Siddharth and was caught at long-on by Markram. KKR went from 99/1 to 105/3 in two overs. At 99/1 after 10, a total of 200+ was possible. The structural collapse that followed — Rinku adding only 4 off several balls before being bowled — left KKR's middle-overs run rate stalled at the exact moment the innings needed to press — Green struggling against spin and Rinku unable to get going.</div>
+          </div>
+        </div>
+
+        <div class="tp-item" onclick="toggleTP(this)">
+          <div class="tp-index">2</div>
+          <div class="tp-content">
+            <div class="tp-label">Arora's Double Strike — Markram and Marsh in the Same Over</div>
+            <div class="tp-detail">KKR's Vaibhav Arora (Impact Player) removed both LSG openers in over 4 (4.1 and 4.3). Markram miscued a drive to Powell at 41/1; Marsh got the faintest of gloves down leg — so faint the keeper had to come around — and was caught at 42/2. Two very different dismissals, two balls apart. LSG had been on 31/0 after 3 overs and building with intent. The double-wicket over immediately swung momentum to KKR and put Pant under pressure entering an innings that required him to rebuild rather than accelerate.</div>
+          </div>
+        </div>
+
+        <div class="tp-item" onclick="toggleTP(this)">
+          <div class="tp-index">3</div>
+          <div class="tp-content">
+            <div class="tp-label">KKR's Spin Choke: LSG 42/2 to 128/7 in 70 Balls</div>
+            <div class="tp-detail">The match's defining phase. After KKR's Arora removed both openers, KKR's spinners took complete control. Green dismissed Pant (73/3, top-edged hook), Tyagi got Pooran (95/4), Roy bowled Samad (104/5) and caught Badoni via Rinku at long-off (125/6), Narine had Shami sweeping to the deep (128/7). Six wickets in 70 balls — the most sustained middle-overs bowling phase in this 15-match dataset. At 128/7 needing 54 from 4 overs, no team recovers from this position. Except Choudhary hadn't batted yet.</div>
+          </div>
+        </div>
+
+        <div class="tp-item" onclick="toggleTP(this)">
+          <div class="tp-index">4</div>
+          <div class="tp-content">
+            <div class="tp-label">Choudhary: 54* off 27, 7 Sixes — From 104/5 to Win</div>
+            <div class="tp-detail">Mukul Choudhary entered at 104/5 with LSG needing 78 off 8 overs. What followed is the most statistically extraordinary lower-order innings in this dataset — 54 off 27 with 7 sixes, including 53 runs in the last 5 overs alone (only Pollard in 2013 has scored more at the death in a successful IPL chase). His helicopter six over long-on off Tyagi, described as reminiscent of Dhoni by du Plessis on commentary. A 6,4,6 sequence off Green in over 19 turned a needing-30-off-2 situation into needing-14-off-1. First-ever 50+ at this position in a successful run chase by an LSG batter.</div>
+          </div>
+        </div>
+
+        <div class="tp-item" onclick="toggleTP(this)">
+          <div class="tp-index">5</div>
+          <div class="tp-content">
+            <div class="tp-label">Green Bowls Over 19 — Hit for 6,4,6 — Match Flipped</div>
+            <div class="tp-detail">Cameron Green had not bowled a single ball in IPL 2026 before this match. KKR gave him the 19th over of a tense chase, with Choudhary in full flow needing 32 off 12. Choudhary hit him for 6 (helicopter over long-on), 4, then 6 — 18 runs off the over. LSG now needed 14 off the last instead of a near-impossible 30+. Green's bowling had been anticipated throughout the tournament but its first use came at the highest-pressure moment. Dale Steyn and Aaron Finch publicly criticised the decision post-match.</div>
+          </div>
+        </div>
+
+        <div class="tp-item" onclick="toggleTP(this)">
+          <div class="tp-index">6</div>
+          <div class="tp-content">
+            <div class="tp-label">Last Ball: Choudhary Misses, Scampers Leg-Bye — Raghuvanshi's Throw Misses</div>
+            <div class="tp-detail">14 needed off Arora's final over. Choudhary got to 7 off 4 balls (one six, one wide yorker scythed over point). With 1 needed off 1 ball: Arora bowled a slower bouncer, Choudhary swung and missed, both batters sprinted. Avesh scrambled through for a leg-bye. Raghuvanshi's throw to the striker's end missed. LSG won by 3 wickets. The last-ball miss is an execution failure — Raghuvanshi took a split second extra to line up his throw. The structural position (1 needed off 1 for LSG with 3 wickets down including Green having bowled an 18-run over) was entirely of KKR's making.</div>
+          </div>
+        </div>
+
+      </div>
+      <div class="tp-expand-hint">Click any point to expand →</div>
+    </div>
+  </div>
+
+  <!-- 02 PHASE CONTROL -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">02</span><span class="section-title">Phase Control</span></div>
+      <div class="phase-toggle">
+        <button class="phase-toggle-btn active" onclick="switchPhaseView(this,'a')">KKR View</button>
+        <button class="phase-toggle-btn" onclick="switchPhaseView(this,'b')">LSG View</button>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="phase-grid">
+
+        <div class="phase-card contested" id="pp-card">
+          <div class="phase-name">Powerplay</div>
+          <div class="phase-controller" id="pp-ctrl">Contested</div>
+          <div class="phase-verdict" id="pp-verd">Both Innings</div>
+          <div class="phase-note team-note visible" id="pp-note-a">KKR reached 56/1 — Rahane 23, Raghuvanshi 20, platform intact. Not dominant but solid. LSG's bowlers (Prince Yadav getting Allen, Shami threatening) kept a lid without seizing the phase. The powerplay set up the middle-overs battle — it didn't decide it.</div>
+          <div class="phase-note team-note" id="pp-note-b">LSG were 42/2 after Arora's double strike in over 4 — having been 31/0 after 3. A rapid swing within the powerplay. KKR dominated LSG's batting powerplay. But LSG's bowling powerplay was only contested — KKR scored 56 without losing rhythm. Both teams entered the middle overs on uncertain footing.</div>
+        </div>
+
+        <div class="phase-card dominated" id="mid-card">
+          <div class="phase-name">Middle Overs</div>
+          <div class="phase-controller" id="mid-ctrl">KKR</div>
+          <div class="phase-verdict" id="mid-verd">Spin Choke</div>
+          <div class="phase-note team-note visible" id="mid-note-a">KKR's spin combination (Rathi 1/25 bowling KKR, then Roy 2/32 and Narine in the chase) was exceptional. LSG went from 42/2 to 128/7 — 6 wickets in 70 balls in the chase. KKR's batting middle was weaker: Rahane and Raghuvanshi fell to the spinners (105/3 from 99/1), leaving Powell and Green to rebuild from too deep a position.</div>
+          <div class="phase-note team-note" id="mid-note-b">LSG's spin-bowling plan for KKR's middle — Rathi and Siddharth — was effective (both took wickets, held the rate). But in LSG's own middle-overs batting, the spin choke was total. Green, Tyagi, Roy, and Narine each took wickets. Choudhary arriving at 104/5 with 78 needed in 8 overs is a middle-overs failure — yet he erased it entirely.</div>
+        </div>
+
+        <div class="phase-card lost" id="death-card">
+          <div class="phase-name">Death Overs</div>
+          <div class="phase-controller" id="death-ctrl">LSG</div>
+          <div class="phase-verdict" id="death-verd">Choudhary Win</div>
+          <div class="phase-note team-note visible" id="death-note-a">KKR's death bowling collapsed. Green over 19 went for 18 — a first-timer given the highest-pressure over of the match. Arora over 20 nearly held (14 needed, 12 scored), but a missed throw on the last ball sealed it. KKR's death bowling was the only phase they failed to control — and it was the last phase, so it negated everything prior.</div>
+          <div class="phase-note team-note" id="death-note-b">LSG's batting death was entirely Choudhary. Without him, this phase doesn't exist as a contest. Choudhary's 53 runs in the last 5 overs of a successful chase has historical precedent only in Pollard (2013) and de Villiers (2014). LSG's bowling death in KKR's innings was equally sharp — Powell and Green's 70-run stand was contained at the cost of Arora's last over.</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 WIN PROBABILITY -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">03</span><span class="section-title">Win Probability Shift</span></div>
+    </div>
+    <div class="section-body">
+      <div class="prob-label-row">
+        <span class="prob-team-label" style="color:var(--team-a)">← KKR Ahead</span>
+        <span class="prob-team-label" style="color:var(--team-b)">LSG Ahead →</span>
+      </div>
+      <div>
+        <div class="prob-track"><div class="prob-fill" id="prob-fill" style="width:48%"></div></div>
+        <div class="prob-nodes">
+
+          <div class="prob-node" onclick="activateNode(this)" data-fill="48" data-team="ahead-both" data-label="Toss — LSG Choose to Bowl" data-detail="LSG win the toss and bowl. Evenly matched at the start — KKR's batting lineup with Rahane, Raghuvanshi, Powell is competitive. LSG's bowling attack with Shami, Prince Yadav, and Arora is among the tournament's strongest. Match truly 50-50.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">Toss<br>LSG bowl</div>
+          </div>
+
+          <div class="prob-node" onclick="activateNode(this)" data-fill="55" data-team="ahead-a" data-label="KKR 99/1 After 10 Overs — Platform Built" data-detail="Rahane and Raghuvanshi have built an 84-run second-wicket stand. KKR on 99/1 after 10 — a 200+ total looks probable. KKR slight favourites — two set batters, Powell and Green to come. But both are about to fall within 12 balls.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">KKR 99/1<br>10 overs</div>
+          </div>
+
+          <div class="prob-node" onclick="activateNode(this)" data-fill="60" data-team="ahead-a" data-label="KKR 181/4 — Target Set" data-detail="KKR post 181 — Powell (39*) and Green (32*) rescued with 70 in 6 overs from 112/4. A competitive total but not a dominant one. LSG have the batting firepower to chase this at Eden Gardens. KKR marginally ahead.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">KKR 181/4<br>set</div>
+          </div>
+
+          <div class="prob-node" onclick="activateNode(this)" data-fill="72" data-team="ahead-a" data-label="LSG 42/2 After Arora's Double Strike" data-detail="Markram and Marsh both gone in the same over — 42/2 after 4.3 overs. KKR have broken LSG's opening partnership before it could build. Pant at 3 must rebuild, not accelerate. KKR now clear favourites to defend 181.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">LSG 42/2<br>powerplay</div>
+          </div>
+
+          <div class="prob-node" onclick="activateNode(this)" data-fill="88" data-team="ahead-a" data-label="LSG 128/7 After Over 16 — Spin Choke Complete" data-detail="Six wickets in 70 balls. LSG need 54 from 4 overs with their last recognised pair (Choudhary + Avesh) at the crease. KKR overwhelmingly favoured — historically, no team recovers from this position in an IPL chase. But Choudhary had other ideas.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">LSG 128/7<br>16 overs</div>
+          </div>
+
+          <div class="prob-node" onclick="activateNode(this)" data-fill="65" data-team="ahead-a" data-label="Green Over 19 Goes for 18 — Match Wide Open" data-detail="Choudhary hit Green for 6,4,6 in over 19 — LSG need 14 off the last. From 54 needed in 4 overs, the chase has become realistic in a single over. KKR still slight favourites to defend 14 — but Choudhary is on 40+ and in full flow.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">Over 19<br>Green 18</div>
+          </div>
+
+          <div class="prob-node" onclick="activateNode(this)" data-fill="52" data-team="ahead-b" data-label="Last Ball — 1 Needed, Slower Bouncer, Missed Throw" data-detail="Choudhary missed Arora's slower bouncer off the last ball. Both batters ran. Avesh scrambled through for a leg-bye. Raghuvanshi's throw to the striker's end missed. LSG win by 3 wickets off the last ball. The last-ball execution decided what the entire match's phases had set up.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">Last ball<br>leg-bye</div>
+          </div>
+
+        </div>
+        <div class="prob-detail-box" id="prob-detail-box">
+          <div class="prob-detail-team ahead-both" id="prob-detail-team"></div>
+          <div class="prob-detail-text" id="prob-detail-text"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 MATCH DECIDER -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">04</span><span class="section-title">Match Decider</span></div>
+    </div>
+    <div class="section-body">
+      <div class="decider-card">
+        <div class="decider-label">The moment that made the game</div>
+        <div class="decider-title">Green Bowling Over 19 — A First-Timer in the Highest-Pressure Moment</div>
+        <div class="decider-body">KKR needed to defend 32 off 12 balls with Choudhary in full flow. They gave the 19th over to Cameron Green — making his first IPL bowling appearance of the season, having not bowled a single delivery across three previous matches. Choudhary hit him for 6, 4, 6. Eighteen runs off one over swung the match from near-impossible to genuinely alive. Without it, LSG needed 30 off 6 balls — statistically, the match was over. With it, they needed 14 off 6, with Choudhary on strike. The decision to bowl Green there is the clearest bowling selection failure in this 15-match dataset.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 05 DECISION INSIGHT -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">05</span><span class="section-title">Decision Insight</span></div>
+    </div>
+    <div class="section-body">
+      <div class="insight-card">
+        <div class="insight-label">Core analytical finding</div>
+        <div class="insight-text">KKR dominated every phase of this match — powerplay batting, middle-overs bowling, innings total — and still lost. The reason is not close: a single bowling decision in over 19 erased the platform built across 18 overs. This is the system's clearest evidence yet that death-phase execution can negate all prior phase control. KKR's 0 wins in 4 games cannot be attributed to poor planning; it is being attributed to execution failures at the phases that decide close games.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 06 COUNTER-TEAM PERSPECTIVE -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">06</span><span class="section-title">Counter-Team Perspective</span></div>
+    </div>
+    <div class="section-body">
+      <p style="font-size:12.5px;color:var(--text-secondary);font-weight:300;line-height:1.65;margin-bottom:16px;">Where KKR had genuine decision forks — and what the alternatives would have required.</p>
+      <div class="fork-list">
+
+        <div class="fork-card" id="fork1">
+          <div class="fork-header" onclick="toggleFork('fork1')">
+            <div>
+              <div class="fork-meta"><span class="fork-over">Over 19 · LSG Chase</span></div>
+              <div class="fork-title" style="margin-top:6px;">KKR gave Green the 19th over — his first IPL bowling spell of the season — with Choudhary in full flow needing 32 off 12. He conceded 18. The decision was criticised publicly by Dale Steyn and Aaron Finch.</div>
+            </div>
+            <div class="fork-toggle-icon">+</div>
+          </div>
+          <div class="fork-body">
+            <div style="font-size:12px;color:var(--text-secondary);font-weight:300;line-height:1.65;">Green had not bowled a single delivery across KKR's three previous IPL 2026 matches. His bowling fitness had been a talking point all tournament. Giving him the 19th over of a tense chase — not a low-pressure test in the middle, but the most consequential over with a set, in-form finisher on strike — is the highest-risk context for a first bowling spell. The risk wasn't Green's ability; it was the timing. A batter who has hit three recent sixes against a bowler they're facing for the first time has every advantage.</div>
+            <div class="fork-row">
+              <div class="fork-col happened">
+                <div class="fork-col-label">What Happened</div>
+                <div class="fork-col-text">Green bowled over 19, conceding 6, 4, 6 off three deliveries to Choudhary (18 runs total). LSG's required total fell from 32 off 12 to 14 off 6. The 18-run over converted an unlikely chase into a competitive finish. Steyn and Finch both stated post-match it was the wrong decision — Green's first IPL bowling appearance should not have been the 19th over of a close chase.</div>
+              </div>
+              <div class="fork-col alternative">
+                <div class="fork-col-label">The Principle</div>
+                <div class="fork-col-text">A bowler's first spell in a high-pressure situation should never come in the match's decisive over. KKR's other bowling options — Saini (experienced), Tyagi — had already bowled. Narine is the question: if he had overs remaining, he should have bowled over 19. Regardless of who the specific alternative was, the principle is clear: introducing an untested bowler into the highest-leverage moment is not a calculated risk — it is an avoidable one.</div>
+              </div>
+            </div>
+            <div class="fork-cost"><strong>What this reveals:</strong> The decision suggests KKR may have planned to use Green in lower-pressure overs and then ran out of options at the death. That planning failure — not accounting for Green's over-19 availability — is the root cause. Whether it was a contingency plan gone wrong or a deliberate choice, the consequence was 18 runs in a match KKR should have won.</div>
+          </div>
+        </div>
+
+        <div class="fork-card" id="fork2" style="margin-top:2px;">
+          <div class="fork-header" onclick="toggleFork('fork2')">
+            <div>
+              <div class="fork-meta"><span class="fork-over">Overs 11–14 · KKR Batting</span></div>
+              <div class="fork-title" style="margin-top:6px;">Green scored 6 off 11 balls against spin in the middle overs. Once his struggle was visible, did KKR make any tactical adjustment to protect him until pace returned?</div>
+            </div>
+            <div class="fork-toggle-icon">+</div>
+          </div>
+          <div class="fork-body">
+            <div style="font-size:12px;color:var(--text-secondary);font-weight:300;line-height:1.65;">Green entered at 99/2 after Rahane's dismissal. Against Rathi and Siddharth in the middle overs, he managed 6 off 11 balls — visibly uncomfortable against spin. This is not surprising: Green is a pace-hitter whose power comes from hard-length balls he can drive or pull. Spin in the 10–14 over range, with fielders set for the aerial shot, is his weakest zone. Yet KKR made no observable adjustment — no attempt to shield him by farming the strike differently, no change in the batting instruction from the dugout. He eventually scored freely once pace returned in the death overs (finishing 32 off 24), which confirms the issue was phase-specific, not a general form problem.</div>
+            <div class="fork-row">
+              <div class="fork-col happened">
+                <div class="fork-col-label">What Happened</div>
+                <div class="fork-col-text">Green scratched around for 6 off 11 against Rathi and Siddharth with no tactical adjustment from KKR. Raghuvanshi, playing his natural game, advanced and was caught at long-on. KKR slid to 105/3, then 111/4 with Rinku managing only 4 off several balls. KKR's middle-overs run rate stalled precisely when their batting structure was best placed — two batters in, Powell saved — to push.</div>
+              </div>
+              <div class="fork-col alternative">
+                <div class="fork-col-label">The Tactical Adjustment</div>
+                <div class="fork-col-text">Consciously farming the strike — keeping Green away from Rathi and Siddharth by taking singles off the last ball of each over, or targeting the non-spinning options more aggressively. This is not a batting-order change; it is an in-match adjustment that experienced batting partnerships make when one batter is clearly in a difficult matchup. Raghuvanshi, comfortable against spin, takes the spinner. Green targets pace when it comes. The same two batters, different strike management.</div>
+              </div>
+            </div>
+            <div class="fork-cost"><strong>What this reveals:</strong> KKR's batting structure in the middle overs was passive — they played the ball on its merits rather than actively managing an obvious mismatch. Green scoring 32 off 24 at the death proves he was not in poor form; he was in the wrong phase against the wrong bowler type. Protecting him for 3–4 overs until pace returned was available and wasn't taken. The additional runs from a better-timed Green could have put KKR at 195+ — a total that changes the calculus of Choudhary's final over entirely.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 07 FRAMEWORK INSIGHTS -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">07</span><span class="section-title">Framework Insights</span></div>
+    </div>
+    <div class="section-body">
+      <div class="framework-grid">
+        <div class="fw-card">
+          <div class="fw-title">The first clear counterexample: a team can recover from losing the middle overs</div>
+          <div class="fw-body">The system's thesis — losing the middle overs means losing the match — is challenged directly by Choudhary's innings. LSG lost 6 wickets in 70 middle-overs balls, were 128/7, and still won. The counterexample's caveat: they needed a historically rare lower-order innings (only two precedents in IPL history for that death-overs scoring rate). The thesis holds as a probability statement, not an absolute rule.</div>
+        </div>
+        <div class="fw-card">
+          <div class="fw-title">A bowler's first spell should never come at the match's highest-pressure moment</div>
+          <div class="fw-body">Green's over-19 appearance was his first IPL bowling in 2026. Regardless of his ability, introducing an untested bowler in the 19th over of a close chase is an avoidable risk. The timing of a bowler's introduction must account for match context — not just their skill level. KKR's planning failure was in not having a clear death-bowling hierarchy that didn't require Green at this moment.</div>
+        </div>
+        <div class="fw-card">
+          <div class="fw-title">KKR's 0-from-4 record reveals a pattern, not a run of bad luck</div>
+          <div class="fw-body">KKR have lost four matches. In three of them (this dataset), they lost in the death phase despite controlling earlier phases. A team that consistently wins the platform battle and loses the execution battle has a structural problem — not a tactical one. Death-overs planning: bowler allocation, batter protection, over assignment — is KKR's defining gap in IPL 2026.</div>
+        </div>
+        <div class="fw-card">
+          <div class="fw-title">A set batter's shot selection at the middle-to-death transition is a specific risk category</div>
+          <div class="fw-body">Raghuvanshi's dismissal (advancing against a spinner with a long-on in place) and Rahane's (dragging against the turn to midwicket) both occurred in the same 2-over window. Both were attempts to accelerate against spin — both chose the wrong shot type for the specific field and bowling angle. Acceleration intent is correct; the method of acceleration must be matched to the specific delivery and field.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div class="match-footer">
+  <div class="match-footer-inner">
+    <a class="footer-nav-link" href="match14_gt-vs-dc.html">← Match 14: GT vs DC</a>
+    <span class="footer-copy">© 2026 Jatin Bhutani</span>
+    <span></span>
+  </div>
+</div>
+
+<script>
+const PHASES_A={
+  pp:   {ctrl:"Contested",cls:"contested",verd:"Both Innings"},
+  mid:  {ctrl:"KKR",     cls:"dominated",verd:"Spin Choke"},
+  death:{ctrl:"LSG",     cls:"lost",     verd:"Green Over 19"}
+};
+const PHASES_B={
+  pp:   {ctrl:"KKR",     cls:"lost",     verd:"Double Strike"},
+  mid:  {ctrl:"KKR",     cls:"lost",     verd:"6 Wickets Down"},
+  death:{ctrl:"LSG",     cls:"dominated",verd:"Choudhary Win"}
+};
+function toggleTP(el){
+  const was=el.classList.contains('active');
+  document.querySelectorAll('.tp-item').forEach(i=>i.classList.remove('active'));
+  if(!was) el.classList.add('active');
+}
+function switchPhaseView(btn,team){
+  document.querySelectorAll('.phase-toggle-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const data=team==='a'?PHASES_A:PHASES_B;
+  ['pp','mid','death'].forEach(ph=>{
+    const d=data[ph];
+    const card=document.getElementById(ph+'-card');
+    card.className='phase-card '+d.cls;
+    document.getElementById(ph+'-ctrl').textContent=d.ctrl;
+    document.getElementById(ph+'-verd').textContent=d.verd;
+    document.querySelectorAll('#'+ph+'-card .team-note').forEach(n=>n.classList.remove('visible'));
+    const noteEl=document.getElementById(ph+'-note-'+team);
+    if(noteEl) noteEl.classList.add('visible');
+  });
+}
+function activateNode(el){
+  document.querySelectorAll('.prob-node').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('prob-fill').style.width=el.dataset.fill+'%';
+  const t=document.getElementById('prob-detail-team');
+  t.className='prob-detail-team '+el.dataset.team;
+  t.textContent=el.dataset.label;
+  document.getElementById('prob-detail-text').textContent=el.dataset.detail;
+}
+function toggleFork(id){
+  const card=document.getElementById(id);
+  const was=card.classList.contains('active');
+  document.querySelectorAll('.fork-card').forEach(c=>c.classList.remove('active'));
+  if(!was) card.classList.add('active');
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  const first=document.querySelector('.prob-node');
+  if(first) activateNode(first);
+});
+</script>
+</body>
+</html>
