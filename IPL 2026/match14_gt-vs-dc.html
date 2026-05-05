@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Match 14 — GT vs DC · AI Decision System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#f7f5f1;--surface:#ffffff;--border:#e4e0d8;--border-2:#d0cbc0;
+    --text-primary:#1a1814;--text-secondary:#5a564e;--text-muted:#9a9690;
+    --accent:#8b6240;--accent-light:rgba(139,98,64,0.07);--accent-mid:rgba(139,98,64,0.14);
+    --green:#3d7a56;--green-light:rgba(61,122,86,0.09);
+    --red:#9a3d3d;--red-light:rgba(154,61,61,0.09);
+    --team-a:#00449E;--team-b:#C8102E;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text-primary);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;}
+  .site-header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;}
+  .header-nav{max-width:900px;margin:auto;display:flex;align-items:center;padding:14px 0;gap:6px;}
+  .back-link{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .15s;}
+  .back-link:hover{color:var(--accent);}
+  .breadcrumb-sep{color:var(--border-2);font-size:12px;}
+  .breadcrumb-cur{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-secondary);}
+  .match-hero{background:var(--surface);border-bottom:1px solid var(--border);padding:40px 32px 36px;}
+  .match-hero-inner{max-width:900px;margin:auto;display:grid;grid-template-columns:1fr auto;gap:32px;align-items:start;}
+  .match-eyebrow{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+  .match-title{font-family:'Cormorant',serif;font-size:clamp(28px,5vw,46px);font-weight:500;line-height:1.1;letter-spacing:-.01em;margin-bottom:12px;}
+  .match-title .team-a{color:var(--team-a);}.match-title .team-b{color:var(--team-b);}.match-title .sep{color:var(--border-2);font-style:italic;}
+  .match-meta{display:flex;gap:10px;flex-wrap:wrap;}
+  .meta-chip{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border:1px solid var(--border);color:var(--text-muted);border-radius:2px;}
+  .meta-chip.winner{border-color:rgba(61,122,86,.3);background:var(--green-light);color:var(--green);}
+  .meta-chip.thriller{border-color:rgba(139,98,64,.3);background:var(--accent-light);color:var(--accent);}
+  .result-card{text-align:center;min-width:130px;}
+  .result-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:6px;}
+  .result-winner{font-family:'Cormorant',serif;font-size:32px;font-weight:600;color:var(--green);line-height:1;margin-bottom:4px;}
+  .result-sub{font-size:11px;color:var(--text-muted);font-weight:300;}
+  main{max-width:900px;margin:auto;padding:40px 32px 80px;display:flex;flex-direction:column;gap:2px;}
+  .section{background:var(--surface);border:1px solid var(--border);opacity:0;transform:translateY(10px);animation:reveal .4s ease forwards;}
+  .section:nth-child(1){animation-delay:.05s;}.section:nth-child(2){animation-delay:.10s;}
+  .section:nth-child(3){animation-delay:.15s;}.section:nth-child(4){animation-delay:.20s;}
+  .section:nth-child(5){animation-delay:.25s;}.section:nth-child(6){animation-delay:.30s;}
+  .section:nth-child(7){animation-delay:.35s;}
+  @keyframes reveal{to{opacity:1;transform:translateY(0);}}
+  .section-head{padding:16px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .section-head-left{display:flex;align-items:center;gap:12px;}
+  .section-num{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;color:var(--border-2);}
+  .section-title{font-family:'Cormorant',serif;font-size:18px;font-weight:500;color:var(--text-primary);letter-spacing:-.01em;}
+  .section-body{padding:24px;}
+  .tp-list{display:flex;flex-direction:column;gap:2px;}
+  .tp-item{display:grid;grid-template-columns:32px 1fr;gap:0;border:1px solid var(--border);cursor:pointer;transition:border-color .15s;}
+  .tp-item:hover{border-color:var(--border-2);}.tp-item.active{border-color:var(--accent);}
+  .tp-index{display:flex;align-items:center;justify-content:center;background:var(--bg);border-right:1px solid var(--border);font-family:'Cormorant',serif;font-size:16px;font-weight:600;color:var(--border-2);transition:all .15s;}
+  .tp-item.active .tp-index{background:var(--accent-light);color:var(--accent);border-right-color:var(--accent);}
+  .tp-content{padding:14px 16px;}
+  .tp-label{font-size:12.5px;font-weight:500;color:var(--text-primary);margin-bottom:4px;}
+  .tp-detail{font-size:12px;color:var(--text-secondary);font-weight:300;line-height:1.55;display:none;padding-top:6px;border-top:1px solid var(--border);margin-top:4px;}
+  .tp-item.active .tp-detail{display:block;}
+  .tp-expand-hint{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);margin-top:12px;text-align:right;}
+  .phase-toggle{display:flex;gap:2px;}
+  .phase-toggle-btn{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;padding:4px 10px;border:1px solid var(--border);background:transparent;color:var(--text-muted);cursor:pointer;transition:all .15s;}
+  .phase-toggle-btn.active{background:var(--accent-light);border-color:var(--accent);color:var(--accent);}
+  .phase-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;}
+  .phase-card{border:1px solid var(--border);padding:18px 16px;transition:border-color .2s;}
+  .phase-card.dominated{border-color:rgba(61,122,86,.3);background:var(--green-light);}
+  .phase-card.lost{border-color:rgba(154,61,61,.3);background:var(--red-light);}
+  .phase-card.contested{border-color:var(--border-2);background:rgba(160,150,140,.05);}
+  .phase-name{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px;}
+  .phase-controller{font-family:'Cormorant',serif;font-size:20px;font-weight:600;margin-bottom:6px;line-height:1;}
+  .phase-card.dominated .phase-controller{color:var(--green);}.phase-card.lost .phase-controller{color:var(--red);}.phase-card.contested .phase-controller{color:var(--text-muted);font-size:14px;}
+  .phase-verdict{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:2px 6px;border-radius:1px;display:inline-block;margin-bottom:8px;}
+  .phase-card.dominated .phase-verdict{background:var(--green-light);color:var(--green);border:1px solid rgba(61,122,86,.2);}
+  .phase-card.lost .phase-verdict{background:var(--red-light);color:var(--red);border:1px solid rgba(154,61,61,.2);}
+  .phase-card.contested .phase-verdict{background:var(--bg);color:var(--text-muted);border:1px solid var(--border);}
+  .phase-note{font-size:11.5px;color:var(--text-secondary);line-height:1.55;font-weight:300;}
+  .team-note{display:none;}.team-note.visible{display:block;}
+  .prob-label-row{display:flex;justify-content:space-between;margin-bottom:6px;}
+  .prob-team-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);}
+  .prob-track{position:relative;height:4px;background:var(--border);border-radius:2px;margin:16px 0 32px;}
+  .prob-fill{position:absolute;left:0;top:0;height:100%;background:var(--green);border-radius:2px;transition:width .6s ease;}
+  .prob-nodes{display:flex;justify-content:space-between;gap:2px;}
+  .prob-node{flex:1;cursor:pointer;position:relative;}
+  .prob-dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--border-2);background:var(--surface);margin:0 auto 8px;transition:all .15s;position:relative;top:-19px;}
+  .prob-node:hover .prob-dot,.prob-node.active .prob-dot{border-color:var(--accent);background:var(--accent);}
+  .prob-node-label{font-size:10.5px;color:var(--text-muted);text-align:center;line-height:1.4;transition:color .15s;font-weight:300;}
+  .prob-node.active .prob-node-label{color:var(--text-primary);font-weight:400;}
+  .prob-detail-box{background:var(--bg);border:1px solid var(--border);padding:14px 16px;margin-top:12px;min-height:52px;}
+  .prob-detail-team{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:4px;}
+  .ahead-a{color:var(--team-a);}.ahead-b{color:var(--team-b);}.ahead-both{color:var(--text-muted);}
+  .prob-detail-text{font-size:12.5px;color:var(--text-secondary);font-weight:300;line-height:1.55;}
+  .decider-card{background:var(--accent-light);border:1px solid var(--accent-mid);padding:20px 22px;}
+  .decider-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:8px;}
+  .decider-title{font-family:'Cormorant',serif;font-size:20px;font-weight:500;color:var(--text-primary);margin-bottom:8px;}
+  .decider-body{font-size:13px;color:var(--text-secondary);font-weight:300;line-height:1.65;}
+  .insight-card{border-left:3px solid var(--accent);padding:20px 22px;background:var(--surface);border-top:1px solid var(--border);border-right:1px solid var(--border);border-bottom:1px solid var(--border);}
+  .insight-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+  .insight-text{font-family:'Cormorant',serif;font-size:19px;font-style:italic;color:var(--text-primary);line-height:1.55;font-weight:400;}
+  .fork-list{display:flex;flex-direction:column;gap:2px;}
+  .fork-card{border:1px solid var(--border);padding:0;}
+  .fork-header{padding:14px 18px;border-bottom:1px solid var(--border);cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;transition:background .15s;}
+  .fork-header:hover{background:var(--bg);}
+  .fork-card.active .fork-header{background:var(--accent-light);border-bottom-color:var(--accent-mid);}
+  .fork-meta{display:flex;align-items:center;gap:10px;}
+  .fork-over{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;padding:2px 8px;border:1px solid var(--border);color:var(--text-muted);border-radius:1px;white-space:nowrap;}
+  .fork-card.active .fork-over{border-color:var(--accent);color:var(--accent);}
+  .fork-title{font-size:12.5px;font-weight:500;color:var(--text-primary);}
+  .fork-toggle-icon{font-size:14px;color:var(--text-muted);flex-shrink:0;transition:transform .15s;}
+  .fork-card.active .fork-toggle-icon{transform:rotate(45deg);color:var(--accent);}
+  .fork-body{display:none;padding:0 18px 18px;}
+  .fork-card.active .fork-body{display:block;}
+  .fork-row{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-top:14px;}
+  .fork-col{padding:14px 16px;border:1px solid var(--border);}
+  .fork-col.happened{background:var(--red-light);border-color:rgba(154,61,61,.25);}
+  .fork-col.alternative{background:var(--green-light);border-color:rgba(61,122,86,.25);}
+  .fork-col-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:8px;}
+  .fork-col.happened .fork-col-label{color:var(--red);}
+  .fork-col.alternative .fork-col-label{color:var(--green);}
+  .fork-col-text{font-size:12px;color:var(--text-secondary);font-weight:300;line-height:1.6;}
+  .fork-cost{margin-top:12px;padding:10px 14px;background:var(--bg);border:1px solid var(--border);font-size:12px;color:var(--text-muted);line-height:1.6;font-weight:300;}
+  .fork-cost strong{color:var(--text-secondary);font-weight:400;}
+  .framework-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;}
+  .fw-card{border:1px solid var(--border);padding:16px 18px;transition:border-color .15s;}
+  .fw-card:hover{border-color:var(--border-2);}
+  .fw-title{font-size:12.5px;font-weight:500;color:var(--text-primary);margin-bottom:5px;display:flex;align-items:flex-start;gap:8px;}
+  .fw-title::before{content:'→';color:var(--accent);flex-shrink:0;margin-top:1px;}
+  .fw-body{font-size:12px;color:var(--text-muted);font-weight:300;line-height:1.6;padding-left:18px;}
+  .match-footer{background:var(--surface);border-top:1px solid var(--border);padding:20px 32px;}
+  .match-footer-inner{max-width:900px;margin:auto;display:flex;justify-content:space-between;align-items:center;}
+  .footer-nav-link{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-muted);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .15s;}
+  .footer-nav-link:hover{color:var(--accent);}
+  .footer-copy{font-family:'DM Mono',monospace;font-size:10px;color:var(--border-2);letter-spacing:.06em;}
+  @media(max-width:640px){
+    .match-hero-inner{grid-template-columns:1fr;}.result-card{text-align:left;}
+    .phase-grid,.framework-grid,.fork-row{grid-template-columns:1fr;}
+    main{padding:24px 18px 60px;}
+    .site-header,.match-hero,.match-footer{padding-left:18px;padding-right:18px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <div class="header-nav">
+    <a class="back-link" href="https://jatinbhutani7.github.io/ipl-system.html">← System Hub</a>
+    <span class="breadcrumb-sep">/</span>
+    <span class="breadcrumb-cur">Match 14 · GT vs DC</span>
+  </div>
+</div>
+
+<div class="match-hero">
+  <div class="match-hero-inner">
+    <div>
+      <div class="match-eyebrow">Match 14 · IPL 2026 · Phase Analysis + Counter Perspective</div>
+      <h1 class="match-title">
+        <span class="team-a">GT</span><span class="sep"> vs </span><span class="team-b">DC</span>
+      </h1>
+      <div class="match-meta">
+        <span class="meta-chip winner">GT Won</span>
+        <span class="meta-chip">Defending team won</span>
+        <span class="meta-chip thriller">1-run thriller</span>
+        <span class="meta-chip">GT 210/4 · DC 209/8</span>
+      </div>
+    </div>
+    <div class="result-card">
+      <div class="result-label">Winner</div>
+      <div class="result-winner">GT</div>
+      <div class="result-sub">1 run · Rashid 3/17</div>
+    </div>
+  </div>
+</div>
+
+<main>
+
+  <!-- 01 TURNING POINTS -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">01</span><span class="section-title">Turning Points</span></div>
+    </div>
+    <div class="section-body">
+      <div class="tp-list">
+
+        <div class="tp-item" onclick="toggleTP(this)">
+          <div class="tp-index">1</div>
+          <div class="tp-content">
+            <div class="tp-label">Buttler's Powerplay Blitz — 47+ in 15 Balls, GT 68/1 After 6</div>
+            <div class="tp-detail">For the first time in three IPL 2026 innings, Buttler's full range appeared. Two sixes off Axar, three off Mukesh in over 3 alone — a scoop, a straight hit, and a lofted cover drive. In five overs, Buttler contributed 47+ of GT's 68 powerplay runs. Sudharsan was the only casualty. By the end of the powerplay, GT's total trajectory had been set firmly above 200. Buttler was eventually out for 52 off 27 when a Kuldeep long hop kept low — the wrong shot to a poor ball, but the damage was done.</div>
+          </div>
+        </div>
+
+        <div class="tp-item" onclick="toggleTP(this)">
+          <div class="tp-index">2</div>
+          <div class="tp-content">
+            <div class="tp-label">Ngidi's Masterclass: 4-0-24-1, Economy 6.00</div>
+            <div class="tp-detail">In a match where almost every bowler conceded at 10+ per over, Ngidi finished with 4-0-24-1 — economy of 6.00. His pace-off strategy was specific and consistent: 17 balls at reduced pace, 16 runs, 1 wicket (Gill). 9 balls at full pace, 8 runs. The change of pace forced mistimings and restricted the boundaries that other DC bowlers conceded freely. Without Ngidi's 4 overs, DC's total concession would have been 20+ higher — erasing any plausibility of a close finish entirely.</div>
+          </div>
+        </div>
+
+        <div class="tp-item" onclick="toggleTP(this)">
+          <div class="tp-index">3</div>
+          <div class="tp-content">
+            <div class="tp-label">Phillips Drops KL Rahul at 21 — Rahul Finishes 92 off 52</div>
+            <div class="tp-detail">Glenn Phillips ran 20-25 metres backwards and had the ball in his hands before it popped out. Rahul had toe-ended a half-slap to covers — the kind of catch that must be caught. The drop cost DC a minimum of 71 runs (Rahul's eventual total minus his score at the time). Rahul's 92 off 52 was the foundation of DC's entire chase — without it, the match isn't close. This is an execution failure, not a decision fork, but its consequence was directly structural to the result.</div>
+          </div>
+        </div>
+
+        <div class="tp-item" onclick="toggleTP(this)">
+          <div class="tp-index">4</div>
+          <div class="tp-content">
+            <div class="tp-label">Rashid Khan: Rana and Rizvi in Consecutive Balls — DC 101/3 After 10</div>
+            <div class="tp-detail">DC were 101/2 and progressing. Rana holed out to long-off (101/2). Next ball: Rizvi bowled by a wrong'un he didn't pick (101/3). Two wickets on consecutive deliveries off Rashid ended any middle-overs momentum DC had built. Axar then came in with DC needing 81 off 42, but Miller had retired hurt — DC were suddenly thin on batting resources at the point where the chase needed its key phase to begin. Rashid's final figures: 4-0-17-3, economy 4.25. In a match where GT's bowlers averaged 13+ per over, this was match-altering.</div>
+          </div>
+        </div>
+
+        <div class="tp-item" onclick="toggleTP(this)">
+          <div class="tp-index">5</div>
+          <div class="tp-content">
+            <div class="tp-label">Rahul Run Out Stubbs, Then Gets Out Next Ball — 166/6 After 17</div>
+            <div class="tp-detail">Rahul called Stubbs for a run then refused it. Sai Sudharsan fired a direct hit. Stubbs run out for 7. Then on the very next delivery, Rahul nicked a wide Siraj yorker behind square — out for 92 off 52. Two wickets in two balls off his own batting. DC went from 160/5 to 166/6 in 6 deliveries. The run-out was Rahul's call error; the dismissal was an attacking shot on a wide ball. Together they swung the match firmly to GT — DC now needed 45 off 18 with Miller (injured), Vipraj Nigam, Kuldeep, and the tail.</div>
+          </div>
+        </div>
+
+        <div class="tp-item" onclick="toggleTP(this)">
+          <div class="tp-index">6</div>
+          <div class="tp-content">
+            <div class="tp-label">Miller Returns, Takes Siraj for 6-4-6 — DC Need 13 Off Last Over</div>
+            <div class="tp-detail">Miller had retired hurt (bruised thumb, 12* off some balls at 130/3) and returned when Stubbs was run out at 160/5. With DC needing 36 off 12, he deposited Siraj for 6, 4, 6 in an over that went for 19 — delivering a performance that would have been extraordinary for a fully fit batter, let alone one batting with a bruised thumb. He brought DC to 13 needed off the final over. Then, with 2 needed off 2, he refused a single — setting up the last ball drama that GT survived.</div>
+          </div>
+        </div>
+
+      </div>
+      <div class="tp-expand-hint">Click any point to expand →</div>
+    </div>
+  </div>
+
+  <!-- 02 PHASE CONTROL -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">02</span><span class="section-title">Phase Control</span></div>
+      <div class="phase-toggle">
+        <button class="phase-toggle-btn active" onclick="switchPhaseView(this,'a')">GT View</button>
+        <button class="phase-toggle-btn" onclick="switchPhaseView(this,'b')">DC View</button>
+      </div>
+    </div>
+    <div class="section-body">
+      <div class="phase-grid">
+
+        <div class="phase-card dominated" id="pp-card">
+          <div class="phase-name">Powerplay</div>
+          <div class="phase-controller" id="pp-ctrl">GT</div>
+          <div class="phase-verdict" id="pp-verd">Buttler's Blitz</div>
+          <div class="phase-note team-note visible" id="pp-note-a">GT's powerplay was defined entirely by Buttler — 47+ in ~15 balls. DC conceded 68/1 in 6 overs, including 22 off one Mukesh Kumar over. By the powerplay's end, GT's total was already trending well above 200. DC's opening bowlers had no answer to the Buttler who appeared on this night.</div>
+          <div class="phase-note team-note" id="pp-note-b">DC's powerplay bowling was poor — Mukesh Kumar conceded 22 in one over, Axar gave 32 in 3 overs total. The only controlled spell in the powerplay was Ngidi (24 in 4 across the innings). DC couldn't prevent the powerplay from setting GT's trajectory above 200. In the chase, DC were excellent: 63/0 from Nissanka and Rahul, platform intact.</div>
+        </div>
+
+        <div class="phase-card dominated" id="mid-card">
+          <div class="phase-name">Middle Overs</div>
+          <div class="phase-controller" id="mid-ctrl">GT</div>
+          <div class="phase-verdict" id="mid-verd">Partnership</div>
+          <div class="phase-note team-note visible" id="mid-note-a">Gill and Washington Sundar built a 100-run third-wicket partnership in 56 balls. Gill moved from 7 at the powerplay to 70 off 45 (SR 155 vs spin: 200). Washington added 55 off 32. GT reached 161/2 after 15 overs — the platform for an even bigger total. DC's bowling in the middle (outside Ngidi) couldn't contain this partnership.</div>
+          <div class="phase-note team-note" id="mid-note-b">Rashid's 3 wickets in the middle (Rana, Rizvi consecutive, then Axar) were DC's best phase of the match. But Miller's retirement hurt at 130/3 complicated DC's batting structure — the set batter who had started to impose left the field. DC went from 63/0 to 134/4 in the middle overs. Rashid alone won this phase for GT.</div>
+        </div>
+
+        <div class="phase-card contested" id="death-card">
+          <div class="phase-name">Death Overs</div>
+          <div class="phase-controller" id="death-ctrl">Contested</div>
+          <div class="phase-verdict" id="death-verd">1-Run Finish</div>
+          <div class="phase-note team-note visible" id="death-note-a">DC conceded only 58 in GT's last 6 overs (9.67/over) — an excellent death-bowling performance given the 210 total. In the chase death, GT needed their bowling to hold under Miller's assault. Prasidh held his nerve in the final over (DC needed 13, scored 12). The death phase was the match — neither team dominated it cleanly.</div>
+          <div class="phase-note team-note" id="death-note-b">DC's death-overs batting was extraordinary from Miller (41* off 19 with a bruised thumb) and Rahul (scored to 92). But a run-out, a nick, a refused single, and a last-ball run-out left DC on 209. DC won the bowling death phase (58 in GT's last 6), contested the batting death, and lost the match by the difference between those two outcomes.</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 03 WIN PROBABILITY -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">03</span><span class="section-title">Win Probability Shift</span></div>
+    </div>
+    <div class="section-body">
+      <div class="prob-label-row">
+        <span class="prob-team-label" style="color:var(--team-b)">← DC Ahead</span>
+        <span class="prob-team-label" style="color:var(--team-a)">GT Ahead →</span>
+      </div>
+      <div>
+        <div class="prob-track"><div class="prob-fill" id="prob-fill" style="width:48%"></div></div>
+        <div class="prob-nodes">
+
+          <div class="prob-node" onclick="activateNode(this)" data-fill="48" data-team="ahead-both" data-label="DC Win Toss and Choose to Bowl" data-detail="DC choose to field. Marginally in DC's favour — teams that choose to bowl in full games often prefer setting their own chase target. But GT's batting lineup, with Buttler returning to form, gives them near-equal standing from the start.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">Toss<br>DC bowl</div>
+          </div>
+
+          <div class="prob-node" onclick="activateNode(this)" data-fill="58" data-team="ahead-a" data-label="GT 68/1 After Powerplay" data-detail="Buttler's blitz (47+ in the powerplay) has set GT on a strong trajectory. 68/1 in 6 overs — GT clearly ahead. A total of 200+ now likely, which DC need a flawless chase to reach.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">GT 68/1<br>powerplay</div>
+          </div>
+
+          <div class="prob-node" onclick="activateNode(this)" data-fill="62" data-team="ahead-a" data-label="GT 210/4 — Target Set" data-detail="GT post 210 — their highest of IPL 2026. A challenging but chaseable target for DC's batting lineup, which includes Rahul, Miller, Nissanka. DC need 10.5 per over — above average but achievable. GT marginal favourites.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">GT 210/4<br>set</div>
+          </div>
+
+          <div class="prob-node" onclick="activateNode(this)" data-fill="47" data-team="ahead-b" data-label="DC 63/0 After Powerplay" data-detail="Nissanka and Rahul have given DC a flawless powerplay — 63/0, both set. DC now marginally ahead — the required rate is manageable (9.6 per over for the remaining 14) and both openers are in rhythm. KL Rahul, dropped on 21 by Phillips, is building.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">DC 63/0<br>powerplay</div>
+          </div>
+
+          <div class="prob-node" onclick="activateNode(this)" data-fill="65" data-team="ahead-a" data-label="DC 101/3 After Over 10 — Rashid's Two in Two" data-detail="Rashid removes Rana and Rizvi on consecutive balls. DC go from 101/2 to 101/3 in one ball. Miller has retired hurt at 130/3. DC need 81 off 42 with weakened middle order. GT back in control — Rashid has changed the match's structural direction.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">DC 101/3<br>Rashid</div>
+          </div>
+
+          <div class="prob-node" onclick="activateNode(this)" data-fill="78" data-team="ahead-a" data-label="Rahul Out 166/6 After Over 17 — GT Strong Favourites" data-detail="Rahul out for 92 off 52, two balls after run-out of Stubbs. DC 166/6 needing 45 off 18 — Miller (injured thumb) is back, plus Vipraj Nigam and Kuldeep. GT strong favourites. Only an extraordinary Miller performance can save DC now.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">Rahul out<br>166/6</div>
+          </div>
+
+          <div class="prob-node" onclick="activateNode(this)" data-fill="55" data-team="ahead-a" data-label="DC Need 13 Off Last Over — Miller On Strike" data-detail="Miller has taken Siraj for 6-4-6 in over 19. DC need 13 off Prasidh's last over. Miller at strike, bruised thumb but batting at 200+ SR. Game wide open — GT marginal favourites given the required rate, but Miller's form makes this genuinely 50-50.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">13 off<br>last over</div>
+          </div>
+
+          <div class="prob-node" onclick="activateNode(this)" data-fill="58" data-team="ahead-a" data-label="2 Needed Off 2 — Miller Refuses Single" data-detail="After 4 balls of the final over, DC need 2 off 2. Miller refuses a single — wanting to win it himself rather than leave it to Kuldeep. This is the fork. Taking the single would mean 1 needed off 1 for Kuldeep — even a wide or bye would tie. Miller missed ball 5, Kuldeep run out last ball. GT win by 1.">
+            <div class="prob-dot"></div>
+            <div class="prob-node-label">2 off 2<br>single refused</div>
+          </div>
+
+        </div>
+        <div class="prob-detail-box" id="prob-detail-box">
+          <div class="prob-detail-team ahead-a" id="prob-detail-team"></div>
+          <div class="prob-detail-text" id="prob-detail-text"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 04 MATCH DECIDER -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">04</span><span class="section-title">Match Decider</span></div>
+    </div>
+    <div class="section-body">
+      <div class="decider-card">
+        <div class="decider-label">The moment that made the game</div>
+        <div class="decider-title">Rashid Khan's Over 10 — Two in Two, Match Turned</div>
+        <div class="decider-body">DC were 101/2 and on track. Rashid removed Rana (101/2) and Rizvi (101/3) on consecutive deliveries — a wrong'un both couldn't pick. Miller had already retired hurt. DC went from a chase requiring 9.6 per over with two set batters, to the same target with the middle order scrambled and their best middle-order batter off the field. Rashid's 4-0-17-3 (economy 4.25) in a match where most bowlers conceded 13+ is the stat that best explains a 1-run result. Without those 3 wickets for 17, DC win comfortably.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 05 DECISION INSIGHT -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">05</span><span class="section-title">Decision Insight</span></div>
+    </div>
+    <div class="section-body">
+      <div class="insight-card">
+        <div class="insight-label">Core analytical finding</div>
+        <div class="insight-text">A 1-run match is decided by the accumulation of small decisions — a single over from the wrong bowler, a single refused at the wrong moment. DC lost by 1 run. Axar's unused over cost 12. Miller's refused single cost a tie at minimum. Neither decision looked obviously wrong at the time. That is what makes 1-run defeats analytically important: the margin reveals the decisions that were invisible when they were made.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 06 COUNTER-TEAM PERSPECTIVE -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">06</span><span class="section-title">Counter-Team Perspective</span></div>
+    </div>
+    <div class="section-body">
+      <p style="font-size:12.5px;color:var(--text-secondary);font-weight:300;line-height:1.65;margin-bottom:16px;">DC lost by 1 run. Both forks below are directly quantifiable against that margin.</p>
+      <div class="fork-list">
+
+        <div class="fork-card" id="fork1">
+          <div class="fork-header" onclick="toggleFork('fork1')">
+            <div>
+              <div class="fork-meta"><span class="fork-over">DC Bowling · GT Innings</span></div>
+              <div class="fork-title" style="margin-top:6px;">Axar Patel bowled only 3 of his 4 allocated overs. His unused over was replaced by Vipraj Nigam's only over — which cost 23 runs. DC lost by 1.</div>
+            </div>
+            <div class="fork-toggle-icon">+</div>
+          </div>
+          <div class="fork-body">
+            <div style="font-size:12px;color:var(--text-secondary);font-weight:300;line-height:1.65;">DC's bowling allocation: Mukesh Kumar 4, Ngidi 4, Axar 3, Kuldeep 4, Natarajan 4, Vipraj Nigam 1 — totalling 20 overs. Axar had one over remaining in his quota. Vipraj Nigam's single over cost 23 runs. Axar's 3 overs cost 32 (economy 10.67 — approximately 10-11 runs per over). The arithmetic is direct: replacing Nigam's over with Axar's 4th over saves approximately 12 runs. DC lost by 1.</div>
+            <div class="fork-row">
+              <div class="fork-col happened">
+                <div class="fork-col-label">What Happened</div>
+                <div class="fork-col-text">Axar bowled 3 overs — his last over was not used. Vipraj Nigam was given the remaining over and conceded 23 (economy 23.00). Nigam is primarily a batting option; his bowling is emergency cover. In a match where DC needed every run they could save, giving a non-specialist one full over was a tactical cost that proved decisive.</div>
+              </div>
+              <div class="fork-col alternative">
+                <div class="fork-col-label">The Available Alternative</div>
+                <div class="fork-col-text">Axar's 4th over at his match economy of 10.67 would have cost approximately 10-11 runs. Against Nigam's 23, the saving is 12 runs. DC lost by 1. This is not hindsight — it was available information during the match. Axar was not injured or restricted from bowling his full allocation. The decision to withhold his 4th over is unexplained by the match narrative.</div>
+              </div>
+            </div>
+            <div class="fork-cost"><strong>Quantified cost:</strong> Approximately 12 runs — directly greater than the margin of defeat (1 run). This is the rarest kind of analytical finding in a close match: a decision with a quantifiable cost that exceeds the loss margin, verifiable from the scorecard alone.</div>
+          </div>
+        </div>
+
+        <div class="fork-card" id="fork2" style="margin-top:2px;">
+          <div class="fork-header" onclick="toggleFork('fork2')">
+            <div>
+              <div class="fork-meta"><span class="fork-over">Last Over Ball 5 · DC Batting</span></div>
+              <div class="fork-title" style="margin-top:6px;">With 2 needed off 2 balls, Miller refused a single that would have left DC needing 1 off 1 with Kuldeep on strike. He then missed ball 5; Kuldeep was run out off the last.</div>
+            </div>
+            <div class="fork-toggle-icon">+</div>
+          </div>
+          <div class="fork-body">
+            <div style="font-size:12px;color:var(--text-secondary);font-weight:300;line-height:1.65;">DC needed 13 off the last over. After 4 balls, they had scored 11 — requiring 2 off 2. Miller was on strike. A single was available off ball 5. Taking it would have left Kuldeep needing 1 off 1 to win — or any wide, no-ball, or bye to tie and force a super over. Miller refused, presumably intending to win it himself. Prasidh then bowled a slower bumper, Miller swung and missed. Ball 6: Kuldeep, backing up, was run out by Buttler's underarm flick.</div>
+            <div class="fork-row">
+              <div class="fork-col happened">
+                <div class="fork-col-label">What Happened</div>
+                <div class="fork-col-text">Miller refused the single off ball 5. He needed 2 off 1 ball to win — a boundary. Prasidh denied him with a slower bumper. Miller missed. Off the last ball, Kuldeep was backing up and Buttler completed a direct hit underarm to run him out. DC finished on 209. GT won by 1 run.</div>
+              </div>
+              <div class="fork-col alternative">
+                <div class="fork-col-label">The Percentage Decision</div>
+                <div class="fork-col-text">Taking the single: 1 needed off 1 for Kuldeep. Any error by Prasidh — a wide, a no-ball, a full toss — and DC tie or win. Kuldeep only needs to get bat on ball for 1 run. Even a leg-bye or a run-out attempt gone wrong ties the match. The number of ways DC win or tie off 1 ball for Kuldeep is higher than the number of ways Miller hits a boundary off a Prasidh slower ball.</div>
+              </div>
+            </div>
+            <div class="fork-cost"><strong>The decision logic:</strong> Miller at 200+ SR was confident he could hit the boundary. That confidence is understandable — he had just taken Siraj for 6-4-6. But Prasidh had one ball and could bowl anything. The percentage calculation — multiple paths to a tie via the single vs one path to a win via Miller's boundary — clearly favoured taking the run. Miller's decision to back himself was human; the probability was against him.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 07 FRAMEWORK INSIGHTS -->
+  <div class="section">
+    <div class="section-head">
+      <div class="section-head-left"><span class="section-num">07</span><span class="section-title">Framework Insights</span></div>
+    </div>
+    <div class="section-body">
+      <div class="framework-grid">
+        <div class="fw-card">
+          <div class="fw-title">1-run matches are decided by the decisions that looked harmless at the time</div>
+          <div class="fw-body">Axar's unused over and Miller's refused single were not obvious errors in the moment. They were small decisions that, in isolation, appeared inconsequential. In a 1-run match, the accumulation of small decisions is the match. The system's framework must account for these moments — they are the real "turning points" of close games.</div>
+        </div>
+        <div class="fw-card">
+          <div class="fw-title">Bowling quota management is a quantifiable decision variable</div>
+          <div class="fw-body">Axar's unused over is the clearest example this tournament of a quota decision with a directly measurable cost. When a bowler has remaining overs and their economy is lower than the replacement, using their full quota is the percentage play. Exceptions exist (saving a batter for a chase pressure situation) — but Axar batted for 3 balls and scored 2 runs. The exception did not apply here.</div>
+        </div>
+        <div class="fw-card">
+          <div class="fw-title">The percentage of a last-ball decision depends on what options remain</div>
+          <div class="fw-body">Miller's decision to refuse the single was not wrong in isolation — he was a batter in form. It was wrong relative to the alternatives: taking the single opened multiple paths to a tie or win. The correct framework for last-ball decisions is not "can I hit this" but "what is the probability distribution of all available options."</div>
+        </div>
+        <div class="fw-card">
+          <div class="fw-title">Rashid Khan is the most valuable phase-control bowler in this dataset</div>
+          <div class="fw-body">4-0-17-3 in a 210-run match, taking wickets that dismantled the chase at its pivot point. Rashid's economy and wicket-taking in Match 14 is the standout individual bowling performance in 14 matches. His wickets weren't lucky — each was a premeditated wrong'un or variation. That combination of wickets + control is what the system defines as phase dominance.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div class="match-footer">
+  <div class="match-footer-inner">
+    <a class="footer-nav-link" href="match13_rr-vs-mi.html">← Match 13: RR vs MI</a>
+    <span class="footer-copy">© 2026 Jatin Bhutani</span>
+    <span></span>
+  </div>
+</div>
+
+<script>
+const PHASES_A={
+  pp:   {ctrl:"GT",       cls:"dominated", verd:"Buttler's Blitz"},
+  mid:  {ctrl:"GT",       cls:"dominated", verd:"Partnership"},
+  death:{ctrl:"Contested",cls:"contested", verd:"1-Run Finish"}
+};
+const PHASES_B={
+  pp:   {ctrl:"GT",       cls:"lost",      verd:"Conceded"},
+  mid:  {ctrl:"GT",       cls:"lost",      verd:"Rashid Decisive"},
+  death:{ctrl:"Contested",cls:"contested", verd:"Narrowly Lost"}
+};
+function toggleTP(el){
+  const was=el.classList.contains('active');
+  document.querySelectorAll('.tp-item').forEach(i=>i.classList.remove('active'));
+  if(!was) el.classList.add('active');
+}
+function switchPhaseView(btn,team){
+  document.querySelectorAll('.phase-toggle-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const data=team==='a'?PHASES_A:PHASES_B;
+  ['pp','mid','death'].forEach(ph=>{
+    const d=data[ph];
+    const card=document.getElementById(ph+'-card');
+    card.className='phase-card '+d.cls;
+    document.getElementById(ph+'-ctrl').textContent=d.ctrl;
+    document.getElementById(ph+'-verd').textContent=d.verd;
+    document.querySelectorAll('#'+ph+'-card .team-note').forEach(n=>n.classList.remove('visible'));
+    const noteEl=document.getElementById(ph+'-note-'+team);
+    if(noteEl) noteEl.classList.add('visible');
+  });
+}
+function activateNode(el){
+  document.querySelectorAll('.prob-node').forEach(n=>n.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('prob-fill').style.width=el.dataset.fill+'%';
+  const t=document.getElementById('prob-detail-team');
+  t.className='prob-detail-team '+el.dataset.team;
+  t.textContent=el.dataset.label;
+  document.getElementById('prob-detail-text').textContent=el.dataset.detail;
+}
+function toggleFork(id){
+  const card=document.getElementById(id);
+  const was=card.classList.contains('active');
+  document.querySelectorAll('.fork-card').forEach(c=>c.classList.remove('active'));
+  if(!was) card.classList.add('active');
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  const first=document.querySelector('.prob-node');
+  if(first) activateNode(first);
+});
+</script>
+</body>
+</html>
