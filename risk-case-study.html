@@ -3,169 +3,447 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AI & Risk Case Study</title>
+<title>West Asia Conflict — Insurance Risk Implications · Jatin Bhutani</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 
 <style>
-body {
-  font-family: 'Inter', sans-serif;
-  margin: 0;
-  background: #fafafa;
-  color: #111;
-}
+  :root {
+    --bg: #F6F4EF;
+    --surface: #FFFFFF;
+    --ink: #111111;
+    --ink-mid: #444444;
+    --ink-light: #888888;
+    --accent: #1B3A5C;
+    --accent-warm: #B8895A;
+    --border: #E2DDD6;
+    --border-light: #EDEAE4;
+  }
 
-.container {
-  max-width: 800px;
-  margin: auto;
-  padding: 40px 20px;
-}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-h1 {
-  font-size: 28px;
-  margin-bottom: 10px;
-}
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.6;
+  }
 
-.subtitle {
-  color: #666;
-  margin-bottom: 30px;
-}
+  /* ─── HEADER ─── */
+  .site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    max-width: 860px;
+    margin: 0 auto;
+    border-bottom: 1px solid var(--border);
+  }
 
-.section {
-  margin-bottom: 35px;
-}
+  .site-header .logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 17px;
+    font-weight: 500;
+    letter-spacing: 0.03em;
+    color: var(--ink);
+    text-decoration: none;
+  }
 
-.section h2 {
-  font-size: 18px;
-  margin-bottom: 10px;
-}
+  .site-header nav a {
+    font-size: 13px;
+    color: var(--ink-light);
+    text-decoration: none;
+    margin-left: 28px;
+    letter-spacing: 0.02em;
+    transition: color 0.2s;
+  }
 
-.section p {
-  color: #444;
-  line-height: 1.7;
-}
+  .site-header nav a:hover { color: var(--accent); }
 
-.highlight {
-  background: #fff;
-  padding: 15px;
-  border-left: 3px solid #000;
-  margin-top: 10px;
-}
+  /* ─── LAYOUT ─── */
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 60px 24px 80px;
+  }
 
-.box {
-  background: #fff;
-  padding: 15px;
-  border-radius: 8px;
-  border: 1px solid #eee;
-  margin-top: 10px;
-}
+  /* ─── ARTICLE HEADER ─── */
+  .article-header {
+    padding-bottom: 48px;
+    border-bottom: 1px solid var(--border);
+    opacity: 0;
+    animation: fadeUp 0.7s ease forwards;
+  }
 
-.footer {
-  margin-top: 50px;
-  font-size: 12px;
-  color: #888;
-}
+  .article-meta {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-warm);
+    margin-bottom: 20px;
+    font-weight: 500;
+  }
+
+  .article-header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(30px, 5vw, 44px);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    margin-bottom: 20px;
+  }
+
+  .article-header .standfirst {
+    font-size: 15px;
+    color: var(--ink-mid);
+    max-width: 600px;
+    line-height: 1.75;
+  }
+
+  /* ─── BODY ─── */
+  .article-body {
+    padding-top: 48px;
+    opacity: 0;
+    animation: fadeUp 0.7s ease 0.15s forwards;
+  }
+
+  /* ─── SECTION ─── */
+  .section {
+    margin-bottom: 44px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .section-header h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  .section-header .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .section p {
+    font-size: 14px;
+    color: var(--ink-mid);
+    line-height: 1.8;
+  }
+
+  /* ─── CHANNEL CARDS ─── */
+  .channel-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .channel-card {
+    background: var(--surface);
+    border: 1px solid var(--border-light);
+    border-left: 3px solid var(--accent-warm);
+    border-radius: 0 6px 6px 0;
+    padding: 18px 20px;
+  }
+
+  .channel-card h3 {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 6px;
+    letter-spacing: 0.01em;
+  }
+
+  .channel-card p {
+    font-size: 13px;
+    color: var(--ink-light);
+    line-height: 1.65;
+  }
+
+  /* ─── AI APPROACH ROW ─── */
+  .approach-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .approach-card {
+    background: var(--surface);
+    border: 1px solid var(--border-light);
+    border-top: 2px solid var(--accent);
+    border-radius: 0 0 6px 6px;
+    padding: 18px 18px 20px;
+  }
+
+  .approach-card .approach-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  .approach-card p {
+    font-size: 13px;
+    color: var(--ink-mid);
+    line-height: 1.65;
+  }
+
+  /* ─── HIGHLIGHT BLOCK ─── */
+  .highlight {
+    background: var(--surface);
+    border: 1px solid var(--border-light);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    padding: 22px 24px;
+    margin-top: 4px;
+  }
+
+  .highlight .highlight-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+
+  .highlight .signal {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+
+  .highlight .interpretation {
+    font-size: 13px;
+    color: var(--ink-mid);
+    line-height: 1.7;
+  }
+
+  /* ─── PULLQUOTE ─── */
+  .pullquote {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    padding: 24px 0;
+    margin-top: 4px;
+  }
+
+  .pullquote p {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--accent);
+    line-height: 1.5;
+    font-style: italic;
+  }
+
+  /* ─── BACK LINK ─── */
+  .back-link {
+    display: inline-block;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-light);
+    text-decoration: none;
+    margin-bottom: 40px;
+    transition: color 0.2s;
+  }
+
+  .back-link:hover { color: var(--accent); }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    margin-top: 64px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .footer-left {
+    font-size: 12px;
+    color: var(--ink-light);
+  }
+
+  .footer-right {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent-warm);
+    opacity: 0.7;
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  /* ─── ANIMATION ─── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 600px) {
+    .site-header nav { display: none; }
+    .approach-grid { grid-template-columns: 1fr; }
+  }
 </style>
 </head>
 
 <body>
 
+<!-- HEADER -->
+<header class="site-header">
+  <a href="index.html" class="logo">Jatin Bhutani</a>
+  <nav>
+    <a href="index.html#perspectives">Perspectives</a>
+    <a href="index.html#personal">Personal</a>
+    <a href="index.html#contact">Contact</a>
+  </nav>
+</header>
+
 <div class="container">
 
-<h1>AI-assisted Impact Assessment of West Asia Conflict</h1>
-<p class="subtitle">Political Risk & Business Interruption Insurance</p>
+  <a href="index.html" class="back-link">← Back to Portfolio</a>
 
-<!-- CONTEXT -->
-<div class="section">
-<h2>Context</h2>
-<p>
-Ongoing geopolitical tensions in West Asia introduce uncertainty across trade routes, regulatory environments, and cross-border operations. 
-For insurers and corporates, the challenge is understanding how evolving developments may influence Political Risk Insurance (PRI) and Business Interruption (BI) exposures.
-</p>
-</div>
+  <!-- ARTICLE HEADER -->
+  <div class="article-header">
+    <div class="article-meta">Applied Case · Political Risk &amp; Business Interruption · West Asia · 2026</div>
+    <h1>West Asia Conflict —<br>Insurance Risk Implications</h1>
+    <p class="standfirst">
+      An AI-assisted perspective on how ongoing geopolitical tensions in West Asia transmit into Political Risk and Business Interruption insurance exposures — and where structured analysis can support more timely risk awareness.
+    </p>
+  </div>
 
-<!-- PROBLEM -->
-<div class="section">
-<h2>Problem</h2>
-<p>
-Risk assessment is complicated by fragmented information, rapidly evolving developments, and the difficulty of translating qualitative geopolitical signals into insurance-relevant implications.
-</p>
-</div>
+  <!-- ARTICLE BODY -->
+  <div class="article-body">
 
-<!-- RISK CHANNELS -->
-<div class="section">
-<h2>Risk Transmission Channels</h2>
+    <!-- CONTEXT -->
+    <div class="section">
+      <div class="section-header">
+        <h2>Context</h2>
+        <div class="section-line"></div>
+      </div>
+      <p>
+        Ongoing geopolitical tensions in West Asia introduce uncertainty across trade routes, regulatory environments, and cross-border operations. For insurers and corporates, the challenge is understanding how evolving developments may influence Political Risk Insurance (PRI) and Business Interruption (BI) exposures — and doing so with enough speed and structure to be decision-relevant.
+      </p>
+    </div>
 
-<div class="box">
-<b>Trade Route Disruption</b>
-<p>Shipping delays and rerouting may impact supply chains and operational continuity.</p>
-</div>
+    <!-- PROBLEM -->
+    <div class="section">
+      <div class="section-header">
+        <h2>The Problem</h2>
+        <div class="section-line"></div>
+      </div>
+      <p>
+        Risk assessment is complicated by fragmented information, rapidly evolving developments, and the difficulty of translating qualitative geopolitical signals into insurance-relevant implications. Analysts often have the domain knowledge — what's missing is a systematic way to process signals at the pace at which they arrive.
+      </p>
+    </div>
 
-<div class="box">
-<b>Political & Regulatory Actions</b>
-<p>Sanctions and policy actions may affect cross-border operations and coverage triggers.</p>
-</div>
+    <!-- RISK CHANNELS -->
+    <div class="section">
+      <div class="section-header">
+        <h2>Risk Transmission Channels</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="channel-grid">
+        <div class="channel-card">
+          <h3>Trade Route Disruption</h3>
+          <p>Shipping delays and rerouting through alternative passages may impact supply chains, lead times, and operational continuity for time-sensitive industries.</p>
+        </div>
+        <div class="channel-card">
+          <h3>Political &amp; Regulatory Actions</h3>
+          <p>Sanctions, export controls, and policy actions may affect cross-border operations, contractual obligations, and the triggers embedded in PRI coverage structures.</p>
+        </div>
+        <div class="channel-card">
+          <h3>Supply Chain Interdependencies</h3>
+          <p>Disruptions at the supplier level — particularly in energy and manufacturing — may generate indirect Business Interruption exposures that are difficult to trace without structured monitoring.</p>
+        </div>
+      </div>
+    </div>
 
-<div class="box">
-<b>Supply Chain Interdependencies</b>
-<p>Disruptions at supplier level may contribute to indirect business interruption exposure.</p>
-</div>
+    <!-- AI APPROACH -->
+    <div class="section">
+      <div class="section-header">
+        <h2>Where AI Can Support</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="approach-grid">
+        <div class="approach-card">
+          <div class="approach-label">Inputs</div>
+          <p>News flows, regulatory updates, shipping data, industry disclosures, and sanctions registers.</p>
+        </div>
+        <div class="approach-card">
+          <div class="approach-label">Processing</div>
+          <p>Identify patterns across sources, cluster signals into risk categories, and track changes over time against defined thresholds.</p>
+        </div>
+        <div class="approach-card">
+          <div class="approach-label">Outputs</div>
+          <p>Structured summaries, early-warning indicators, and scenario inputs for underwriting and exposure discussions.</p>
+        </div>
+      </div>
+    </div>
 
-</div>
+    <!-- ILLUSTRATIVE INSIGHT -->
+    <div class="section">
+      <div class="section-header">
+        <h2>Illustrative Insight</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="highlight">
+        <div class="highlight-label">Observed Signal</div>
+        <div class="signal">Sustained shipping disruption in the Red Sea, with vessels rerouting via the Cape of Good Hope.</div>
+        <div class="interpretation">
+          Potential logistics uncertainty for Asia–Europe trade routes, extending transit times by 10–14 days. Relevant for time-sensitive supply chains in automotive, pharma, and consumer goods — where BI triggers may be defined around delivery windows rather than physical damage.
+        </div>
+      </div>
+    </div>
 
-<!-- AI APPROACH -->
-<div class="section">
-<h2>Where AI Can Support</h2>
+    <!-- POTENTIAL VALUE -->
+    <div class="section">
+      <div class="section-header">
+        <h2>Potential Value</h2>
+        <div class="section-line"></div>
+      </div>
+      <p>
+        Supports more timely awareness of evolving risks and provides structured inputs for underwriting, exposure monitoring, and scenario discussions. The analyst's role shifts from information gathering to interpretation — which is where domain knowledge creates the most value.
+      </p>
+    </div>
 
-<div class="box">
-<b>Inputs</b>
-<p>News, regulatory updates, industry disclosures</p>
-</div>
+    <!-- KEY TAKEAWAY -->
+    <div class="section">
+      <div class="section-header">
+        <h2>Key Takeaway</h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="pullquote">
+        <p>The challenge is not lack of data. It is the capacity to interpret diverse signals in a structured, timely, and insurance-relevant manner.</p>
+      </div>
+    </div>
 
-<div class="box">
-<b>Processing</b>
-<p>Identify patterns, cluster signals into risk categories, track changes over time</p>
-</div>
+  </div>
 
-<div class="box">
-<b>Outputs</b>
-<p>Structured summaries, early indicators, inputs for risk discussions</p>
-</div>
-
-</div>
-
-<!-- EXAMPLE -->
-<div class="section">
-<h2>Illustrative Insight</h2>
-
-<div class="highlight">
-<b>Observed Signal:</b> Increased shipping disruption in Red Sea<br><br>
-<b>Interpretation:</b> Potential logistics uncertainty for Asia–Europe trade routes, relevant for time-sensitive supply chains.
-</div>
-
-</div>
-
-<!-- IMPACT -->
-<div class="section">
-<h2>Potential Value</h2>
-<p>
-Supports more timely awareness of evolving risks and provides structured inputs for underwriting, exposure monitoring, and scenario discussions.
-</p>
-</div>
-
-<!-- TAKEAWAY -->
-<div class="section">
-<h2>Key Takeaway</h2>
-
-<div class="highlight">
-The challenge is not lack of data, but interpreting diverse signals in a structured and timely manner.
-</div>
-
-</div>
-
-<div class="footer">
-© 2026 Jatin Bhutani
-</div>
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-left">© 2026 Jatin Bhutani</div>
+    <div class="footer-right">Research · Risk · Intelligence</div>
+  </div>
 
 </div>
 
