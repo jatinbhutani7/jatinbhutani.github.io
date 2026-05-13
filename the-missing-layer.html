@@ -1,549 +1,500 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Missing Layer — Jatin Bhutani</title>
-<meta name="description" content="India's insurance AI problem is not a talent problem. It is a data infrastructure problem. An interactive analysis of 10 insurance AI use cases mapped against India's data exchange readiness.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="India's insurance AI problem is not a talent problem. It is a data infrastructure problem. An analysis of 10 insurance AI use cases mapped against India's data exchange readiness." />
+  <title>The Missing Layer — Jatin Bhutani</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  :root {
-    --bg: #0d0d0d;
-    --bg-surface: #141414;
-    --bg-card: #1a1a1a;
-    --bg-card-hover: #1f1f1f;
-    --border: rgba(255,255,255,0.07);
-    --border-mid: rgba(255,255,255,0.12);
-    --text-primary: #f0ede8;
-    --text-secondary: #9a9690;
-    --text-tertiary: #5a5855;
-    --accent: #c8b89a;
-    --accent-dim: rgba(200,184,154,0.15);
-    --green: #639922;
-    --green-bg: rgba(99,153,34,0.12);
-    --amber: #BA7517;
-    --amber-bg: rgba(186,117,23,0.12);
-    --red: #E24B4A;
-    --red-bg: rgba(226,75,74,0.12);
-    --serif: 'Cormorant Garamond', Georgia, serif;
-    --sans: 'DM Sans', system-ui, sans-serif;
-  }
+    :root {
+      --bg:           #faf9f7;
+      --bg2:          #f2f0ec;
+      --text:         #1a1916;
+      --text-muted:   #6b6860;
+      --text-faint:   #a09d98;
+      --border:       rgba(0,0,0,0.08);
+      --border-med:   rgba(0,0,0,0.14);
+      --accent:       #8b6240;
+      --accent-dim:   rgba(139,98,64,0.08);
+      --radius:       10px;
+      --serif:        'Instrument Serif', Georgia, serif;
+      --sans:         'Geist', system-ui, sans-serif;
+    }
 
-  html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; }
 
-  body {
-    background: var(--bg);
-    color: var(--text-primary);
-    font-family: var(--sans);
-    font-weight: 300;
-    line-height: 1.7;
-    -webkit-font-smoothing: antialiased;
-    min-height: 100vh;
-  }
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
 
-  /* NAV */
-  nav {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    padding: 20px 48px;
-    display: flex; justify-content: space-between; align-items: center;
-    border-bottom: 1px solid var(--border);
-    background: rgba(13,13,13,0.92);
-    backdrop-filter: blur(12px);
-  }
-  .nav-brand {
-    font-family: var(--serif); font-size: 17px; font-weight: 400;
-    color: var(--text-secondary); text-decoration: none; letter-spacing: 0.3px;
-  }
-  .nav-brand:hover { color: var(--text-primary); }
-  .nav-links { display: flex; gap: 32px; }
-  .nav-links a {
-    font-size: 12px; letter-spacing: 1.5px; text-transform: uppercase;
-    color: var(--text-tertiary); text-decoration: none;
-    transition: color 0.2s;
-  }
-  .nav-links a:hover { color: var(--accent); }
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      border-bottom: 1px solid var(--border);
+      background: rgba(250,249,247,0.94);
+      backdrop-filter: blur(10px);
+    }
+    .nav-inner {
+      max-width: 860px; margin: 0 auto; padding: 0 2rem;
+      display: flex; justify-content: space-between; align-items: center;
+      height: 56px;
+    }
+    .nav-logo {
+      font-family: var(--serif); font-size: 17px; color: var(--text);
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a {
+      font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-muted); text-decoration: none; transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
 
-  /* HERO */
-  .hero {
-    padding: 160px 48px 80px;
-    max-width: 1100px; margin: 0 auto;
-    display: grid; grid-template-columns: 1fr 380px; gap: 80px; align-items: start;
-  }
-  .hero-meta {
-    display: flex; align-items: center; gap: 16px; margin-bottom: 28px;
-  }
-  .tag {
-    font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase;
-    color: var(--text-tertiary); font-weight: 400;
-  }
-  .tag-divider { width: 24px; height: 1px; background: var(--border-mid); }
-  .hero h1 {
-    font-family: var(--serif); font-size: clamp(48px, 6vw, 72px);
-    font-weight: 300; line-height: 1.05; letter-spacing: -1px;
-    color: var(--text-primary); margin-bottom: 8px;
-  }
-  .hero h1 em { font-style: italic; color: var(--accent); }
-  .hero-sub {
-    font-family: var(--serif); font-size: 20px; font-weight: 300;
-    font-style: italic; color: var(--text-secondary); margin-bottom: 36px;
-    line-height: 1.5;
-  }
-  .hero-body {
-    font-size: 15px; color: var(--text-secondary); line-height: 1.85;
-    border-left: 1px solid var(--border-mid); padding-left: 24px;
-    margin-bottom: 40px;
-  }
-  .hero-body p + p { margin-top: 14px; }
+    /* WRAP */
+    .wrap { max-width: 860px; margin: 0 auto; padding: 0 2rem; }
 
-  /* PULL QUOTE SIDEBAR */
-  .sidebar {
-    padding-top: 12px;
-  }
-  .pull-quote {
-    font-family: var(--serif); font-size: 26px; font-weight: 300;
-    font-style: italic; color: var(--text-primary); line-height: 1.4;
-    border-top: 1px solid var(--border-mid); padding-top: 28px;
-    margin-bottom: 32px;
-  }
-  .pull-quote em { color: var(--accent); font-style: normal; }
-  .stat-block { display: flex; flex-direction: column; gap: 1px; }
-  .stat-item {
-    background: var(--bg-surface);
-    border: 1px solid var(--border);
-    padding: 18px 20px;
-  }
-  .stat-item:first-child { border-radius: 8px 8px 0 0; }
-  .stat-item:last-child { border-radius: 0 0 8px 8px; }
-  .stat-num {
-    font-family: var(--serif); font-size: 32px; font-weight: 300;
-    color: var(--accent); line-height: 1;
-  }
-  .stat-label {
-    font-size: 11px; letter-spacing: 0.5px; color: var(--text-tertiary);
-    margin-top: 4px;
-  }
+    /* BACK */
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; letter-spacing: 0.05em;
+      color: var(--text-muted); text-decoration: none;
+      margin: 2rem 0 0; transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--accent); }
 
-  /* SECTION DIVIDER */
-  .section-divider {
-    max-width: 1100px; margin: 0 auto;
-    padding: 0 48px;
-    display: flex; align-items: center; gap: 20px;
-  }
-  .section-divider .line { flex: 1; height: 1px; background: var(--border); }
-  .section-divider span {
-    font-size: 10px; letter-spacing: 2.5px; text-transform: uppercase;
-    color: var(--text-tertiary);
-  }
+    /* ARTICLE HEADER */
+    .article-header {
+      padding: 3rem 0 2.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .article-kicker {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 1.25rem;
+    }
+    .article-kicker::before {
+      content: ''; display: block; width: 24px; height: 1px; background: var(--accent);
+    }
+    .article-meta {
+      font-size: 12px; color: var(--text-faint);
+      letter-spacing: 0.04em; margin-bottom: 1rem;
+    }
+    .article-title {
+      font-family: var(--serif);
+      font-size: clamp(30px, 5vw, 50px);
+      font-weight: 400; line-height: 1.1;
+      letter-spacing: -0.5px; color: var(--text);
+      margin-bottom: 1.25rem;
+    }
+    .article-title em { font-style: italic; color: var(--accent); }
+    .article-intro {
+      font-size: 16px; line-height: 1.8;
+      color: var(--text-muted); font-weight: 300;
+      max-width: 620px;
+    }
 
-  /* MATRIX SECTION */
-  .matrix-section {
-    max-width: 1100px; margin: 0 auto;
-    padding: 60px 48px;
-  }
-  .matrix-header {
-    display: flex; justify-content: space-between; align-items: flex-end;
-    margin-bottom: 28px; flex-wrap: wrap; gap: 16px;
-  }
-  .matrix-title {
-    font-family: var(--serif); font-size: 13px; font-weight: 400;
-    letter-spacing: 1px; text-transform: uppercase;
-    color: var(--text-tertiary);
-  }
-  .legend {
-    display: flex; gap: 20px; flex-wrap: wrap;
-  }
-  .leg {
-    display: flex; align-items: center; gap: 7px;
-    font-size: 12px; color: var(--text-tertiary);
-  }
-  .leg-dot { width: 9px; height: 9px; border-radius: 50%; }
-  .hint {
-    font-size: 12px; color: var(--text-tertiary);
-    margin-bottom: 16px; letter-spacing: 0.3px;
-  }
-  .chart-wrap {
-    position: relative; width: 100%; height: 400px;
-    background: var(--bg-surface);
-    border: 1px solid var(--border);
-    border-radius: 12px; padding: 24px 24px 16px;
-  }
-  .axis-label-bottom {
-    display: flex; justify-content: space-between;
-    padding: 10px 24px 0; font-size: 11px; color: var(--text-tertiary);
-  }
+    /* STATS */
+    .stats-row {
+      display: flex; gap: 12px; flex-wrap: wrap;
+      padding: 2rem 0; border-bottom: 1px solid var(--border);
+    }
+    .stat-card {
+      flex: 1; min-width: 150px;
+      padding: 1.25rem 1.5rem;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    .stat-number {
+      font-family: var(--serif); font-size: 32px; font-style: italic;
+      color: var(--accent); line-height: 1; margin-bottom: 0.4rem;
+    }
+    .stat-label { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
 
-  /* DETAIL PANEL */
-  .detail-panel {
-    display: none; margin-top: 16px;
-    background: var(--bg-surface);
-    border: 1px solid var(--border-mid);
-    border-radius: 12px; padding: 28px 32px;
-    animation: slideIn 0.2s ease;
-  }
-  .detail-panel.visible { display: block; }
-  @keyframes slideIn {
-    from { opacity: 0; transform: translateY(8px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .dp-top {
-    display: flex; justify-content: space-between;
-    align-items: flex-start; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
-  }
-  .dp-name {
-    font-family: var(--serif); font-size: 26px; font-weight: 300;
-    color: var(--text-primary); line-height: 1.2;
-  }
-  .dp-sector {
-    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
-    color: var(--text-tertiary); margin-top: 4px;
-  }
-  .dp-badge {
-    font-size: 11px; font-weight: 400; letter-spacing: 1px;
-    text-transform: uppercase; padding: 5px 14px;
-    border-radius: 20px; border: 1px solid;
-  }
-  .dp-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 12px;
-  }
-  .dp-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 8px; padding: 16px 18px;
-  }
-  .dp-card-label {
-    font-size: 10px; letter-spacing: 2px; text-transform: uppercase;
-    color: var(--text-tertiary); margin-bottom: 8px;
-  }
-  .dp-card-text {
-    font-size: 13px; color: var(--text-secondary);
-    line-height: 1.65;
-  }
+    /* BODY */
+    .article-body { padding: 3rem 0; }
+    .body-text {
+      font-size: 15px; line-height: 1.85;
+      color: var(--text-muted); font-weight: 300;
+      max-width: 680px; margin-bottom: 1.75rem;
+    }
+    .pull-quote {
+      border-left: 2px solid var(--accent);
+      padding: 0.75rem 0 0.75rem 1.5rem;
+      margin: 2.5rem 0;
+    }
+    .pull-quote p {
+      font-family: var(--serif); font-size: 19px; font-style: italic;
+      color: var(--text); line-height: 1.6;
+    }
 
-  /* IMPLICATIONS */
-  .implications {
-    max-width: 1100px; margin: 0 auto;
-    padding: 0 48px 80px;
-  }
-  .impl-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1px; background: var(--border);
-    border: 1px solid var(--border); border-radius: 12px; overflow: hidden;
-  }
-  .impl-card {
-    background: var(--bg-surface); padding: 28px 30px;
-    transition: background 0.2s;
-  }
-  .impl-card:hover { background: var(--bg-card); }
-  .impl-num {
-    font-family: var(--serif); font-size: 42px; font-weight: 300;
-    color: var(--accent); opacity: 0.4; line-height: 1;
-    margin-bottom: 14px;
-  }
-  .impl-heading {
-    font-family: var(--serif); font-size: 18px; font-weight: 400;
-    color: var(--text-primary); margin-bottom: 10px; line-height: 1.3;
-  }
-  .impl-text {
-    font-size: 13px; color: var(--text-secondary); line-height: 1.75;
-  }
+    /* SECTION HEADER */
+    .section-header {
+      display: flex; align-items: center; gap: 1rem;
+      margin: 3rem 0 1.75rem;
+    }
+    .section-label {
+      font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-faint); white-space: nowrap;
+    }
+    .section-line { flex: 1; height: 1px; background: var(--border); }
 
-  /* FOOTER */
-  footer {
-    border-top: 1px solid var(--border);
-    padding: 40px 48px;
-    max-width: 1100px; margin: 0 auto;
-    display: flex; justify-content: space-between; align-items: center;
-    flex-wrap: wrap; gap: 16px;
-  }
-  .footer-text {
-    font-size: 12px; color: var(--text-tertiary); line-height: 1.6;
-  }
-  .footer-link {
-    font-size: 12px; color: var(--accent); text-decoration: none;
-    letter-spacing: 0.5px;
-  }
-  .footer-link:hover { text-decoration: underline; }
+    /* BUBBLE CHART */
+    .chart-wrap {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+    .chart-legend {
+      display: flex; gap: 1.5rem; flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+    }
+    .legend-item {
+      display: flex; align-items: center; gap: 7px;
+      font-size: 12px; color: var(--text-muted);
+    }
+    .legend-dot {
+      width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+    }
 
-  /* ANIMATIONS */
-  .fade-in {
-    opacity: 0; transform: translateY(16px);
-    animation: fadeUp 0.6s ease forwards;
-  }
-  @keyframes fadeUp {
-    to { opacity: 1; transform: translateY(0); }
-  }
-  .delay-1 { animation-delay: 0.1s; }
-  .delay-2 { animation-delay: 0.2s; }
-  .delay-3 { animation-delay: 0.3s; }
+    /* USE CASE ACCORDION */
+    .uc-intro {
+      font-size: 13px; color: var(--text-muted);
+      margin-bottom: 1.25rem; line-height: 1.65;
+    }
+    .use-case-list { display: flex; flex-direction: column; gap: 2px; }
+    .use-case-item {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden; transition: border-color 0.2s;
+    }
+    .use-case-item:hover { border-color: var(--border-med); }
+    .use-case-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 0.9rem 1.1rem; cursor: pointer;
+      background: white; transition: background 0.15s;
+    }
+    .use-case-header:hover { background: var(--bg2); }
+    .uc-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .uc-num {
+      font-family: var(--serif); font-size: 13px; font-style: italic;
+      color: var(--text-faint); min-width: 26px;
+    }
+    .uc-title { flex: 1; font-size: 14px; color: var(--text); }
+    .uc-badge {
+      font-size: 10px; letter-spacing: 0.05em; padding: 3px 8px;
+      border-radius: 100px; border: 1px solid var(--border);
+      color: var(--text-faint); background: var(--bg2);
+      white-space: nowrap;
+    }
+    .uc-chevron {
+      font-size: 11px; color: var(--text-faint);
+      transition: transform 0.2s; margin-left: 4px;
+    }
+    .use-case-item.open .uc-chevron { transform: rotate(180deg); }
+    .use-case-body {
+      display: none; padding: 1.1rem 1.1rem 1.4rem;
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .use-case-item.open .use-case-body { display: block; }
+    .uc-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    }
+    .uc-field {
+      padding: 0.8rem 1rem; background: white;
+      border: 1px solid var(--border); border-radius: 8px;
+    }
+    .uc-field-label {
+      font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--text-faint); margin-bottom: 0.3rem;
+    }
+    .uc-field-value { font-size: 13px; color: var(--text-muted); line-height: 1.55; }
+    .uc-implication {
+      padding: 0.8rem 1rem;
+      background: var(--accent-dim);
+      border: 1px solid rgba(139,98,64,0.18);
+      border-radius: 8px;
+    }
+    .uc-implication .uc-field-label { color: var(--accent); }
+    .uc-implication .uc-field-value { color: var(--text); }
 
-  @media (max-width: 768px) {
-    nav { padding: 16px 24px; }
-    .nav-links { display: none; }
-    .hero { grid-template-columns: 1fr; padding: 120px 24px 60px; gap: 48px; }
-    .matrix-section, .implications, footer { padding-left: 24px; padding-right: 24px; }
-    .section-divider { padding-left: 24px; padding-right: 24px; }
-  }
-</style>
+    /* INSIGHTS */
+    .insight-list { display: flex; flex-direction: column; gap: 12px; }
+    .insight-card {
+      padding: 1.5rem; background: white;
+      border: 1px solid var(--border); border-radius: var(--radius);
+    }
+    .insight-num {
+      font-family: var(--serif); font-size: 24px; font-style: italic;
+      color: var(--text-faint); line-height: 1; margin-bottom: 0.7rem;
+    }
+    .insight-title {
+      font-size: 15px; font-weight: 500;
+      color: var(--text); margin-bottom: 0.4rem; line-height: 1.4;
+    }
+    .insight-desc {
+      font-size: 13px; color: var(--text-muted);
+      line-height: 1.7; font-weight: 300;
+    }
+
+    /* ARTICLE FOOTER */
+    .article-footer {
+      padding: 2.5rem 0; border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between;
+      align-items: flex-start; flex-wrap: wrap; gap: 1rem;
+    }
+    .footer-author { font-size: 13px; color: var(--text-muted); line-height: 1.7; }
+    .footer-author strong { color: var(--text); font-weight: 500; }
+    .footer-back a {
+      font-size: 12px; color: var(--text-muted);
+      text-decoration: none; transition: color 0.2s;
+    }
+    .footer-back a:hover { color: var(--accent); }
+
+    footer {
+      border-top: 1px solid var(--border); padding: 1.5rem 0;
+    }
+    .footer-inner {
+      max-width: 860px; margin: 0 auto; padding: 0 2rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .footer-inner span { font-size: 12px; color: var(--text-faint); }
+
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      .stats-row { flex-direction: column; }
+      .uc-grid { grid-template-columns: 1fr; }
+      .article-footer { flex-direction: column; }
+      .uc-badge { display: none; }
+    }
+  </style>
 </head>
 <body>
 
 <nav>
-  <a href="https://jatinbhutani7.github.io" class="nav-brand">Jatin Bhutani</a>
-  <div class="nav-links">
-    <a href="https://jatinbhutani7.github.io#work">Work</a>
-    <a href="https://jatinbhutani7.github.io#perspectives">Perspectives</a>
-    <a href="https://jatinbhutani7.github.io#contact">Contact</a>
+  <div class="nav-inner">
+    <a class="nav-logo" href="https://jatinbhutani7.github.io">Jatin Bhutani</a>
+    <div class="nav-links">
+      <a href="https://jatinbhutani7.github.io#work">Work</a>
+      <a href="https://jatinbhutani7.github.io#perspectives">Perspectives</a>
+      <a href="https://jatinbhutani7.github.io#contact">Contact</a>
+    </div>
   </div>
 </nav>
 
-<main>
-  <section class="hero">
-    <div class="hero-left fade-in">
-      <div class="hero-meta">
-        <span class="tag">Research Brief</span>
-        <div class="tag-divider"></div>
-        <span class="tag">Insurance AI · India</span>
-        <div class="tag-divider"></div>
-        <span class="tag">April 2026</span>
-      </div>
-      <h1>The <em>missing</em><br>layer</h1>
-      <p class="hero-sub">India's insurance AI gap is not what most people think it is.</p>
-      <div class="hero-body">
-        <p>India has world-class AI talent. It has a fast-growing insured population and a regulatory regime increasingly open to innovation. Yet AI-powered underwriting remains almost entirely confined to motor and simple retail lending products. The assumption in most discussions is that this is a technology or talent problem. It is neither.</p>
-        <p>The bottleneck is structural. The data exchange layer — the infrastructure that would allow AI models to be trained on real, representative, population-scale data — does not yet exist at the depth required. India has built identity infrastructure (Aadhaar) and payments infrastructure (UPI) to world-beating scale. The data layer is the third pillar, and it remains underdeveloped.</p>
-        <p>This piece maps 10 insurance AI use cases against India's current data exchange readiness — identifying what is commercially viable today, what is close, and what remains structurally blocked. The purpose is not to catalogue problems but to locate exactly where the opportunity sits when the infrastructure catches up.</p>
-      </div>
-    </div>
-    <div class="sidebar fade-in delay-2">
-      <p class="pull-quote">"The algorithms are ready. The models exist. What is missing is the <em>data infrastructure</em> to feed them."</p>
-      <div class="stat-block">
-        <div class="stat-item">
-          <div class="stat-num">3.7%</div>
-          <div class="stat-label">India's insurance penetration vs ~7+% global avg</div>
-        </div>
-        <div class="stat-item">
-          <div class="stat-num">0</div>
-          <div class="stat-label">Live commercial health data marketplaces in India</div>
-        </div>
-      </div>
-    </div>
-  </section>
+<div class="wrap">
+  <a class="back-link" href="https://jatinbhutani7.github.io">← Back to portfolio</a>
 
-  <div class="section-divider">
-    <div class="line"></div>
-    <span>The matrix</span>
-    <div class="line"></div>
+  <div class="article-header">
+    <div class="article-kicker">Research Brief</div>
+    <div class="article-meta">Insurance AI &middot; India &middot; April 2026</div>
+    <h1 class="article-title">The <em>missing</em> layer</h1>
+    <p class="article-intro">India's insurance AI gap is not what most people think it is. The bottleneck is not talent, technology, or regulatory appetite. It is data infrastructure — the exchange layer that would allow AI models to be trained on real, representative, population-scale data.</p>
   </div>
 
-  <section class="matrix-section fade-in delay-3">
-    <div class="matrix-header">
-      <div>
-        <p class="matrix-title">Insurance AI readiness · 10 use cases</p>
-        <p class="hint" style="margin-top:6px;margin-bottom:0">Click any bubble to explore the use case in detail</p>
-      </div>
-      <div class="legend">
-        <div class="leg"><div class="leg-dot" style="background:var(--green)"></div>Possible today</div>
-        <div class="leg"><div class="leg-dot" style="background:var(--amber)"></div>Partially unlocked</div>
-        <div class="leg"><div class="leg-dot" style="background:var(--red)"></div>Blocked</div>
-      </div>
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-number">3.7%</div>
+      <div class="stat-label">India's insurance penetration vs ~7%+ global average</div>
     </div>
+    <div class="stat-card">
+      <div class="stat-number">0</div>
+      <div class="stat-label">Live commercial health data marketplaces in India today</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">10</div>
+      <div class="stat-label">Insurance AI use cases mapped in this analysis</div>
+    </div>
+  </div>
+
+  <div class="article-body">
+
+    <p class="body-text">India has world-class AI talent. It has a fast-growing insured population and a regulatory regime increasingly open to innovation. Yet AI-powered underwriting remains almost entirely confined to motor and simple retail lending products. The assumption in most discussions is that this is a technology or talent problem. It is neither.</p>
+
+    <p class="body-text">The bottleneck is structural. India has built identity infrastructure (Aadhaar) and payments infrastructure (UPI) to world-beating scale. The data exchange layer — the third pillar — remains underdeveloped. Without it, AI models cannot be trained on real, representative, population-scale data across health, agriculture, or complex commercial lines.</p>
+
+    <div class="pull-quote">
+      <p>"The algorithms are ready. The models exist. What is missing is the <em>data infrastructure</em> to feed them."</p>
+    </div>
+
+    <!-- BUBBLE CHART -->
+    <div class="section-header">
+      <span class="section-label">The Matrix — 10 Use Cases</span>
+      <div class="section-line"></div>
+    </div>
+
+    <p class="uc-intro">Each bubble represents one insurance AI use case, plotted by data exchange readiness (x-axis) and AI potential value (y-axis). Bubble size reflects estimated market scale. Hover over any bubble for detail.</p>
 
     <div class="chart-wrap">
-      <canvas id="matrixChart" role="img" aria-label="Bubble chart showing 10 insurance AI use cases mapped by data exchange readiness on the x-axis and insurance AI potential on the y-axis. Blocked use cases include crop parametric insurance and preventive health insurance. Possible today include retail lending insurance and auto insurance pricing.">10 insurance AI use cases mapped against data exchange readiness and AI potential.</canvas>
-    </div>
-    <div class="axis-label-bottom">
-      <span>← Exchange broken</span>
-      <span>Data exchange readiness</span>
-      <span>Exchange live →</span>
+      <div class="chart-legend">
+        <div class="legend-item"><div class="legend-dot" style="background:#4caf7d"></div> Possible today</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#c9a84c"></div> Partially unlocked</div>
+        <div class="legend-item"><div class="legend-dot" style="background:#c97a7a"></div> Structurally blocked</div>
+      </div>
+      <div style="position:relative; width:100%; height:380px;">
+        <canvas id="bubbleChart" role="img" aria-label="Bubble chart mapping 10 insurance AI use cases by data exchange readiness and AI value potential. Motor telematics and fraud detection are possible today. Health underwriting and crop parametric are structurally blocked.">Insurance AI use cases: Motor telematics (possible), Fraud detection (possible), SME lending (possible), Dynamic health (blocked), Crop parametric (blocked), Cyber SME (partial), Marine tracking (partial), Preventive health (partial), Life insurance AA (partial), Climate/property (partial).</canvas>
+      </div>
+      <div id="bubble-tooltip" style="display:none; margin-top:1rem; padding:1rem; background:var(--bg2); border:1px solid var(--border); border-radius:var(--radius); font-size:13px; color:var(--text-muted); line-height:1.6;"></div>
     </div>
 
-    <div id="detailPanel" class="detail-panel">
-      <div class="dp-top">
-        <div>
-          <p id="dpName" class="dp-name"></p>
-          <p id="dpSector" class="dp-sector"></p>
-        </div>
-        <span id="dpBadge" class="dp-badge"></span>
+    <!-- ACCORDION -->
+    <div class="section-header">
+      <span class="section-label">Use Case Detail</span>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="use-case-list" id="useCaseList"></div>
+
+    <!-- INSIGHTS -->
+    <div class="section-header">
+      <span class="section-label">Key Insights</span>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="insight-list">
+      <div class="insight-card">
+        <div class="insight-num">01</div>
+        <div class="insight-title">The Account Aggregator proves the model works</div>
+        <p class="insight-desc">In financial services — where AA infrastructure is live — AI-powered lending, credit scoring, and wealth management have advanced rapidly. The same logic, applied to health and agriculture, would unlock markets of comparable scale. The infrastructure, not the algorithm, was the constraint.</p>
       </div>
-      <div class="dp-grid">
-        <div class="dp-card">
-          <p class="dp-card-label">Data needed</p>
-          <p id="dpData" class="dp-card-text"></p>
-        </div>
-        <div class="dp-card">
-          <p class="dp-card-label">What's missing</p>
-          <p id="dpMissing" class="dp-card-text"></p>
-        </div>
-        <div class="dp-card">
-          <p class="dp-card-label">Unlocked when gap closes</p>
-          <p id="dpUnlocked" class="dp-card-text"></p>
-        </div>
+      <div class="insight-card">
+        <div class="insight-num">02</div>
+        <div class="insight-title">Health is the highest-value unsolved problem</div>
+        <p class="insight-desc">Preventive health insurance and dynamic health underwriting represent the largest single opportunity — and the deepest structural gap. ABDM enrollment is growing but thin. Private hospital data remains fragmented. Until a functional health data exchange exists, India's health insurers will continue pricing on proxies rather than evidence.</p>
+      </div>
+      <div class="insight-card">
+        <div class="insight-num">03</div>
+        <div class="insight-title">Agriculture is a policy failure, not a technology failure</div>
+        <p class="insight-desc">The data required to build accurate crop parametric models exists — satellite imagery, mandi transaction records, IMD weather data, soil profiles. It sits in government systems that are not commercially accessible. NDGF, if operationalised, would change this overnight. 300 million exposed farmers are waiting not for better AI, but for a government decision to open the data.</p>
+      </div>
+      <div class="insight-card">
+        <div class="insight-num">04</div>
+        <div class="insight-title">The opportunity is largest for challengers, not incumbents</div>
+        <p class="insight-desc">Established insurers have legacy pricing models calibrated to existing data. When data exchange infrastructure matures, the companies best positioned are those building underwriting models now — before the data arrives — so they can train rapidly when it does. First-mover advantage is about model architecture readiness, not just data access.</p>
       </div>
     </div>
-  </section>
 
-  <div class="section-divider">
-    <div class="line"></div>
-    <span>Implications</span>
-    <div class="line"></div>
+    <div class="article-footer">
+      <div class="footer-author">
+        <strong>Jatin Bhutani</strong><br>
+        Specialty Risk Consulting, Marsh &middot; April 2026<br>
+        Research at the intersection of data governance, AI, and commercial insurance.
+      </div>
+      <div class="footer-back"><a href="https://jatinbhutani7.github.io">← Back to portfolio</a></div>
+    </div>
+
   </div>
-
-  <section class="implications" style="padding-top:48px">
-    <div class="impl-grid">
-      <div class="impl-card">
-        <div class="impl-num">01</div>
-        <h3 class="impl-heading">The Account Aggregator proves the model works</h3>
-        <p class="impl-text">In financial services — where AA infrastructure is live — AI-powered lending, credit scoring, and wealth management have advanced rapidly. Flow-based lending to SMEs is already emerging. The same logic, applied to health and agriculture, would unlock markets of comparable scale. The infrastructure, not the algorithm, was the constraint.</p>
-      </div>
-      <div class="impl-card">
-        <div class="impl-num">02</div>
-        <h3 class="impl-heading">Health is the highest-value unsolved problem</h3>
-        <p class="impl-text">Preventive health insurance and dynamic health underwriting represent the largest single opportunity — and the deepest structural gap. ABDM enrollment is growing but thin. Private hospital data remains fragmented. Until a functional health data exchange exists, India's health insurers will continue pricing on proxies rather than evidence, underwriting bluntly in a market that rewards precision.</p>
-      </div>
-      <div class="impl-card">
-        <div class="impl-num">03</div>
-        <h3 class="impl-heading">Agriculture is a policy failure, not a technology failure</h3>
-        <p class="impl-text">The data required to build accurate crop parametric models exists — satellite imagery, mandi transaction records, IMD weather data, soil profiles. It sits in government systems that are not commercially accessible. NDGF, if operationalised, would change this overnight. The 300 million farmers exposed to weather risk are waiting not for better AI, but for a government decision to open the data.</p>
-      </div>
-      <div class="impl-card">
-        <div class="impl-num">04</div>
-        <h3 class="impl-heading">The opportunity is largest for challengers, not incumbents</h3>
-        <p class="impl-text">Established insurers have legacy pricing models calibrated to existing data. When data exchange infrastructure matures, the companies positioned to gain most are those building underwriting models now — before the data arrives — so they can train rapidly when it does. First-mover advantage in insurance AI is about model architecture readiness, not just data access.</p>
-      </div>
-    </div>
-  </section>
-</main>
+</div>
 
 <footer>
-  <p class="footer-text">Jatin Bhutani · Specialty Risk Consulting, Marsh · April 2026<br>Research synthesis at the intersection of data governance, AI, and commercial insurance.</p>
-  <a href="https://jatinbhutani7.github.io" class="footer-link">← Back to portfolio</a>
+  <div class="footer-inner">
+    <span>Jatin Bhutani &mdash; Industry Researcher</span>
+    <span>&copy; 2026</span>
+  </div>
 </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
 const useCases = [
-  {name:"Crop parametric insurance",x:18,y:88,r:14,status:"blocked",sector:"Agriculture",dataNeeded:"Satellite yield data, soil moisture readings, mandi transaction records, hyperlocal weather indices",missing:"No live exchange connecting agri data silos. NDGF not operational. PM-FASAL data not commercially accessible.",unlocked:"AI models that dynamically price parametric triggers on real crop stress signals — replacing manual survey-based claims entirely"},
-  {name:"Preventive health insurance",x:20,y:92,r:15,status:"blocked",sector:"Health",dataNeeded:"Longitudinal health records, lab results, pharmacy dispensing data, wearable signals",missing:"ABDM enrollment remains low. Private hospital data fragmented across systems. No commercial health data marketplace exists.",unlocked:"Dynamic premium pricing tied to actual health behaviour — rewarding preventive care with measurably lower premiums in real time"},
-  {name:"Cyber insurance for SMEs",x:22,y:85,r:13,status:"blocked",sector:"Cyber",dataNeeded:"SME digital infrastructure profiles, breach incident data, sector-level cyber loss history at scale",missing:"No structured breach reporting database. CERT-In data not commercially accessible. SME digital footprint entirely unquantified.",unlocked:"AI-driven cyber risk scoring enabling affordable, accurately priced cover for the 63 million SME segment"},
-  {name:"Weather index agriculture",x:32,y:80,r:12,status:"blocked",sector:"Agriculture",dataNeeded:"Hyperlocal weather data at district level, crop type mapping, historical insurance loss correlations",missing:"IMD data not commercially licensed at hyperlocal resolution. Crop insurance loss data siloed in government schemes.",unlocked:"Granular index triggers correlated to actual farm-level losses — significantly reducing the basis risk inherent in current parametric products"},
-  {name:"Personal health underwriting",x:40,y:78,r:12,status:"partial",sector:"Health",dataNeeded:"Health records via ABDM, full prescription history, diagnostic reports from labs",missing:"ABDM live but enrollment remains thin. Private diagnostic labs not yet feeding into any exchange. Consent flow incomplete across providers.",unlocked:"Underwriting on verified medical history — replacing the crude age-plus-declared-condition model that currently dominates"},
-  {name:"Flow-based SME credit insurance",x:50,y:82,r:13,status:"partial",sector:"Credit",dataNeeded:"GST returns, bank transactions, supply chain payment flows — all via Account Aggregator",missing:"AA covers financial data well, but supply chain and trade credit data not yet in scope. GST data access remains inconsistent across lenders.",unlocked:"Credit insurance priced on real-time cash flow patterns — a product that barely exists in India today for the SME segment"},
-  {name:"Thin-file microinsurance",x:55,y:62,r:11,status:"partial",sector:"Financial inclusion",dataNeeded:"Telecom recharge history, UPI transaction patterns, Jan Dhan account activity data",missing:"Telecom data not formally in AA scope. UPI data available to NPCI but not directly to third-party insurers.",unlocked:"Insurance products for the 300M+ thin-file population — priced on robust proxy signals rather than absent formal credit history"},
-  {name:"Auto insurance pricing",x:75,y:52,r:11,status:"possible",sector:"Motor",dataNeeded:"Driving behaviour via telematics, claims history, vehicle registration data, traffic patterns",missing:"Telematics adoption still low among policyholders. IIB claims database exists but access is limited. Largely solvable via bilateral agreements today.",unlocked:"Usage-based insurance with dynamic premium adjustments — already emerging with challengers like Acko and Digit"},
-  {name:"Life insurance underwriting",x:70,y:48,r:10,status:"possible",sector:"Life",dataNeeded:"ITR filings, income data, bank statements — all accessible via Account Aggregator today",missing:"Income verification largely solvable via AA already. Health history thin but overall data picture is better than most sectors.",unlocked:"Faster and cheaper term underwriting with fewer invasive medical tests — already being piloted by HDFC Life and others"},
-  {name:"Retail lending insurance",x:82,y:72,r:12,status:"possible",sector:"Credit",dataNeeded:"Loan data, repayment history, income verification — all available via Account Aggregator",missing:"Largely solvable today. Main constraint is insurer appetite for thin-file borrowers, not data availability.",unlocked:"Credit life and EMI protection scaled to the full formal lending market — India's most near-term insurance AI opportunity"}
+  { num:"01", title:"Motor telematics underwriting",        status:"possible", x:8.5, y:7.2, r:14, dataNeeded:"Driving behaviour, GPS, vehicle telematics", missing:"Standardised OBD/telematics data formats across OEMs", unlocked:"Fully real-time, behaviour-based premium pricing at scale", implication:"Most commercially advanced use case. Several insurers already piloting. Data exists — the gap is standardisation, not availability." },
+  { num:"02", title:"SME credit & flow-based lending",       status:"possible", x:8.0, y:7.8, r:13, dataNeeded:"GST filings, bank transaction flows via Account Aggregator", missing:"Broader AA adoption among smaller SMEs", unlocked:"Dynamic premium pricing linked to real-time cashflow health", implication:"AA framework is live. Largest constraint is SME adoption rate, not data infrastructure design." },
+  { num:"03", title:"AI-driven claims fraud detection",      status:"possible", x:7.0, y:6.5, r:12, dataNeeded:"Historical claims data, network graphs, document verification", missing:"Data quality and standardisation within insurer legacy systems", unlocked:"Significant reduction in claims leakage; faster straight-through processing", implication:"Most commercially deployed use case after motor. Constrained by internal data quality more than external exchange gaps." },
+  { num:"04", title:"Dynamic health underwriting",           status:"blocked",  x:1.5, y:9.5, r:22, dataNeeded:"Longitudinal health records, diagnostics, pharmacy data", missing:"ABDM enrollment thin; private hospital data siloed; no commercial health data exchange", unlocked:"Risk-based pricing, preventive nudges, reduced adverse selection", implication:"Largest opportunity and deepest gap. Until a functional health data exchange exists, pricing remains proxy-based." },
+  { num:"05", title:"Crop parametric insurance",             status:"blocked",  x:2.0, y:8.8, r:20, dataNeeded:"Satellite imagery, mandi prices, IMD weather data, soil profiles", missing:"Government data sits in closed systems; NDGF not operationalised", unlocked:"Accurate, scalable parametric triggers for 300M+ exposed farmers", implication:"A policy decision, not a technology problem. The data exists — it is simply not accessible commercially." },
+  { num:"06", title:"Preventive health & wellness",          status:"partial",  x:4.5, y:8.0, r:16, dataNeeded:"Wearables, fitness apps, lifestyle signals", missing:"No standardised data sharing consent layer between apps and insurers", unlocked:"Personalised preventive products with dynamic premium adjustments", implication:"Consumer willingness exists. Infrastructure for consent-based data sharing is the missing piece." },
+  { num:"07", title:"Cyber risk underwriting — SMEs",        status:"partial",  x:4.0, y:6.8, r:11, dataNeeded:"Digital footprint, security posture, incident history", missing:"No standardised cyber risk scoring framework for Indian SMEs", unlocked:"Scalable SME cyber products priced on actual exposure rather than sector proxies", implication:"Growing awareness post-2023 incidents. Underwriting frameworks are nascent but developing." },
+  { num:"08", title:"Real-time marine & cargo tracking",     status:"partial",  x:5.5, y:6.2, r:12, dataNeeded:"AIS vessel data, port records, customs filings", missing:"Data fragmentation across ports; limited API access to government logistics systems", unlocked:"Dynamic cargo cover priced on route, vessel condition, and geopolitical exposure", implication:"Global data is more accessible than domestic Indian port data. Hybrid models possible today." },
+  { num:"09", title:"Life insurance via financial data",     status:"partial",  x:5.0, y:7.0, r:13, dataNeeded:"Income patterns, liabilities, financial behaviour via AA", missing:"Limited integration between AA data and life underwriting models", unlocked:"Income-linked, dynamically priced life cover beyond salary-band proxies", implication:"Infrastructure exists. The gap is actuarial model integration rather than data availability." },
+  { num:"10", title:"Climate & property risk modelling",     status:"partial",  x:4.8, y:6.0, r:13, dataNeeded:"Land records, flood zone maps, construction quality data, satellite", missing:"Digitisation of land records incomplete; no standardised property risk API", unlocked:"Location-specific, real-time property underwriting replacing postcode-level proxies", implication:"Satellite data increasingly accessible. Domestic land record digitisation is the binding constraint." }
 ];
 
-const blocked = useCases.filter(u => u.status === "blocked");
-const partial = useCases.filter(u => u.status === "partial");
-const possible = useCases.filter(u => u.status === "possible");
+const colorMap = { possible:"#4caf7d", partial:"#c9a84c", blocked:"#c97a7a" };
 
-const makeDataset = (arr, color, label) => ({
-  label,
-  data: arr.map(u => ({ x: u.x, y: u.y, r: u.r })),
-  backgroundColor: color + "99",
-  borderColor: color,
+const datasets = ["possible","partial","blocked"].map(s => ({
+  label: s === "possible" ? "Possible today" : s === "partial" ? "Partially unlocked" : "Structurally blocked",
+  data: useCases.filter(u => u.status === s).map(u => ({ x: u.x, y: u.y, r: u.r, uc: u })),
+  backgroundColor: colorMap[s] + "99",
+  borderColor: colorMap[s],
   borderWidth: 1.5,
-  hoverBorderWidth: 2.5,
-  hoverBackgroundColor: color + "cc"
-});
+  hoverBackgroundColor: colorMap[s] + "cc",
+}));
 
-const chart = new Chart(document.getElementById("matrixChart"), {
+const chart = new Chart(document.getElementById("bubbleChart"), {
   type: "bubble",
-  data: {
-    datasets: [
-      makeDataset(blocked, "#E24B4A", "Blocked"),
-      makeDataset(partial, "#BA7517", "Partially unlocked"),
-      makeDataset(possible, "#639922", "Possible today")
-    ]
-  },
+  data: { datasets },
   options: {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: { display: false },
       tooltip: {
-        callbacks: {
-          label: (ctx) => {
-            const sets = [blocked, partial, possible];
-            const uc = sets[ctx.datasetIndex][ctx.dataIndex];
-            return uc ? uc.name : "";
-          },
-          title: () => ""
-        },
-        displayColors: false,
-        backgroundColor: "#1a1a1a",
-        borderColor: "rgba(255,255,255,0.1)",
-        borderWidth: 1,
-        bodyColor: "rgba(240,237,232,0.85)",
-        padding: 12,
-        bodyFont: { family: "'DM Sans', sans-serif", size: 13, weight: "300" }
+        enabled: false,
+        external: function(ctx) {
+          const tooltip = document.getElementById("bubble-tooltip");
+          if (ctx.tooltip.opacity === 0) { tooltip.style.display = "none"; return; }
+          const item = ctx.tooltip.dataPoints?.[0]?.raw?.uc;
+          if (!item) return;
+          const statusLabel = item.status === "possible" ? "Possible today" : item.status === "partial" ? "Partially unlocked" : "Structurally blocked";
+          tooltip.style.display = "block";
+          tooltip.innerHTML = `<strong style="color:#1a1916;font-size:14px;">${item.num}. ${item.title}</strong> &nbsp;<span style="font-size:11px;color:${colorMap[item.status]};font-weight:500;">${statusLabel}</span><br><br><span style="color:#a09d98;font-size:10px;letter-spacing:0.07em;text-transform:uppercase;">Data needed</span><br>${item.dataNeeded}<br><br><span style="color:#a09d98;font-size:10px;letter-spacing:0.07em;text-transform:uppercase;">What's missing</span><br>${item.missing}<br><br><span style="color:#8b6240;font-size:10px;letter-spacing:0.07em;text-transform:uppercase;">Implication</span><br><span style="color:#1a1916;">${item.implication}</span>`;
+        }
       }
     },
     scales: {
       x: {
-        min: 0, max: 100,
-        grid: { color: "rgba(255,255,255,0.04)" },
-        border: { color: "rgba(255,255,255,0.08)" },
-        ticks: {
-          color: "rgba(255,255,255,0.25)",
-          font: { family: "'DM Sans', sans-serif", size: 11 },
-          callback: (v) => ({ 0: "Broken", 25: "Weak", 50: "Partial", 75: "Live", 100: "" }[v] ?? "")
-        }
+        min: 0, max: 10,
+        title: { display: true, text: "← Data exchange readiness →", font: { size: 11 }, color: "#a09d98" },
+        ticks: { font: { size: 11 }, color: "#a09d98" },
+        grid: { color: "rgba(0,0,0,0.05)" }
       },
       y: {
-        min: 30, max: 105,
-        grid: { color: "rgba(255,255,255,0.04)" },
-        border: { color: "rgba(255,255,255,0.08)" },
-        ticks: {
-          color: "rgba(255,255,255,0.25)",
-          font: { family: "'DM Sans', sans-serif", size: 11 },
-          callback: (v) => ({ 30: "Low", 55: "Medium", 75: "High", 95: "Very high" }[v] ?? "")
-        },
-        title: {
-          display: true,
-          text: "Insurance AI potential",
-          color: "rgba(255,255,255,0.2)",
-          font: { family: "'DM Sans', sans-serif", size: 11 }
-        }
+        min: 4, max: 11,
+        title: { display: true, text: "AI value potential ↑", font: { size: 11 }, color: "#a09d98" },
+        ticks: { font: { size: 11 }, color: "#a09d98" },
+        grid: { color: "rgba(0,0,0,0.05)" }
       }
     },
-    layout: { padding: { top: 12, right: 32, bottom: 8, left: 8 } },
-    onClick: (_, elements) => {
-      if (!elements.length) return;
-      const { datasetIndex: di, index: i } = elements[0];
-      const u = [blocked, partial, possible][di][i];
-      if (!u) return;
-
-      document.getElementById("dpName").textContent = u.name;
-      document.getElementById("dpSector").textContent = u.sector;
-      document.getElementById("dpData").textContent = u.dataNeeded;
-      document.getElementById("dpMissing").textContent = u.missing;
-      document.getElementById("dpUnlocked").textContent = u.unlocked;
-
-      const badge = document.getElementById("dpBadge");
-      const styles = {
-        blocked: { bg: "rgba(226,75,74,0.12)", border: "rgba(226,75,74,0.3)", text: "#E24B4A", label: "Blocked" },
-        partial: { bg: "rgba(186,117,23,0.12)", border: "rgba(186,117,23,0.3)", text: "#BA7517", label: "Partially unlocked" },
-        possible: { bg: "rgba(99,153,34,0.12)", border: "rgba(99,153,34,0.3)", text: "#639922", label: "Possible today" }
-      }[u.status];
-
-      badge.textContent = styles.label;
-      badge.style.background = styles.bg;
-      badge.style.borderColor = styles.border;
-      badge.style.color = styles.text;
-
-      const panel = document.getElementById("detailPanel");
-      panel.classList.add("visible");
-      panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    }
+    layout: { padding: 20 }
   }
 });
+
+const list = document.getElementById("useCaseList");
+useCases.forEach(uc => {
+  const statusLabel = uc.status === "possible" ? "Possible today" : uc.status === "partial" ? "Partially unlocked" : "Structurally blocked";
+  const item = document.createElement("div");
+  item.className = "use-case-item";
+  item.innerHTML = `
+    <div class="use-case-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="uc-dot" style="background:${colorMap[uc.status]}"></div>
+      <div class="uc-num">${uc.num}</div>
+      <div class="uc-title">${uc.title}</div>
+      <div class="uc-badge">${statusLabel}</div>
+      <div class="uc-chevron">▾</div>
+    </div>
+    <div class="use-case-body">
+      <div class="uc-grid">
+        <div class="uc-field"><div class="uc-field-label">Data needed</div><div class="uc-field-value">${uc.dataNeeded}</div></div>
+        <div class="uc-field"><div class="uc-field-label">What's missing</div><div class="uc-field-value">${uc.missing}</div></div>
+        <div class="uc-field"><div class="uc-field-label">Unlocked when gap closes</div><div class="uc-field-value">${uc.unlocked}</div></div>
+        <div class="uc-implication"><div class="uc-field-label">Implication</div><div class="uc-field-value">${uc.implication}</div></div>
+      </div>
+    </div>`;
+  list.appendChild(item);
+});
 </script>
+
 </body>
 </html>
