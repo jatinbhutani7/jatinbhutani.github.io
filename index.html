@@ -1,407 +1,465 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Jatin Bhutani — AI Portfolio</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jatin Bhutani — Industry Researcher</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    :root {
+      --bg:           #faf9f7;
+      --bg2:          #f2f0ec;
+      --bg3:          #eae7e1;
+      --line:         rgba(0,0,0,0.08);
+      --line-med:     rgba(0,0,0,0.14);
+      --text:         #1a1916;
+      --text-muted:   #6b6860;
+      --text-faint:   #a09d98;
+      --accent:       #8b6240;
+      --accent-dim:   rgba(139,98,64,0.08);
+      --radius:       10px;
+      --serif:        'Instrument Serif', Georgia, serif;
+      --sans:         'Geist', system-ui, sans-serif;
+    }
 
-<style>
-  :root {
-    --bg: #F6F4EF;
-    --surface: #FFFFFF;
-    --ink: #111111;
-    --ink-mid: #444444;
-    --ink-light: #888888;
-    --accent: #1B3A5C;
-    --accent-warm: #B8895A;
-    --border: #E2DDD6;
-    --border-light: #EDEAE4;
-  }
+    html { scroll-behavior: smooth; }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
 
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--ink);
-    font-size: 15px;
-    line-height: 1.6;
-  }
+    .wrap { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 0 2rem; }
 
-  /* ─── LAYOUT ─── */
-  .container {
-    max-width: 860px;
-    margin: 0 auto;
-    padding: 60px 24px 80px;
-  }
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      border-bottom: 1px solid var(--line);
+      background: rgba(250,249,247,0.94);
+      backdrop-filter: blur(12px);
+    }
+    .nav-inner {
+      max-width: 860px; margin: 0 auto; padding: 0 2rem;
+      display: flex; justify-content: space-between; align-items: center;
+      height: 56px;
+    }
+    .nav-logo { font-family: var(--serif); font-size: 17px; color: var(--text); }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a {
+      font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-muted); text-decoration: none; transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
 
-  /* ─── HEADER BAR ─── */
-  .site-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 24px;
-    max-width: 860px;
-    margin: 0 auto;
-    border-bottom: 1px solid var(--border);
-  }
+    /* HERO */
+    .hero { padding: 7rem 0 5rem; border-bottom: 1px solid var(--line); }
+    .hero-kicker {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 1.75rem;
+    }
+    .hero-kicker::before {
+      content: ''; display: block; width: 24px; height: 1px; background: var(--accent);
+    }
+    .hero-name {
+      font-family: var(--serif);
+      font-size: clamp(38px, 6vw, 62px);
+      font-weight: 400; line-height: 1.05;
+      letter-spacing: -0.5px; margin-bottom: 1.5rem; color: var(--text);
+    }
+    .hero-name em { font-style: italic; color: var(--accent); }
+    .hero-bio {
+      font-size: 16px; line-height: 1.8; color: var(--text-muted);
+      font-weight: 300; max-width: 520px; margin-bottom: 2.5rem;
+    }
+    .hero-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pill {
+      font-size: 11px; letter-spacing: 0.04em; padding: 5px 12px;
+      border: 1px solid var(--line-med); border-radius: 100px;
+      color: var(--text-muted); background: var(--bg2);
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .pill:hover { border-color: var(--accent); color: var(--accent); }
 
-  .site-header .logo {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 17px;
-    font-weight: 500;
-    letter-spacing: 0.03em;
-    color: var(--ink);
-    text-decoration: none;
-  }
+    /* SECTION CHROME */
+    .section { padding: 4.5rem 0; border-bottom: 1px solid var(--line); }
+    .section:last-of-type { border-bottom: none; }
+    .section-header {
+      display: flex; align-items: center; gap: 1rem; margin-bottom: 2.5rem;
+    }
+    .section-label {
+      font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-faint); white-space: nowrap;
+    }
+    .section-line { flex: 1; height: 1px; background: var(--line); }
 
-  .site-header nav a {
-    font-size: 13px;
-    color: var(--ink-light);
-    text-decoration: none;
-    margin-left: 28px;
-    letter-spacing: 0.02em;
-    transition: color 0.2s;
-  }
+    /* PROJECT CARDS */
+    .project-list { display: flex; flex-direction: column; gap: 2px; }
+    .project-card {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 2rem; padding: 1.5rem;
+      border-radius: var(--radius); border: 1px solid transparent;
+      text-decoration: none; transition: background 0.2s, border-color 0.2s;
+    }
+    .project-card:hover { background: var(--bg2); border-color: var(--line-med); }
+    .project-card:hover .card-arrow { opacity: 1; transform: translateX(0); }
+    .card-left { flex: 1; }
+    .card-type {
+      font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 0.4rem;
+    }
+    .card-title {
+      font-family: var(--serif); font-size: 20px; font-weight: 400;
+      line-height: 1.3; color: var(--text); margin-bottom: 0.5rem;
+    }
+    .card-desc { font-size: 13px; color: var(--text-muted); line-height: 1.65; font-weight: 300; }
+    .card-arrow {
+      font-size: 18px; color: var(--accent);
+      opacity: 0; transform: translateX(-6px);
+      transition: opacity 0.2s, transform 0.2s;
+      padding-top: 4px; flex-shrink: 0;
+    }
 
-  .site-header nav a:hover { color: var(--accent); }
+    /* PERSPECTIVES */
+    .perspectives-list { display: flex; flex-direction: column; gap: 2px; }
+    .perspective-item {
+      display: flex; align-items: flex-start; gap: 1.5rem;
+      padding: 1.25rem 1.5rem; border-radius: var(--radius);
+      border: 1px solid transparent; text-decoration: none;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .perspective-item:hover { background: var(--bg2); border-color: var(--line-med); }
+    .persp-num {
+      font-family: var(--serif); font-size: 13px; font-style: italic;
+      color: var(--text-faint); min-width: 24px; padding-top: 2px;
+    }
+    .persp-body { flex: 1; }
+    .persp-title { font-size: 15px; color: var(--text); margin-bottom: 0.3rem; line-height: 1.4; }
+    .persp-desc { font-size: 13px; color: var(--text-muted); font-weight: 300; line-height: 1.6; }
 
-  /* ─── HERO ─── */
-  .hero {
-    padding-top: 64px;
-    padding-bottom: 56px;
-    border-bottom: 1px solid var(--border);
-    opacity: 0;
-    animation: fadeUp 0.7s ease forwards;
-  }
+    /* ETHICS */
+    .ethics-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px;
+    }
+    .ethics-card {
+      padding: 1.5rem; background: var(--bg2);
+      border: 1px solid var(--line); border-radius: var(--radius);
+      transition: border-color 0.2s;
+    }
+    .ethics-card:hover { border-color: var(--line-med); }
+    .ethics-num {
+      font-family: var(--serif); font-size: 28px; font-style: italic;
+      color: var(--text-faint); line-height: 1; margin-bottom: 1rem;
+    }
+    .ethics-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 0.4rem; }
+    .ethics-desc { font-size: 12px; color: var(--text-muted); line-height: 1.65; font-weight: 300; }
 
-  .hero-label {
-    font-size: 11px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--accent-warm);
-    margin-bottom: 18px;
-    font-weight: 500;
-  }
+    /* CONTACT */
+    .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .contact-card {
+      padding: 1.5rem; background: var(--bg2);
+      border: 1px solid var(--line); border-radius: var(--radius);
+      text-decoration: none; transition: border-color 0.2s, background 0.2s;
+      display: flex; flex-direction: column; gap: 0.4rem;
+    }
+    .contact-card:hover { border-color: var(--accent); background: var(--accent-dim); }
+    .contact-label {
+      font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-faint);
+    }
+    .contact-value { font-size: 14px; color: var(--text); }
+    .contact-note {
+      margin-top: 1.5rem; font-size: 13px; color: var(--text-muted);
+      font-weight: 300; line-height: 1.75; padding: 1.25rem 1.5rem;
+      border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg2);
+    }
 
-  .hero h1 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: clamp(38px, 6vw, 56px);
-    font-weight: 500;
-    line-height: 1.1;
-    letter-spacing: -0.01em;
-    color: var(--ink);
-    margin-bottom: 24px;
-  }
+    /* FOOTER */
+    footer { border-top: 1px solid var(--line); padding: 2rem 0; position: relative; z-index: 1; }
+    .footer-inner {
+      max-width: 860px; margin: 0 auto; padding: 0 2rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .footer-inner span { font-size: 12px; color: var(--text-faint); }
 
-  .hero h1 span {
-    color: var(--accent);
-  }
+    /* ANIMATIONS */
+    .fade-up { opacity: 0; transform: translateY(16px); animation: fadeUp 0.65s ease forwards; }
+    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+    .hero-kicker { animation-delay: 0.05s; }
+    .hero-name   { animation-delay: 0.18s; }
+    .hero-bio    { animation-delay: 0.3s; }
+    .hero-tags   { animation-delay: 0.42s; }
 
-  .hero-desc {
-    font-size: 15px;
-    color: var(--ink-mid);
-    max-width: 580px;
-    line-height: 1.75;
-    margin-bottom: 28px;
-  }
+    /* THE INSURANCE BRIEF */
+    .brief-card {
+      display: block; text-decoration: none;
+      padding: 1.75rem;
+      background: var(--bg2);
+      border: 1px solid var(--line-med);
+      border-radius: var(--radius);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .brief-card:hover { border-color: var(--accent); background: var(--bg3); }
+    .brief-card:hover .brief-arrow { opacity: 1; transform: translateX(0); }
+    .brief-top {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 1rem; margin-bottom: 1rem;
+    }
+    .brief-badge {
+      font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 100px;
+      background: var(--accent-dim);
+      color: var(--accent);
+      border: 1px solid rgba(201,185,122,0.2);
+      white-space: nowrap;
+    }
+    .brief-date { font-size: 12px; color: var(--text-faint); letter-spacing: 0.04em; }
+    .brief-title {
+      font-family: var(--serif); font-size: 20px; font-weight: 400;
+      line-height: 1.25; color: var(--text);
+      margin-bottom: 0.6rem; letter-spacing: -0.2px;
+    }
+    .brief-desc { font-size: 13px; color: var(--text-muted); line-height: 1.65; font-weight: 300; margin-bottom: 1.1rem; }
+    .brief-topics { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.25rem; }
+    .brief-topic {
+      font-size: 11px; padding: 3px 10px;
+      border: 1px solid var(--line-med); border-radius: 100px;
+      color: var(--text-muted); background: var(--bg);
+    }
+    .brief-footer {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 1.1rem; border-top: 1px solid var(--line);
+    }
+    .brief-cta { font-size: 12px; color: var(--accent); }
+    .brief-arrow {
+      font-size: 16px; color: var(--accent);
+      opacity: 0; transform: translateX(-6px);
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .brief-all {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; color: var(--text-muted);
+      text-decoration: none; margin-top: 1rem;
+      transition: color 0.2s;
+    }
+    .brief-all:hover { color: var(--accent); }
 
-  .tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .tag {
-    font-size: 11px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--accent);
-    background: transparent;
-    border: 1px solid var(--accent);
-    padding: 5px 11px;
-    border-radius: 2px;
-    font-weight: 500;
-  }
-
-  /* ─── SECTIONS ─── */
-  .section {
-    padding-top: 52px;
-    opacity: 0;
-    animation: fadeUp 0.7s ease forwards;
-  }
-
-  .section:nth-child(2) { animation-delay: 0.1s; }
-  .section:nth-child(3) { animation-delay: 0.2s; }
-  .section:nth-child(4) { animation-delay: 0.3s; }
-  .section:nth-child(5) { animation-delay: 0.35s; }
-
-  .section-header {
-    display: flex;
-    align-items: baseline;
-    gap: 16px;
-    margin-bottom: 28px;
-  }
-
-  .section-header h2 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 22px;
-    font-weight: 500;
-    letter-spacing: 0.01em;
-    color: var(--ink);
-  }
-
-  .section-header .section-line {
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  .section-note {
-    font-size: 13px;
-    color: var(--ink-light);
-    margin-bottom: 24px;
-    margin-top: -14px;
-    font-style: italic;
-  }
-
-  /* ─── CARDS ─── */
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border-light);
-    border-left: 3px solid var(--accent);
-    border-radius: 0 6px 6px 0;
-    padding: 22px 24px;
-    margin-bottom: 12px;
-    text-decoration: none;
-    color: inherit;
-    display: block;
-    transition: border-left-color 0.2s, box-shadow 0.2s, transform 0.2s;
-  }
-
-  .card:hover {
-    border-left-color: var(--accent-warm);
-    transform: translateX(3px);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-  }
-
-  .card-title {
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--ink);
-    margin-bottom: 6px;
-    letter-spacing: 0.01em;
-  }
-
-  .card-desc {
-    font-size: 13px;
-    color: var(--ink-light);
-    line-height: 1.6;
-  }
-
-  /* Research brief cards — warm accent left border */
-  .card-brief {
-    border-left-color: var(--accent-warm);
-  }
-
-  .card-brief:hover {
-    border-left-color: var(--accent);
-  }
-
-  .card-brief .card-meta {
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--accent-warm);
-    margin-bottom: 6px;
-    font-weight: 500;
-  }
-
-  /* Personal project cards — slightly muted */
-  .card-personal {
-    border-left-color: var(--accent-warm);
-    background: #FDFCF9;
-  }
-
-  .card-personal:hover {
-    border-left-color: var(--accent);
-  }
-
-  /* ─── CONTACT ─── */
-  .contact-row {
-    display: flex;
-    gap: 32px;
-    flex-wrap: wrap;
-    margin-top: 8px;
-  }
-
-  .contact-item {
-    font-size: 13px;
-    color: var(--ink-mid);
-  }
-
-  .contact-item a {
-    color: var(--accent);
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
-    transition: border-color 0.2s;
-  }
-
-  .contact-item a:hover { border-bottom-color: var(--accent); }
-
-  /* ─── FOOTER ─── */
-  .footer {
-    margin-top: 64px;
-    padding-top: 24px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .footer-left {
-    font-size: 12px;
-    color: var(--ink-light);
-  }
-
-  .footer-right {
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--accent-warm);
-    opacity: 0.7;
-    font-family: 'Cormorant Garamond', serif;
-  }
-
-  /* ─── ANIMATION ─── */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(16px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ─── RESPONSIVE ─── */
-  @media (max-width: 600px) {
-    .site-header nav { display: none; }
-    .hero h1 { font-size: 36px; }
-  }
-</style>
+    /* MOBILE */
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      .hero { padding: 4rem 0 3rem; }
+      .contact-grid { grid-template-columns: 1fr; }
+      .ethics-grid { grid-template-columns: 1fr 1fr; }
+      .project-card { flex-direction: column; gap: 0.5rem; }
+      .card-arrow { display: none; }
+    }
+  </style>
 </head>
-
 <body>
 
-<!-- HEADER -->
-<header class="site-header">
-  <a href="index.html" class="logo">Jatin Bhutani</a>
   <nav>
-    <a href="#perspectives">Perspectives</a>
-    <a href="#personal">Personal</a>
-    <a href="#contact">Contact</a>
+    <div class="nav-inner">
+      <span class="nav-logo">Jatin Bhutani</span>
+      <div class="nav-links">
+        <a href="#work">Work</a>
+        <a href="#brief">The Brief</a>
+        <a href="#perspectives">Perspectives</a>
+        <a href="#ethics">AI Ethics</a>
+        <a href="#contact">Contact</a>
+      </div>
+    </div>
   </nav>
-</header>
 
-<div class="container">
+  <div class="wrap">
 
-  <!-- HERO -->
-  <div class="hero">
-    <div class="hero-label">AI Portfolio · Insurance &amp; Commercial Risk</div>
-    <h1>Research intelligence,<br><span>applied through AI.</span></h1>
-    <p class="hero-desc">
-      Experience in commercial risk research across Commercial Industries and Insurance — 
-      translated into AI-assisted tools that make domain expertise scalable and decision-ready.
-    </p>
-    <div class="tags">
-      <span class="tag">Commercial Risk</span>
-      <span class="tag">AI Research Tools</span>
-      <span class="tag">Insurance &amp; Broking</span>
-      <span class="tag">Emerging Risk</span>
-      <span class="tag">Structured Analysis</span>
-    </div>
-  </div>
-
-  <!-- PERSPECTIVES -->
-  <div class="section" id="perspectives">
-    <div class="section-header">
-      <h2>Perspectives</h2>
-      <div class="section-line"></div>
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-kicker fade-up">Industry Research &amp; AI Workflows</div>
+      <h1 class="hero-name fade-up">Jatin<br><em>Bhutani</em></h1>
+      <p class="hero-bio fade-up">
+        I synthesize complex industry landscapes into clear, actionable intelligence — combining rigorous secondary research with AI-assisted workflows across risk, geopolitics, and emerging technology.
+      </p>
+      <div class="hero-tags fade-up">
+        <span class="pill">Secondary Research</span>
+        <span class="pill">Industry Analysis</span>
+        <span class="pill">AI-Assisted Workflows</span>
+        <span class="pill">Risk &amp; Insurance</span>
+        <span class="pill">Geopolitical Risk</span>
+        <span class="pill">AI Ethics &amp; Governance</span>
+      </div>
     </div>
 
-    <a href="the-missing-layer.html" class="card card-brief">
-      <div class="card-meta">Research Brief · Insurance AI · India · April 2026</div>
-      <div class="card-title">The Missing Layer</div>
-      <div class="card-desc">
-        India's insurance AI gap is not a talent problem or an algorithm problem. It is a data infrastructure problem. An interactive map of 10 insurance AI use cases against India's data exchange readiness.
+    <!-- WORK -->
+    <div class="section" id="work">
+      <div class="section-header">
+        <span class="section-label">Work</span>
+        <div class="section-line"></div>
       </div>
-    </a>
+      <div class="project-list">
 
-    <a href="risk-case-study.html" class="card card-brief">
-      <div class="card-meta">Applied Case · Political Risk &amp; Business Interruption · West Asia · 2026</div>
-      <div class="card-title">West Asia Conflict — Insurance Risk Implications</div>
-      <div class="card-desc">
-        AI-assisted perspective on geopolitical risk transmission into Political Risk and Business Interruption insurance.
+        <a class="project-card" href="https://jatinbhutani7.github.io/commercial-risk-horizon.html" target="_blank">
+          <div class="card-left">
+            <div class="card-type">AI Research Tool</div>
+            <div class="card-title">Commercial Risk Horizon</div>
+            <p class="card-desc">Surfaces emerging and underinsured risks across complex commercial industries through a geopolitical, macroeconomic, and AI disruption lens.</p>
+          </div>
+          <div class="card-arrow">↗</div>
+        </a>
+
+        <a class="project-card" href="https://jatinbhutani7.github.io/ipl-system.html" target="_blank">
+          <div class="card-left">
+            <div class="card-type">AI Decision System</div>
+            <div class="card-title">Cricket Match Intelligence</div>
+            <p class="card-desc">A structured system to analyze T20 matches through phase control, decision insights, and evolving match patterns.</p>
+          </div>
+          <div class="card-arrow">↗</div>
+        </a>
+
+        <a class="project-card" href="https://jatinbhutani7.github.io/blind-spot-detector.html" target="_blank">
+          <div class="card-left">
+            <div class="card-type">AI Thinking Tool</div>
+            <div class="card-title">Blind Spot Detector</div>
+            <p class="card-desc">Surfaces what your analysis misses — hidden assumptions, overlooked variables, and failure risks lurking beneath confident conclusions.</p>
+          </div>
+          <div class="card-arrow">↗</div>
+        </a>
+
+        <a class="project-card" href="https://jatinbhutani7.github.io/risk-case-study.html" target="_blank">
+          <div class="card-left">
+            <div class="card-type">Applied Case Study</div>
+            <div class="card-title">West Asia Conflict — Insurance Risk Implications</div>
+            <p class="card-desc">AI-assisted perspective on geopolitical risk transmission into Political Risk and Business Interruption insurance.</p>
+          </div>
+          <div class="card-arrow">↗</div>
+        </a>
+
       </div>
-    </a>
-
-    <a href="ai-pitfall-overreliance.html" class="card card-brief">
-      <div class="card-meta">AI Risk Note · Research Workflows · March 2026</div>
-      <div class="card-title">Over-reliance in Research Workflows</div>
-      <div class="card-desc">
-        How structured AI outputs can quietly reduce validation and critical thinking in professional research workflows.
-      </div>
-    </a>
-
-    <a href="ai-bias-thought-leadership.html" class="card card-brief">
-      <div class="card-meta">Perspective · AI &amp; Society · March 2026</div>
-      <div class="card-title">AI Bias &amp; Social Structure</div>
-      <div class="card-desc">
-        Why AI learns societal hierarchies and what it means for real-world deployment.
-      </div>
-    </a>
-
-  </div>
-
-  <!-- PERSONAL -->
-  <div class="section" id="personal">
-    <div class="section-header">
-      <h2>Personal</h2>
-      <div class="section-line"></div>
     </div>
-    <p class="section-note">Applying the same analytical frameworks I use professionally to the game I follow obsessively.</p>
 
-    <a href="ipl-system.html" class="card card-personal">
-      <div class="card-title">AI Decision System: Cricket Match Intelligence</div>
-      <div class="card-desc">
-        Phase-by-phase T20 match analysis — Powerplay control, turning points, and cross-match pattern synthesis. Built out of love for the game.
+    <!-- THE INSURANCE BRIEF -->
+    <div class="section" id="brief">
+      <div class="section-header">
+        <span class="section-label">The Insurance Brief</span>
+        <div class="section-line"></div>
       </div>
-    </a>
 
-  </div>
+      <a class="brief-card" href="https://jatinbhutani7.github.io/insurance-brief-01.html" target="_blank">
+        <div class="brief-top">
+          <span class="brief-badge">Latest &mdash; Edition 01</span>
+          <span class="brief-date">May 2026</span>
+        </div>
+        <div class="brief-title">Capital quality, convergence risk, and the AI production gap</div>
+        <p class="brief-desc">PE capital is flooding into insurance — but its investment thesis is float management, not underwriting conviction. Data centres have become a convergence risk the industry hasn't structurally solved. And the 22% of insurers who've moved beyond AI pilots are building a gap that's harder to close than it looks.</p>
+        <div class="brief-topics">
+          <span class="brief-topic">Capital &amp; Capacity</span>
+          <span class="brief-topic">Data Centre Risk</span>
+          <span class="brief-topic">AI Deployment</span>
+        </div>
+        <div class="brief-footer">
+          <span class="brief-cta">Read Edition 01</span>
+          <span class="brief-arrow">↗</span>
+        </div>
+      </a>
 
-  <!-- CONTACT -->
-  <div class="section" id="contact">
-    <div class="section-header">
-      <h2>Get in Touch</h2>
-      <div class="section-line"></div>
+      <a class="brief-all" href="https://jatinbhutani7.github.io/insurance-brief.html" target="_blank">
+        View all editions →
+      </a>
     </div>
-    <p style="font-size:14px; color: var(--ink-mid); margin-bottom: 20px;">
-      Open to research and consulting collaborations in insurance, risk, and emerging risk advisory.
-    </p>
-    <div class="contact-row">
-      <div class="contact-item"><b>Email</b> &nbsp;<a href="mailto:jatinbhutani7@gmail.com">jatinbhutani7@gmail.com</a></div>
-      <div class="contact-item"><b>LinkedIn</b> &nbsp;<a href="https://www.linkedin.com/in/jatin-bhutani-551b3981/" target="_blank">View Profile</a></div>
+
+    <!-- PERSPECTIVES -->
+    <div class="section" id="perspectives">
+      <div class="section-header">
+        <span class="section-label">Perspectives</span>
+        <div class="section-line"></div>
+      </div>
+      <div class="perspectives-list">
+
+        <a class="perspective-item" href="https://jatinbhutani7.github.io/ai-pitfall-overreliance.html" target="_blank">
+          <div class="persp-num">01</div>
+          <div class="persp-body">
+            <div class="persp-title">AI Risk Note: Over-reliance in Research Workflows</div>
+            <p class="persp-desc">How structured AI outputs can reduce validation and critical thinking in research workflows — and what to do about it.</p>
+          </div>
+        </a>
+
+        <a class="perspective-item" href="https://jatinbhutani7.github.io/ai-bias-thought-leadership.html" target="_blank">
+          <div class="persp-num">02</div>
+          <div class="persp-body">
+            <div class="persp-title">AI Bias &amp; Social Structure</div>
+            <p class="persp-desc">Why AI learns societal hierarchies and what it means for real-world deployment across research and decision-making contexts.</p>
+          </div>
+        </a>
+
+      </div>
     </div>
+
+    <!-- AI ETHICS -->
+    <div class="section" id="ethics">
+      <div class="section-header">
+        <span class="section-label">AI Ethics &amp; Governance</span>
+        <div class="section-line"></div>
+      </div>
+      <div class="ethics-grid">
+        <div class="ethics-card">
+          <div class="ethics-num">I</div>
+          <div class="ethics-title">Responsible AI use</div>
+          <p class="ethics-desc">Applying AI with intent and accountability — flagging limitations, validating outputs, maintaining research integrity.</p>
+        </div>
+        <div class="ethics-card">
+          <div class="ethics-num">II</div>
+          <div class="ethics-title">Bias &amp; fairness</div>
+          <p class="ethics-desc">Identifying systemic biases in datasets and secondary sources when synthesising market or policy intelligence.</p>
+        </div>
+        <div class="ethics-card">
+          <div class="ethics-num">III</div>
+          <div class="ethics-title">Governance frameworks</div>
+          <p class="ethics-desc">Tracking AI governance standards — EU AI Act, NIST AI RMF, and sector-specific compliance requirements.</p>
+        </div>
+        <div class="ethics-card">
+          <div class="ethics-num">IV</div>
+          <div class="ethics-title">Transparency &amp; attribution</div>
+          <p class="ethics-desc">Ensuring AI-assisted work is clearly attributed, with human oversight at every stage of the research process.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONTACT -->
+    <div class="section" id="contact">
+      <div class="section-header">
+        <span class="section-label">Contact</span>
+        <div class="section-line"></div>
+      </div>
+      <div class="contact-grid">
+        <a class="contact-card" href="mailto:jatinbhutani7@gmail.com">
+          <span class="contact-label">Email</span>
+          <span class="contact-value">jatinbhutani7@gmail.com</span>
+        </a>
+        <a class="contact-card" href="https://www.linkedin.com/in/jatin-bhutani-551b3981/" target="_blank" rel="noopener">
+          <span class="contact-label">LinkedIn</span>
+          <span class="contact-value">Jatin Bhutani</span>
+        </a>
+      </div>
+      <div class="contact-note">
+        Open to research collaborations, consulting engagements, and conversations about AI in industry intelligence — particularly in insurance, risk, and geopolitical analysis. Based in Mumbai, India.
+      </div>
+    </div>
+
   </div>
 
-  <!-- FOOTER -->
-  <div class="footer">
-    <div class="footer-left">© 2026 Jatin Bhutani</div>
-    <div class="footer-right">Research · Risk · Intelligence</div>
-  </div>
-
-</div>
+  <footer>
+    <div class="footer-inner">
+      <span>Jatin Bhutani &mdash; Industry Researcher</span>
+      <span>&copy; 2026</span>
+    </div>
+  </footer>
 
 </body>
 </html>
