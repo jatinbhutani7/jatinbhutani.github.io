@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="The Insurance Brief — a monthly strategic intelligence note on commercial lines and non-life insurance by Jatin Bhutani." />
+  <title>The Insurance Brief | Jatin Bhutani</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #faf9f7;
+      --bg2:          #f2f0ec;
+      --text:         #1a1916;
+      --text-muted:   #6b6860;
+      --text-faint:   #a09d98;
+      --border:       rgba(0,0,0,0.08);
+      --border-med:   rgba(0,0,0,0.14);
+      --accent:       #8b6240;
+      --accent-dim:   rgba(139,98,64,0.08);
+      --radius:       10px;
+      --serif:        'Instrument Serif', Georgia, serif;
+      --sans:         'Geist', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      border-bottom: 1px solid var(--border);
+      background: rgba(250,249,247,0.94);
+      backdrop-filter: blur(10px);
+    }
+    .nav-inner {
+      max-width: 860px; margin: 0 auto; padding: 0 2rem;
+      display: flex; justify-content: space-between; align-items: center;
+      height: 56px;
+    }
+    .nav-logo {
+      font-family: var(--serif); font-size: 17px; color: var(--text);
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a {
+      font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-muted); text-decoration: none; transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    .wrap { max-width: 860px; margin: 0 auto; padding: 0 2rem; }
+
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; color: var(--text-muted); text-decoration: none;
+      margin: 2rem 0 0; transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--accent); }
+
+    /* SERIES HEADER */
+    .series-header {
+      padding: 3.5rem 0 2.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .series-kicker {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 1.25rem;
+    }
+    .series-kicker::before {
+      content: ''; display: block; width: 24px; height: 1px; background: var(--accent);
+    }
+    .series-title {
+      font-family: var(--serif);
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 400; line-height: 1.05;
+      letter-spacing: -0.5px; color: var(--text);
+      margin-bottom: 1rem;
+    }
+    .series-desc {
+      font-size: 15px; line-height: 1.8;
+      color: var(--text-muted); font-weight: 300;
+      max-width: 540px; margin-bottom: 1.5rem;
+    }
+    .series-meta { font-size: 12px; color: var(--text-faint); letter-spacing: 0.04em; }
+
+    /* EDITIONS LIST */
+    .editions-section { padding: 3rem 0; }
+    .section-header {
+      display: flex; align-items: center; gap: 1rem;
+      margin-bottom: 1.75rem;
+    }
+    .section-label {
+      font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--text-faint); white-space: nowrap;
+    }
+    .section-line { flex: 1; height: 1px; background: var(--border); }
+
+    .editions-list { display: flex; flex-direction: column; gap: 2px; }
+
+    /* EDITION CARD — latest */
+    .edition-card-latest {
+      display: block; text-decoration: none;
+      padding: 2rem;
+      background: white;
+      border: 1px solid var(--border-med);
+      border-radius: var(--radius);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      margin-bottom: 2px;
+    }
+    .edition-card-latest:hover {
+      border-color: var(--accent);
+    }
+    .edition-card-latest:hover .card-arrow { opacity: 1; transform: translateX(0); }
+
+    .card-top {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 1rem; margin-bottom: 1rem;
+    }
+    .card-badge {
+      font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 3px 10px; border-radius: 100px;
+      background: var(--accent-dim);
+      color: var(--accent); border: 1px solid rgba(139,98,64,0.2);
+      white-space: nowrap;
+    }
+    .card-date { font-size: 12px; color: var(--text-faint); letter-spacing: 0.04em; }
+
+    .card-title {
+      font-family: var(--serif);
+      font-size: 22px; font-weight: 400; line-height: 1.2;
+      color: var(--text); margin-bottom: 0.6rem; letter-spacing: -0.2px;
+    }
+    .card-desc { font-size: 13px; color: var(--text-muted); line-height: 1.65; margin-bottom: 1rem; }
+    .card-topics { display: flex; gap: 8px; flex-wrap: wrap; }
+    .card-topic {
+      font-size: 11px; padding: 3px 10px;
+      border: 1px solid var(--border);
+      border-radius: 100px; color: var(--text-muted);
+      background: var(--bg2);
+    }
+    .card-footer {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 1.25rem; padding-top: 1.25rem;
+      border-top: 1px solid var(--border);
+    }
+    .card-read { font-size: 12px; color: var(--accent); }
+    .card-arrow {
+      font-size: 16px; color: var(--accent);
+      opacity: 0; transform: translateX(-6px);
+      transition: opacity 0.2s, transform 0.2s;
+    }
+
+    /* EDITION CARD — standard */
+    .edition-card {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      gap: 1.5rem; padding: 1.25rem 1.5rem;
+      text-decoration: none;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .edition-card:hover { background: white; border-color: var(--border); }
+    .edition-card:hover .ec-arrow { opacity: 1; transform: translateX(0); }
+
+    .ec-left { flex: 1; }
+    .ec-meta { font-size: 11px; color: var(--text-faint); margin-bottom: 0.4rem; letter-spacing: 0.04em; }
+    .ec-title { font-size: 15px; color: var(--text); margin-bottom: 0.3rem; line-height: 1.4; }
+    .ec-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+    .ec-arrow {
+      font-size: 16px; color: var(--accent);
+      opacity: 0; transform: translateX(-4px);
+      transition: opacity 0.2s, transform 0.2s;
+      padding-top: 2px; flex-shrink: 0;
+    }
+
+    /* COMING SOON */
+    .coming-soon {
+      padding: 2rem; text-align: center;
+      border: 1px dashed var(--border-med);
+      border-radius: var(--radius);
+      margin-top: 2px;
+    }
+    .cs-label { font-size: 13px; color: var(--text-muted); margin-bottom: 0.35rem; }
+    .cs-sub { font-size: 12px; color: var(--text-faint); }
+
+    /* ABOUT SECTION */
+    .about-section {
+      padding: 2.5rem 0;
+      border-top: 1px solid var(--border);
+    }
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .about-card {
+      padding: 1.25rem;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    .about-card-label {
+      font-size: 10px; letter-spacing: 0.09em; text-transform: uppercase;
+      color: var(--text-faint); margin-bottom: 0.5rem;
+    }
+    .about-card-text { font-size: 13px; color: var(--text-muted); line-height: 1.65; }
+
+    footer {
+      border-top: 1px solid var(--border); padding: 1.5rem 0;
+    }
+    .footer-inner {
+      max-width: 860px; margin: 0 auto; padding: 0 2rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .footer-inner span { font-size: 12px; color: var(--text-faint); }
+
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      .about-grid { grid-template-columns: 1fr; }
+      .card-top { flex-direction: column; gap: 0.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="https://jatinbhutani7.github.io">Jatin Bhutani</a>
+    <div class="nav-links">
+      <a href="https://jatinbhutani7.github.io#work">Work</a>
+      <a href="https://jatinbhutani7.github.io#perspectives">Perspectives</a>
+      <a href="https://jatinbhutani7.github.io#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <a class="back-link" href="https://jatinbhutani7.github.io">← Back to portfolio</a>
+
+  <div class="series-header">
+    <div class="series-kicker">Monthly Series</div>
+    <h1 class="series-title">The Insurance Brief</h1>
+    <p class="series-desc">
+      A monthly strategic intelligence note on commercial lines and non-life insurance — covering real market trends, emerging risks, and AI deployment. Written for those who think in business implications, not policy wordings.
+    </p>
+    <div class="series-meta">Published monthly &nbsp;&middot;&nbsp; Commercial Lines &amp; Non-Life &nbsp;&middot;&nbsp; By Jatin Bhutani</div>
+  </div>
+
+  <div class="editions-section">
+
+    <div class="section-header">
+      <span class="section-label">All Editions</span>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="editions-list">
+
+      <!-- LATEST EDITION — replace href and content each month -->
+      <a class="edition-card-latest" href="https://jatinbhutani7.github.io/insurance-brief-01.html">
+        <div class="card-top">
+          <span class="card-badge">Latest &mdash; Edition 01</span>
+          <span class="card-date">May 2026</span>
+        </div>
+        <div class="card-title">Capital quality, convergence risk, and the AI production gap</div>
+        <p class="card-desc">PE capital is flooding into insurance — but its investment thesis is float management, not underwriting conviction. Data centres have become a convergence risk the industry hasn't structurally solved. And the 22% of insurers who've moved beyond AI pilots are building a gap that's harder to close than it looks.</p>
+        <div class="card-topics">
+          <span class="card-topic">Capital &amp; Capacity</span>
+          <span class="card-topic">Data Centre Risk</span>
+          <span class="card-topic">AI Deployment</span>
+        </div>
+        <div class="card-footer">
+          <span class="card-read">Read Edition 01 →</span>
+          <span class="card-arrow">↗</span>
+        </div>
+      </a>
+
+      <!-- COMING SOON PLACEHOLDER — remove when Edition 02 is published -->
+      <div class="coming-soon">
+        <div class="cs-label">Edition 02 — June 2026</div>
+        <div class="cs-sub">Topics under consideration: casualty reserve adequacy, parametric product expansion, AI model explainability regulation</div>
+      </div>
+
+      <!--
+        TO ADD A NEW EDITION EACH MONTH:
+        1. Copy the block below, uncomment it, and fill in the details
+        2. Move the previous "latest" card down to this standard format
+        3. Update the "coming soon" placeholder with the next edition topics
+
+      <a class="edition-card" href="https://jatinbhutani7.github.io/insurance-brief-02.html">
+        <div class="ec-left">
+          <div class="ec-meta">Edition 02 &nbsp;&middot;&nbsp; June 2026</div>
+          <div class="ec-title">YOUR TITLE HERE</div>
+          <div class="ec-desc">YOUR ONE-LINE SUMMARY HERE</div>
+        </div>
+        <div class="ec-arrow">→</div>
+      </a>
+      -->
+
+    </div>
+
+  </div>
+
+  <!-- ABOUT THE BRIEF -->
+  <div class="about-section">
+    <div class="section-header">
+      <span class="section-label">About This Brief</span>
+      <div class="section-line"></div>
+    </div>
+    <div class="about-grid">
+      <div class="about-card">
+        <div class="about-card-label">What it covers</div>
+        <div class="about-card-text">Strategic-level trends in commercial lines and non-life insurance — market cycles, emerging risks, AI deployment, and regulatory shifts. Not policy-level detail. Business implications.</div>
+      </div>
+      <div class="about-card">
+        <div class="about-card-label">Who it is for</div>
+        <div class="about-card-text">Consulting firms, insurers, and risk professionals who want a concise, opinionated read on what is actually moving in the market — not a summary of what everyone already knows.</div>
+      </div>
+      <div class="about-card">
+        <div class="about-card-label">Frequency</div>
+        <div class="about-card-text">Monthly. Each edition covers three topics — a market trend, an emerging risk, and one area where conventional wisdom needs updating.</div>
+      </div>
+      <div class="about-card">
+        <div class="about-card-label">The author</div>
+        <div class="about-card-text">Jatin Bhutani is an industry researcher specialising in commercial risk and insurance, with experience across specialty risk consulting and AI-assisted research workflows.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <span>Jatin Bhutani &mdash; Industry Researcher</span>
+    <span>&copy; 2026</span>
+  </div>
+</footer>
+
+</body>
+</html>
