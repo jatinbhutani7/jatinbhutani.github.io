@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="The Insurance Brief, Edition 01 — Capital quality, data centre convergence risk, and the AI pilot-to-production gap. A monthly strategic intelligence brief by Jatin Bhutani." />
+  <title>The Insurance Brief — Edition 01 | Jatin Bhutani</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #faf9f7;
+      --bg2:          #f2f0ec;
+      --bg3:          #eae7e1;
+      --text:         #1a1916;
+      --text-muted:   #6b6860;
+      --text-faint:   #a09d98;
+      --border:       rgba(0,0,0,0.08);
+      --border-med:   rgba(0,0,0,0.14);
+      --accent:       #8b6240;
+      --accent-dim:   rgba(139,98,64,0.08);
+      --radius:       10px;
+      --serif:        'Instrument Serif', Georgia, serif;
+      --sans:         'Geist', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 15px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      border-bottom: 1px solid var(--border);
+      background: rgba(250,249,247,0.94);
+      backdrop-filter: blur(10px);
+    }
+    .nav-inner {
+      max-width: 860px; margin: 0 auto; padding: 0 2rem;
+      display: flex; justify-content: space-between; align-items: center;
+      height: 56px;
+    }
+    .nav-logo {
+      font-family: var(--serif); font-size: 17px; color: var(--text);
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 2rem; }
+    .nav-links a {
+      font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase;
+      color: var(--text-muted); text-decoration: none; transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* WRAP */
+    .wrap { max-width: 760px; margin: 0 auto; padding: 0 2rem; }
+
+    /* BACK */
+    .back-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; letter-spacing: 0.05em;
+      color: var(--text-muted); text-decoration: none;
+      margin: 2rem 0 0; transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--accent); }
+
+    /* MASTHEAD */
+    .masthead {
+      padding: 3.5rem 0 2.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .masthead-series {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 1.25rem;
+    }
+    .masthead-series::before {
+      content: ''; display: block; width: 24px; height: 1px; background: var(--accent);
+    }
+    .masthead-title {
+      font-family: var(--serif);
+      font-size: clamp(34px, 5vw, 54px);
+      font-weight: 400; line-height: 1.05;
+      letter-spacing: -0.5px; color: var(--text);
+      margin-bottom: 0.5rem;
+    }
+    .masthead-edition {
+      font-size: 13px; color: var(--text-faint);
+      letter-spacing: 0.04em; margin-bottom: 1.5rem;
+    }
+    .masthead-intro {
+      font-size: 16px; line-height: 1.8;
+      color: var(--text-muted); font-weight: 300;
+      max-width: 580px; margin-bottom: 1.75rem;
+    }
+    .edition-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+    .edition-pill {
+      font-size: 11px; padding: 4px 12px;
+      border: 1px solid var(--border-med);
+      border-radius: 100px; color: var(--text-muted);
+      background: var(--bg2);
+    }
+
+    /* ARTICLE BODY */
+    .article-body { padding: 3.5rem 0 2rem; }
+
+    /* STORY BLOCK */
+    .story {
+      margin-bottom: 3.5rem;
+      padding-bottom: 3.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .story:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+    .story-header { margin-bottom: 1.5rem; }
+    .story-num {
+      font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 0.5rem; display: block;
+    }
+    .story-title {
+      font-family: var(--serif);
+      font-size: clamp(20px, 3vw, 26px);
+      font-weight: 400; line-height: 1.2;
+      color: var(--text); letter-spacing: -0.3px;
+    }
+
+    .body-text {
+      font-size: 15px; line-height: 1.9;
+      color: var(--text-muted); font-weight: 300;
+      margin-bottom: 1.25rem;
+    }
+    .body-text:last-child { margin-bottom: 0; }
+
+    /* STAT CALLOUT */
+    .stat-callout {
+      display: flex; gap: 12px; flex-wrap: wrap;
+      margin: 2rem 0;
+    }
+    .stat-block {
+      flex: 1; min-width: 140px;
+      padding: 1rem 1.25rem;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+    .stat-num {
+      font-family: var(--serif); font-size: 28px; font-style: italic;
+      color: var(--accent); line-height: 1; margin-bottom: 0.35rem;
+    }
+    .stat-label { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+    /* PULL QUOTE */
+    .pull-quote {
+      border-left: 2px solid var(--accent);
+      padding: 0.5rem 0 0.5rem 1.5rem;
+      margin: 2rem 0;
+    }
+    .pull-quote p {
+      font-family: var(--serif); font-size: 18px; font-style: italic;
+      color: var(--text); line-height: 1.6;
+    }
+
+    /* IMPLICATION BOX */
+    .implication {
+      padding: 1.25rem 1.5rem;
+      background: var(--accent-dim);
+      border: 1px solid rgba(139,98,64,0.18);
+      border-radius: var(--radius);
+      margin: 2rem 0;
+    }
+    .impl-label {
+      font-size: 10px; letter-spacing: 0.09em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 0.5rem;
+    }
+    .impl-text { font-size: 14px; color: var(--text); line-height: 1.7; }
+
+    /* ARTICLE FOOTER */
+    .article-footer {
+      padding: 2.5rem 0;
+      border-top: 1px solid var(--border);
+      display: flex; justify-content: space-between;
+      align-items: flex-start; flex-wrap: wrap; gap: 1.5rem;
+      margin-top: 1rem;
+    }
+    .footer-author { font-size: 13px; color: var(--text-muted); line-height: 1.75; }
+    .footer-author strong { color: var(--text); font-weight: 500; display: block; margin-bottom: 2px; }
+    .footer-nav a {
+      font-size: 12px; color: var(--text-muted);
+      text-decoration: none; transition: color 0.2s;
+    }
+    .footer-nav a:hover { color: var(--accent); }
+
+    /* NEXT EDITION TEASER */
+    .next-edition {
+      padding: 1.5rem;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      margin-bottom: 2.5rem;
+    }
+    .next-label {
+      font-size: 10px; letter-spacing: 0.09em; text-transform: uppercase;
+      color: var(--text-faint); margin-bottom: 0.5rem;
+    }
+    .next-text { font-size: 13px; color: var(--text-muted); line-height: 1.65; }
+
+    /* SITE FOOTER */
+    footer {
+      border-top: 1px solid var(--border); padding: 1.5rem 0;
+    }
+    .footer-inner {
+      max-width: 860px; margin: 0 auto; padding: 0 2rem;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .footer-inner span { font-size: 12px; color: var(--text-faint); }
+
+    @media (max-width: 600px) {
+      .nav-links { display: none; }
+      .stat-callout { flex-direction: column; }
+      .article-footer { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="https://jatinbhutani7.github.io">Jatin Bhutani</a>
+    <div class="nav-links">
+      <a href="https://jatinbhutani7.github.io#work">Work</a>
+      <a href="https://jatinbhutani7.github.io#perspectives">Perspectives</a>
+      <a href="https://jatinbhutani7.github.io#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <a class="back-link" href="https://jatinbhutani7.github.io">← Back to portfolio</a>
+
+  <!-- MASTHEAD -->
+  <div class="masthead">
+    <div class="masthead-series">The Insurance Brief</div>
+    <h1 class="masthead-title">Edition 01</h1>
+    <div class="masthead-edition">May 2026 &nbsp;·&nbsp; Commercial Lines &amp; Non-Life</div>
+    <p class="masthead-intro">
+      Three things worth paying attention to this month — a capital story with an underappreciated implication, an emerging risk the industry has not structurally solved, and the AI deployment gap that will determine who wins the next decade.
+    </p>
+    <div class="edition-pills">
+      <span class="edition-pill">Capital &amp; Capacity</span>
+      <span class="edition-pill">Data Centre Risk</span>
+      <span class="edition-pill">AI Deployment</span>
+    </div>
+  </div>
+
+  <div class="article-body">
+
+    <!-- STORY 01 -->
+    <div class="story">
+      <div class="story-header">
+        <span class="story-num">01 &mdash; Capital &amp; Capacity</span>
+        <h2 class="story-title">Capital is expanding. But not all capital is equal.</h2>
+      </div>
+
+      <p class="body-text">The commercial non-life market has earned its profitability. The US P&C industry posted its best underwriting results in over a decade in 2024, with a combined ratio of 96.5% — a significant recovery from 101.6% the year prior. Global commercial lines averaged approximately 91% over the same period, with premiums growing 8% annually for five consecutive years. Rate increases, disciplined underwriting, and relatively benign catastrophe years did their work.</p>
+
+      <p class="body-text">The consequence is predictable — capital is flowing in. What is less discussed is the character of that capital.</p>
+
+      <div class="stat-callout">
+        <div class="stat-block">
+          <div class="stat-num">$27B</div>
+          <div class="stat-label">PE investment in insurance through July 2024 — already exceeding full-year 2022 and 2023 totals</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-num">50%</div>
+          <div class="stat-label">Share of ABS in PE-owned insurer portfolios, vs 25–33% for the industry overall</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-num">&minus;3%</div>
+          <div class="stat-label">Global commercial insurance rate movement in Q1 2025 — third consecutive quarterly decline</div>
+        </div>
+      </div>
+
+      <p class="body-text">PE investment in insurance reached $27 billion through July 2024 — already exceeding full-year totals for both 2022 and 2023 — even as broader PE markets contracted sharply. Insurance is being treated as a yield vehicle in a difficult fundraising environment. The investment thesis is float management, not underwriting conviction. PE-owned insurers hold up to 50% of their portfolios in asset-backed securities, compared to 25–33% for the industry overall. The exposure profile is structurally different from traditional carrier capital.</p>
+
+      <div class="pull-quote">
+        <p>"Capacity is expanding because returns have been attractive — not because underlying risk has reduced."</p>
+      </div>
+
+      <p class="body-text">Global commercial rates have already declined for three consecutive quarters as of Q1 2025. When investment return compression follows rate softening, PE-backed capital will face a test it has not yet encountered in insurance. The next market dislocation may not be triggered by a catastrophe event. It may be triggered by capital deciding the vehicle is no longer worth the complexity — and exiting faster than traditional reinsurance capital would.</p>
+
+      <div class="implication">
+        <div class="impl-label">Strategic implication</div>
+        <div class="impl-text">The softening cycle ahead carries different risk than previous cycles. Underwriting discipline will need to hold not just against competitive pressure from traditional players, but against capital that entered for investment returns and may exit on investment logic rather than underwriting logic. Monitoring the behaviour of PE-backed capacity through 2025–26 is more important than monitoring headline rate movements.</div>
+      </div>
+    </div>
+
+    <!-- STORY 02 -->
+    <div class="story">
+      <div class="story-header">
+        <span class="story-num">02 &mdash; Emerging Risk</span>
+        <h2 class="story-title">Data centres: a convergence risk the industry has not priced cleanly.</h2>
+      </div>
+
+      <p class="body-text">The AI infrastructure build-out has created one of the more complex emerging risk pools of the past decade. Hyperscalers invested approximately $210 billion in AI-related data centre capital expenditure in 2024 alone, with Amazon, Microsoft, and Google accounting for 63% of global cloud services revenue. That concentration of critical digital infrastructure in specific geographies is producing exposures that do not sit cleanly within any single insurance line.</p>
+
+      <p class="body-text">The risk profile of a data centre has changed fundamentally. What was underwritten as complex property — fire, flood, power failure — is now a convergence of property damage, business interruption, political violence, cyber, and supply chain disruption in a single asset class. Standard commercial property and business interruption policies frequently exclude acts of war. Operators are being forced to layer specialised war risk coverage on top of existing programmes — programmes that were not designed to interact with each other cleanly.</p>
+
+      <div class="stat-callout">
+        <div class="stat-block">
+          <div class="stat-num">$210B</div>
+          <div class="stat-label">Hyperscaler AI data centre capex in 2024 alone, concentrated in a small number of geographies</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-num">4</div>
+          <div class="stat-label">Separate insurance lines that can trigger simultaneously in a single data centre loss event: property, BI, political violence, cyber</div>
+        </div>
+      </div>
+
+      <p class="body-text">As Marsh's political risk practice has noted, data centres now sit at the intersection of technology and geopolitics — requiring businesses to factor political risk, investment restrictions, and local instability into asset-level decisions that were previously purely operational. This is no longer a theoretical framing. The 2026 drone strikes on AWS facilities in the UAE and Bahrain demonstrated that digital infrastructure in contested regions carries kinetic as well as cyber and operational risk simultaneously.</p>
+
+      <div class="pull-quote">
+        <p>"A data centre loss in a contested region could trigger coverage disputes across three or four separate towers at the same time."</p>
+      </div>
+
+      <div class="implication">
+        <div class="impl-label">Strategic implication</div>
+        <div class="impl-text">Capacity for true convergence risk — where property, BI, political violence, and cyber interact in the same loss event — is thin and fragmented. The industry has not yet produced a coherent product response to an asset class that has outgrown the coverage architecture designed for it. The opportunity for specialist insurers and brokers is to build convergence products before a major claim forces the issue. The Lloyd's market and specialist political risk carriers are best positioned — but coordination across lines is the prerequisite.</div>
+      </div>
+    </div>
+
+    <!-- STORY 03 -->
+    <div class="story">
+      <div class="story-header">
+        <span class="story-num">03 &mdash; AI Deployment</span>
+        <h2 class="story-title">The pilot-to-production gap is the real competitive divide.</h2>
+      </div>
+
+      <p class="body-text">The narrative around AI in insurance has moved from "should we invest" to "how fast can we scale." The reality on the ground is more nuanced. 55% of insurers are in early or full generative AI adoption stages. Only 22% have scaled beyond pilot programmes. That gap — between experimentation and production deployment — is where the competitive differentiation of the next three years will be determined.</p>
+
+      <p class="body-text">Claims has moved faster than underwriting, and the reason is data quality rather than strategic intent. Claims data is structured, standardised, and largely consistent across systems. Commercial underwriting data is fragmented, broker-dependent, and variable in quality — particularly in specialty and complex commercial lines. Where data infrastructure has been built first, the results are material: underwriting timelines compressing from days to minutes, straight-through processing rates rising from 10–15% to 70–90% in early production deployments. But these outcomes follow years of data investment, not AI deployment alone.</p>
+
+      <div class="stat-callout">
+        <div class="stat-block">
+          <div class="stat-num">22%</div>
+          <div class="stat-label">Share of insurers that have scaled AI beyond pilot programmes, despite 55% in adoption stages</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-num">70–90%</div>
+          <div class="stat-label">Straight-through processing rates in early production deployments, up from 10–15%</div>
+        </div>
+        <div class="stat-block">
+          <div class="stat-num">35%</div>
+          <div class="stat-label">Share of insurers projected to deploy AI agents across 3+ core functions by end-2026</div>
+        </div>
+      </div>
+
+      <p class="body-text">The next phase is agentic AI — systems that handle complete workflows end-to-end rather than assisting at individual steps. By late 2026, more than 35% of insurers are projected to deploy AI agents across at least three core functions, with processing time reductions of up to 70%. The carriers moving into this phase are not those with the most AI investment. They are those that invested in data infrastructure two to three years ago and are now in a position to build on it.</p>
+
+      <div class="pull-quote">
+        <p>"The underlying data infrastructure required to run these systems takes years to build — not months. The pilot-to-production gap is closing. The data infrastructure gap is not."</p>
+      </div>
+
+      <div class="implication">
+        <div class="impl-label">Strategic implication</div>
+        <div class="impl-text">The risk is not failed AI deployment. It is successful deployment concentrating structural cost advantage in a small group of technically prepared carriers — creating a distance that data-laggard competitors cannot close quickly. For consulting firms advising insurers, the strategic question is no longer which AI tools to deploy. It is whether the underlying data architecture can support production-grade deployment at all — and how long it will take to get there if it cannot.</div>
+      </div>
+    </div>
+
+    <!-- NEXT EDITION -->
+    <div class="next-edition">
+      <div class="next-label">Next edition — June 2026</div>
+      <div class="next-text">Topics under consideration: casualty reserve adequacy in a softening market, parametric products and the expanding use case beyond cat, and the regulatory pressure building around AI model explainability in underwriting. Published monthly.</div>
+    </div>
+
+    <!-- ARTICLE FOOTER -->
+    <div class="article-footer">
+      <div class="footer-author">
+        <strong>Jatin Bhutani</strong>
+        Industry Researcher &mdash; Commercial Risk &amp; Insurance<br>
+        The Insurance Brief is a monthly strategic intelligence note on commercial lines and non-life insurance. Views are the author's own.
+      </div>
+      <div class="footer-nav">
+        <a href="https://jatinbhutani7.github.io">← Back to portfolio</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <span>Jatin Bhutani &mdash; Industry Researcher</span>
+    <span>&copy; 2026</span>
+  </div>
+</footer>
+
+</body>
+</html>
